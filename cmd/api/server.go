@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/kartik7120/booking_broker-service/cmd/api/routes"
 )
 
 type Config struct {
@@ -28,6 +29,8 @@ func (c *Config) Routes() http.Handler {
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to the booking broker service"))
 	})
+
+	mux.Get("/getupcomingmovies/{date}", routes.GetUpcomingMovies)
 
 	return mux
 }
