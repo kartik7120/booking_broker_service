@@ -20,16 +20,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	MovieDBService_AddMovie_FullMethodName     = "/moviedb_service.MovieDBService/AddMovie"
-	MovieDBService_GetMovie_FullMethodName     = "/moviedb_service.MovieDBService/GetMovie"
-	MovieDBService_GetAllMovies_FullMethodName = "/moviedb_service.MovieDBService/GetAllMovies"
-	MovieDBService_UpdateMovie_FullMethodName  = "/moviedb_service.MovieDBService/UpdateMovie"
-	MovieDBService_DeleteMovie_FullMethodName  = "/moviedb_service.MovieDBService/DeleteMovie"
-	MovieDBService_AddVenue_FullMethodName     = "/moviedb_service.MovieDBService/AddVenue"
-	MovieDBService_GetVenue_FullMethodName     = "/moviedb_service.MovieDBService/GetVenue"
-	MovieDBService_GetAllVenues_FullMethodName = "/moviedb_service.MovieDBService/GetAllVenues"
-	MovieDBService_UpdateVenue_FullMethodName  = "/moviedb_service.MovieDBService/UpdateVenue"
-	MovieDBService_DeleteVenue_FullMethodName  = "/moviedb_service.MovieDBService/DeleteVenue"
+	MovieDBService_AddMovie_FullMethodName            = "/moviedb_service.MovieDBService/AddMovie"
+	MovieDBService_GetMovie_FullMethodName            = "/moviedb_service.MovieDBService/GetMovie"
+	MovieDBService_GetAllMovies_FullMethodName        = "/moviedb_service.MovieDBService/GetAllMovies"
+	MovieDBService_UpdateMovie_FullMethodName         = "/moviedb_service.MovieDBService/UpdateMovie"
+	MovieDBService_DeleteMovie_FullMethodName         = "/moviedb_service.MovieDBService/DeleteMovie"
+	MovieDBService_AddVenue_FullMethodName            = "/moviedb_service.MovieDBService/AddVenue"
+	MovieDBService_GetVenue_FullMethodName            = "/moviedb_service.MovieDBService/GetVenue"
+	MovieDBService_GetAllVenues_FullMethodName        = "/moviedb_service.MovieDBService/GetAllVenues"
+	MovieDBService_UpdateVenue_FullMethodName         = "/moviedb_service.MovieDBService/UpdateVenue"
+	MovieDBService_DeleteVenue_FullMethodName         = "/moviedb_service.MovieDBService/DeleteVenue"
+	MovieDBService_GetUpcomingMovies_FullMethodName   = "/moviedb_service.MovieDBService/GetUpcomingMovies"
+	MovieDBService_GetNowPlayingMovies_FullMethodName = "/moviedb_service.MovieDBService/GetNowPlayingMovies"
 )
 
 // MovieDBServiceClient is the client API for MovieDBService service.
@@ -46,6 +48,8 @@ type MovieDBServiceClient interface {
 	GetAllVenues(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*MovieListResponse, error)
 	UpdateVenue(ctx context.Context, in *Venue, opts ...grpc.CallOption) (*VenueResponse, error)
 	DeleteVenue(ctx context.Context, in *MovieRequest, opts ...grpc.CallOption) (*MovieResponse, error)
+	GetUpcomingMovies(ctx context.Context, in *GetUpcomingMovieRequest, opts ...grpc.CallOption) (*GetUpcomingMovieResponse, error)
+	GetNowPlayingMovies(ctx context.Context, in *GetNowPlayingMovieRequest, opts ...grpc.CallOption) (*GetUpcomingMovieResponse, error)
 }
 
 type movieDBServiceClient struct {
@@ -156,6 +160,26 @@ func (c *movieDBServiceClient) DeleteVenue(ctx context.Context, in *MovieRequest
 	return out, nil
 }
 
+func (c *movieDBServiceClient) GetUpcomingMovies(ctx context.Context, in *GetUpcomingMovieRequest, opts ...grpc.CallOption) (*GetUpcomingMovieResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUpcomingMovieResponse)
+	err := c.cc.Invoke(ctx, MovieDBService_GetUpcomingMovies_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *movieDBServiceClient) GetNowPlayingMovies(ctx context.Context, in *GetNowPlayingMovieRequest, opts ...grpc.CallOption) (*GetUpcomingMovieResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUpcomingMovieResponse)
+	err := c.cc.Invoke(ctx, MovieDBService_GetNowPlayingMovies_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MovieDBServiceServer is the server API for MovieDBService service.
 // All implementations must embed UnimplementedMovieDBServiceServer
 // for forward compatibility.
@@ -170,6 +194,8 @@ type MovieDBServiceServer interface {
 	GetAllVenues(context.Context, *empty.Empty) (*MovieListResponse, error)
 	UpdateVenue(context.Context, *Venue) (*VenueResponse, error)
 	DeleteVenue(context.Context, *MovieRequest) (*MovieResponse, error)
+	GetUpcomingMovies(context.Context, *GetUpcomingMovieRequest) (*GetUpcomingMovieResponse, error)
+	GetNowPlayingMovies(context.Context, *GetNowPlayingMovieRequest) (*GetUpcomingMovieResponse, error)
 	mustEmbedUnimplementedMovieDBServiceServer()
 }
 
@@ -209,6 +235,12 @@ func (UnimplementedMovieDBServiceServer) UpdateVenue(context.Context, *Venue) (*
 }
 func (UnimplementedMovieDBServiceServer) DeleteVenue(context.Context, *MovieRequest) (*MovieResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteVenue not implemented")
+}
+func (UnimplementedMovieDBServiceServer) GetUpcomingMovies(context.Context, *GetUpcomingMovieRequest) (*GetUpcomingMovieResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUpcomingMovies not implemented")
+}
+func (UnimplementedMovieDBServiceServer) GetNowPlayingMovies(context.Context, *GetNowPlayingMovieRequest) (*GetUpcomingMovieResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNowPlayingMovies not implemented")
 }
 func (UnimplementedMovieDBServiceServer) mustEmbedUnimplementedMovieDBServiceServer() {}
 func (UnimplementedMovieDBServiceServer) testEmbeddedByValue()                        {}
@@ -411,6 +443,42 @@ func _MovieDBService_DeleteVenue_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MovieDBService_GetUpcomingMovies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUpcomingMovieRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MovieDBServiceServer).GetUpcomingMovies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MovieDBService_GetUpcomingMovies_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MovieDBServiceServer).GetUpcomingMovies(ctx, req.(*GetUpcomingMovieRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MovieDBService_GetNowPlayingMovies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNowPlayingMovieRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MovieDBServiceServer).GetNowPlayingMovies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MovieDBService_GetNowPlayingMovies_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MovieDBServiceServer).GetNowPlayingMovies(ctx, req.(*GetNowPlayingMovieRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MovieDBService_ServiceDesc is the grpc.ServiceDesc for MovieDBService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -457,6 +525,14 @@ var MovieDBService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteVenue",
 			Handler:    _MovieDBService_DeleteVenue_Handler,
+		},
+		{
+			MethodName: "GetUpcomingMovies",
+			Handler:    _MovieDBService_GetUpcomingMovies_Handler,
+		},
+		{
+			MethodName: "GetNowPlayingMovies",
+			Handler:    _MovieDBService_GetNowPlayingMovies_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

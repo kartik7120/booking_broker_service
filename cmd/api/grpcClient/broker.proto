@@ -62,6 +62,8 @@ message Movie {
     repeated string movie_resolution = 10;
     repeated Venue venues = 11;
     string movieid = 12;
+    int64 votes = 13;
+    int32 ranking = 14;
 }
 
 enum VenueType {
@@ -136,6 +138,22 @@ message VenueResponse {
     string error = 4;
 }
 
+message GetUpcomingMovieRequest {
+    string date = 1;
+}
+
+message GetUpcomingMovieResponse {
+    int32 status = 1;
+    string message = 2;
+    repeated Movie movie_list = 3;
+    string error = 4;
+}
+
+message GetNowPlayingMovieRequest {
+    int64 longitude = 1;
+    int64 latitude = 2;
+}
+
 service MovieDBService {
     rpc AddMovie (Movie) returns (MovieResponse);
     rpc GetMovie (MovieRequest) returns (MovieResponse);
@@ -147,4 +165,6 @@ service MovieDBService {
     rpc GetAllVenues (google.protobuf.Empty) returns (MovieListResponse);
     rpc UpdateVenue (Venue) returns (VenueResponse);
     rpc DeleteVenue (MovieRequest) returns (MovieResponse);
+    rpc GetUpcomingMovies (GetUpcomingMovieRequest) returns (GetUpcomingMovieResponse);
+    rpc GetNowPlayingMovies (GetNowPlayingMovieRequest) returns (GetUpcomingMovieResponse);
 }
