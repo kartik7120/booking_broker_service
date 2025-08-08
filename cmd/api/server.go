@@ -8,10 +8,12 @@ import (
 	"github.com/go-chi/cors"
 
 	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
+	ps "github.com/kartik7120/booking_broker-service/cmd/api/payment_service"
 )
 
 type Config struct {
 	MovieDB_service pb.MovieDBServiceClient
+	Payment_service ps.PaymentServiceClient
 }
 
 func (c *Config) Routes() http.Handler {
@@ -27,6 +29,9 @@ func (c *Config) Routes() http.Handler {
 	}))
 
 	mux.Use(middleware.Heartbeat("/ping"))
+	mux.Use(middleware.Logger)
+	mux.Use(middleware.Recoverer)
+	// mux.Use(utils.RedirectToHttpMiddleware)
 
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to the booking broker service"))
@@ -34,6 +39,20 @@ func (c *Config) Routes() http.Handler {
 
 	mux.Get("/getupcomingmovies/{date}", c.GetUpcomingMovies)
 	mux.Get("/getnowplayingmovies", c.GetNowPlayingMovies)
+	mux.Get("/getMovie/{id}", c.GetMovieDetails)
+	mux.Post("/getAllMovieReview/{id}", c.GetMovieReviews)
+	mux.Post("/addReview/{id}", c.AddMovieReview)
+	mux.Post("/getMovieTimeSlots", c.GetMovieTimeSlots)
+	mux.Post("/GetBookedSeats", c.GetBookedSeats)
+	mux.Post("/BookSeats", c.BookSeats)
+	mux.Post("/GetSeatMatrix", c.GetSeatMatrix)
+	mux.Post("/webhook/events", c.HandleWebhookEvents)
+	mux.Get("/getIdempotentKey", c.GetIdempotentKey)
+	mux.Get("/isValidIdempotentKey", c.IsValidIdempotentKey)
+	mux.Post("/commitIdempotentKey", c.CommitIdempotentKey)
+	mux.Post("/createCustomer", c.Create_Customer)
+	mux.Post("/createOrder", c.CreateOrder)
+	mux.Post("/createPaymentLink", c.CreatePaymentLink)
 
 	return mux
 }

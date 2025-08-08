@@ -2,17 +2,32 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/kartik7120/booking_broker-service/cmd/api"
+	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
+	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
+	"github.com/kartik7120/booking_broker-service/cmd/api/payment_service"
 )
 
 func main() {
+
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading .env file", err)
+		os.Exit(1)
+		return
+	}
+
 	app := api.Config{}
 
 	srv := &http.Server{
@@ -20,15 +35,57 @@ func main() {
 		Handler: app.Routes(),
 	}
 
+	// srv2 := &http.Server{
+	// 	Addr:    ":8081",
+	// 	Handler: app.Routes(),
+	// }
+
 	quit := make(chan os.Signal, 1)
 
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetOutput(os.Stdout)
+	log.SetReportCaller(true)
+
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	var opts []grpc.DialOption
+
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	conn, err := grpc.NewClient(":1102", opts...)
+
+	if err != nil {
+		log.Error("error connecting to client", err)
+		os.Exit(1)
+		return
+	}
+
+	conn2, err := grpc.NewClient(":1104", opts...)
+
+	if err != nil {
+		log.Error("error connecting to payment service", err)
+		os.Exit(1)
+		return
+	}
+
+	client := pb.NewMovieDBServiceClient(conn)
+
+	paymentClient := payment_service.NewPaymentServiceClient(conn2)
+
+	app.MovieDB_service = client
+	app.Payment_service = paymentClient
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Error starting server: %v", err)
 		}
 	}()
+
+	// go func() {
+	// 	if err := srv2.ListenAndServeTLS("cert.pem", "key.pem"); err != nil && err != http.ErrServerClosed {
+	// 		log.Fatalf("Error starting TLS server %v", err)
+	// 	}
+	// }()
 
 	<-quit
 

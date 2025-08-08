@@ -22,6 +22,61 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type SeatType int32
+
+const (
+	SeatType_TWO_D   SeatType = 0
+	SeatType_THREE_D SeatType = 1
+	SeatType_FOUR_D  SeatType = 2
+	SeatType_NORMAL  SeatType = 3
+	SeatType_VIP     SeatType = 4
+)
+
+// Enum value maps for SeatType.
+var (
+	SeatType_name = map[int32]string{
+		0: "TWO_D",
+		1: "THREE_D",
+		2: "FOUR_D",
+		3: "NORMAL",
+		4: "VIP",
+	}
+	SeatType_value = map[string]int32{
+		"TWO_D":   0,
+		"THREE_D": 1,
+		"FOUR_D":  2,
+		"NORMAL":  3,
+		"VIP":     4,
+	}
+)
+
+func (x SeatType) Enum() *SeatType {
+	p := new(SeatType)
+	*p = x
+	return p
+}
+
+func (x SeatType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SeatType) Descriptor() protoreflect.EnumDescriptor {
+	return file_broker_proto_enumTypes[0].Descriptor()
+}
+
+func (SeatType) Type() protoreflect.EnumType {
+	return &file_broker_proto_enumTypes[0]
+}
+
+func (x SeatType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SeatType.Descriptor instead.
+func (SeatType) EnumDescriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{0}
+}
+
 type CastAndCrewType int32
 
 const (
@@ -121,11 +176,11 @@ func (x CastAndCrewType) String() string {
 }
 
 func (CastAndCrewType) Descriptor() protoreflect.EnumDescriptor {
-	return file_broker_proto_enumTypes[0].Descriptor()
+	return file_broker_proto_enumTypes[1].Descriptor()
 }
 
 func (CastAndCrewType) Type() protoreflect.EnumType {
-	return &file_broker_proto_enumTypes[0]
+	return &file_broker_proto_enumTypes[1]
 }
 
 func (x CastAndCrewType) Number() protoreflect.EnumNumber {
@@ -134,7 +189,7 @@ func (x CastAndCrewType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CastAndCrewType.Descriptor instead.
 func (CastAndCrewType) EnumDescriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{0}
+	return file_broker_proto_rawDescGZIP(), []int{1}
 }
 
 type VenueType int32
@@ -173,11 +228,11 @@ func (x VenueType) String() string {
 }
 
 func (VenueType) Descriptor() protoreflect.EnumDescriptor {
-	return file_broker_proto_enumTypes[1].Descriptor()
+	return file_broker_proto_enumTypes[2].Descriptor()
 }
 
 func (VenueType) Type() protoreflect.EnumType {
-	return &file_broker_proto_enumTypes[1]
+	return &file_broker_proto_enumTypes[2]
 }
 
 func (x VenueType) Number() protoreflect.EnumNumber {
@@ -186,62 +241,305 @@ func (x VenueType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use VenueType.Descriptor instead.
 func (VenueType) EnumDescriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{1}
+	return file_broker_proto_rawDescGZIP(), []int{2}
 }
 
-type SeatType int32
+type SortBy int32
 
 const (
-	SeatType_TWO_D   SeatType = 0
-	SeatType_THREE_D SeatType = 1
-	SeatType_FOUR_D  SeatType = 2
-	SeatType_NORMAL  SeatType = 3
-	SeatType_VIP     SeatType = 4
+	SortBy_ASCENDING  SortBy = 0
+	SortBy_DESCENDING SortBy = 1
 )
 
-// Enum value maps for SeatType.
+// Enum value maps for SortBy.
 var (
-	SeatType_name = map[int32]string{
-		0: "TWO_D",
-		1: "THREE_D",
-		2: "FOUR_D",
-		3: "NORMAL",
-		4: "VIP",
+	SortBy_name = map[int32]string{
+		0: "ASCENDING",
+		1: "DESCENDING",
 	}
-	SeatType_value = map[string]int32{
-		"TWO_D":   0,
-		"THREE_D": 1,
-		"FOUR_D":  2,
-		"NORMAL":  3,
-		"VIP":     4,
+	SortBy_value = map[string]int32{
+		"ASCENDING":  0,
+		"DESCENDING": 1,
 	}
 )
 
-func (x SeatType) Enum() *SeatType {
-	p := new(SeatType)
+func (x SortBy) Enum() *SortBy {
+	p := new(SortBy)
 	*p = x
 	return p
 }
 
-func (x SeatType) String() string {
+func (x SortBy) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (SeatType) Descriptor() protoreflect.EnumDescriptor {
-	return file_broker_proto_enumTypes[2].Descriptor()
+func (SortBy) Descriptor() protoreflect.EnumDescriptor {
+	return file_broker_proto_enumTypes[3].Descriptor()
 }
 
-func (SeatType) Type() protoreflect.EnumType {
-	return &file_broker_proto_enumTypes[2]
+func (SortBy) Type() protoreflect.EnumType {
+	return &file_broker_proto_enumTypes[3]
 }
 
-func (x SeatType) Number() protoreflect.EnumNumber {
+func (x SortBy) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use SeatType.Descriptor instead.
-func (SeatType) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use SortBy.Descriptor instead.
+func (SortBy) EnumDescriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{3}
+}
+
+type FilterBy int32
+
+const (
+	FilterBy_RATING FilterBy = 0
+	FilterBy_DATE   FilterBy = 1
+)
+
+// Enum value maps for FilterBy.
+var (
+	FilterBy_name = map[int32]string{
+		0: "RATING",
+		1: "DATE",
+	}
+	FilterBy_value = map[string]int32{
+		"RATING": 0,
+		"DATE":   1,
+	}
+)
+
+func (x FilterBy) Enum() *FilterBy {
+	p := new(FilterBy)
+	*p = x
+	return p
+}
+
+func (x FilterBy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FilterBy) Descriptor() protoreflect.EnumDescriptor {
+	return file_broker_proto_enumTypes[4].Descriptor()
+}
+
+func (FilterBy) Type() protoreflect.EnumType {
+	return &file_broker_proto_enumTypes[4]
+}
+
+func (x FilterBy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use FilterBy.Descriptor instead.
+func (FilterBy) EnumDescriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{4}
+}
+
+type SeatMatrix struct {
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	SeatNumber string                 `protobuf:"bytes,1,opt,name=seat_number,json=seatNumber,proto3" json:"seat_number,omitempty"`
+	// Deprecated: Marked as deprecated in broker.proto.
+	IsBooked      bool     `protobuf:"varint,2,opt,name=is_booked,json=isBooked,proto3" json:"is_booked,omitempty"`
+	Price         int32    `protobuf:"varint,3,opt,name=price,proto3" json:"price,omitempty"`
+	Row           int32    `protobuf:"varint,4,opt,name=row,proto3" json:"row,omitempty"`
+	Column        int32    `protobuf:"varint,5,opt,name=column,proto3" json:"column,omitempty"`
+	Type          SeatType `protobuf:"varint,6,opt,name=type,proto3,enum=moviedb_service.SeatType" json:"type,omitempty"`
+	Id            int32    `protobuf:"varint,7,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SeatMatrix) Reset() {
+	*x = SeatMatrix{}
+	mi := &file_broker_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SeatMatrix) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SeatMatrix) ProtoMessage() {}
+
+func (x *SeatMatrix) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SeatMatrix.ProtoReflect.Descriptor instead.
+func (*SeatMatrix) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *SeatMatrix) GetSeatNumber() string {
+	if x != nil {
+		return x.SeatNumber
+	}
+	return ""
+}
+
+// Deprecated: Marked as deprecated in broker.proto.
+func (x *SeatMatrix) GetIsBooked() bool {
+	if x != nil {
+		return x.IsBooked
+	}
+	return false
+}
+
+func (x *SeatMatrix) GetPrice() int32 {
+	if x != nil {
+		return x.Price
+	}
+	return 0
+}
+
+func (x *SeatMatrix) GetRow() int32 {
+	if x != nil {
+		return x.Row
+	}
+	return 0
+}
+
+func (x *SeatMatrix) GetColumn() int32 {
+	if x != nil {
+		return x.Column
+	}
+	return 0
+}
+
+func (x *SeatMatrix) GetType() SeatType {
+	if x != nil {
+		return x.Type
+	}
+	return SeatType_TWO_D
+}
+
+func (x *SeatMatrix) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type AddSeatMatrixInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Venueid       int32                  `protobuf:"varint,1,opt,name=venueid,proto3" json:"venueid,omitempty"`
+	Seats         []*SeatMatrix          `protobuf:"bytes,2,rep,name=seats,proto3" json:"seats,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddSeatMatrixInput) Reset() {
+	*x = AddSeatMatrixInput{}
+	mi := &file_broker_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddSeatMatrixInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddSeatMatrixInput) ProtoMessage() {}
+
+func (x *AddSeatMatrixInput) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddSeatMatrixInput.ProtoReflect.Descriptor instead.
+func (*AddSeatMatrixInput) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AddSeatMatrixInput) GetVenueid() int32 {
+	if x != nil {
+		return x.Venueid
+	}
+	return 0
+}
+
+func (x *AddSeatMatrixInput) GetSeats() []*SeatMatrix {
+	if x != nil {
+		return x.Seats
+	}
+	return nil
+}
+
+type AddSeatMatrixResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddSeatMatrixResponse) Reset() {
+	*x = AddSeatMatrixResponse{}
+	mi := &file_broker_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddSeatMatrixResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddSeatMatrixResponse) ProtoMessage() {}
+
+func (x *AddSeatMatrixResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddSeatMatrixResponse.ProtoReflect.Descriptor instead.
+func (*AddSeatMatrixResponse) Descriptor() ([]byte, []int) {
 	return file_broker_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AddSeatMatrixResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *AddSeatMatrixResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *AddSeatMatrixResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
 }
 
 type CastAndCrew struct {
@@ -256,7 +554,7 @@ type CastAndCrew struct {
 
 func (x *CastAndCrew) Reset() {
 	*x = CastAndCrew{}
-	mi := &file_broker_proto_msgTypes[0]
+	mi := &file_broker_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -268,7 +566,7 @@ func (x *CastAndCrew) String() string {
 func (*CastAndCrew) ProtoMessage() {}
 
 func (x *CastAndCrew) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[0]
+	mi := &file_broker_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -281,7 +579,7 @@ func (x *CastAndCrew) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CastAndCrew.ProtoReflect.Descriptor instead.
 func (*CastAndCrew) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{0}
+	return file_broker_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CastAndCrew) GetName() string {
@@ -319,13 +617,15 @@ type MovieTimeSlot struct {
 	Duration      int32                  `protobuf:"varint,3,opt,name=duration,proto3" json:"duration,omitempty"`
 	Date          string                 `protobuf:"bytes,4,opt,name=date,proto3" json:"date,omitempty"`
 	MovieFormat   SeatType               `protobuf:"varint,5,opt,name=movie_format,json=movieFormat,proto3,enum=moviedb_service.SeatType" json:"movie_format,omitempty"`
+	Movieid       int32                  `protobuf:"varint,6,opt,name=movieid,proto3" json:"movieid,omitempty"`
+	Venueid       int32                  `protobuf:"varint,7,opt,name=venueid,proto3" json:"venueid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MovieTimeSlot) Reset() {
 	*x = MovieTimeSlot{}
-	mi := &file_broker_proto_msgTypes[1]
+	mi := &file_broker_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -337,7 +637,7 @@ func (x *MovieTimeSlot) String() string {
 func (*MovieTimeSlot) ProtoMessage() {}
 
 func (x *MovieTimeSlot) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[1]
+	mi := &file_broker_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -350,7 +650,7 @@ func (x *MovieTimeSlot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MovieTimeSlot.ProtoReflect.Descriptor instead.
 func (*MovieTimeSlot) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{1}
+	return file_broker_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *MovieTimeSlot) GetStartTime() string {
@@ -388,6 +688,20 @@ func (x *MovieTimeSlot) GetMovieFormat() SeatType {
 	return SeatType_TWO_D
 }
 
+func (x *MovieTimeSlot) GetMovieid() int32 {
+	if x != nil {
+		return x.Movieid
+	}
+	return 0
+}
+
+func (x *MovieTimeSlot) GetVenueid() int32 {
+	if x != nil {
+		return x.Venueid
+	}
+	return 0
+}
+
 type Movie struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Title           string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
@@ -401,16 +715,17 @@ type Movie struct {
 	ReleaseDate     string                 `protobuf:"bytes,9,opt,name=release_date,json=releaseDate,proto3" json:"release_date,omitempty"`
 	MovieResolution []string               `protobuf:"bytes,10,rep,name=movie_resolution,json=movieResolution,proto3" json:"movie_resolution,omitempty"`
 	Venues          []*Venue               `protobuf:"bytes,11,rep,name=venues,proto3" json:"venues,omitempty"`
-	Movieid         string                 `protobuf:"bytes,12,opt,name=movieid,proto3" json:"movieid,omitempty"`
-	Votes           int64                  `protobuf:"varint,13,opt,name=votes,proto3" json:"votes,omitempty"`
-	Ranking         int32                  `protobuf:"varint,14,opt,name=ranking,proto3" json:"ranking,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// string movieid = 12;
+	Votes         int64 `protobuf:"varint,13,opt,name=votes,proto3" json:"votes,omitempty"`
+	Ranking       int32 `protobuf:"varint,14,opt,name=ranking,proto3" json:"ranking,omitempty"`
+	Id            int32 `protobuf:"varint,15,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Movie) Reset() {
 	*x = Movie{}
-	mi := &file_broker_proto_msgTypes[2]
+	mi := &file_broker_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -422,7 +737,7 @@ func (x *Movie) String() string {
 func (*Movie) ProtoMessage() {}
 
 func (x *Movie) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[2]
+	mi := &file_broker_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -435,7 +750,7 @@ func (x *Movie) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Movie.ProtoReflect.Descriptor instead.
 func (*Movie) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{2}
+	return file_broker_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Movie) GetTitle() string {
@@ -515,13 +830,6 @@ func (x *Movie) GetVenues() []*Venue {
 	return nil
 }
 
-func (x *Movie) GetMovieid() string {
-	if x != nil {
-		return x.Movieid
-	}
-	return ""
-}
-
 func (x *Movie) GetVotes() int64 {
 	if x != nil {
 		return x.Votes
@@ -536,88 +844,11 @@ func (x *Movie) GetRanking() int32 {
 	return 0
 }
 
-type SeatMatrix struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SeatNumber    string                 `protobuf:"bytes,1,opt,name=seat_number,json=seatNumber,proto3" json:"seat_number,omitempty"`
-	IsBooked      bool                   `protobuf:"varint,2,opt,name=is_booked,json=isBooked,proto3" json:"is_booked,omitempty"`
-	Price         int32                  `protobuf:"varint,3,opt,name=price,proto3" json:"price,omitempty"`
-	Row           int32                  `protobuf:"varint,4,opt,name=row,proto3" json:"row,omitempty"`
-	Column        int32                  `protobuf:"varint,5,opt,name=column,proto3" json:"column,omitempty"`
-	Type          SeatType               `protobuf:"varint,6,opt,name=type,proto3,enum=moviedb_service.SeatType" json:"type,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SeatMatrix) Reset() {
-	*x = SeatMatrix{}
-	mi := &file_broker_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SeatMatrix) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SeatMatrix) ProtoMessage() {}
-
-func (x *SeatMatrix) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[3]
+func (x *Movie) GetId() int32 {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SeatMatrix.ProtoReflect.Descriptor instead.
-func (*SeatMatrix) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *SeatMatrix) GetSeatNumber() string {
-	if x != nil {
-		return x.SeatNumber
-	}
-	return ""
-}
-
-func (x *SeatMatrix) GetIsBooked() bool {
-	if x != nil {
-		return x.IsBooked
-	}
-	return false
-}
-
-func (x *SeatMatrix) GetPrice() int32 {
-	if x != nil {
-		return x.Price
+		return x.Id
 	}
 	return 0
-}
-
-func (x *SeatMatrix) GetRow() int32 {
-	if x != nil {
-		return x.Row
-	}
-	return 0
-}
-
-func (x *SeatMatrix) GetColumn() int32 {
-	if x != nil {
-		return x.Column
-	}
-	return 0
-}
-
-func (x *SeatMatrix) GetType() SeatType {
-	if x != nil {
-		return x.Type
-	}
-	return SeatType_TWO_D
 }
 
 type Venue struct {
@@ -642,7 +873,7 @@ type Venue struct {
 
 func (x *Venue) Reset() {
 	*x = Venue{}
-	mi := &file_broker_proto_msgTypes[4]
+	mi := &file_broker_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -654,7 +885,7 @@ func (x *Venue) String() string {
 func (*Venue) ProtoMessage() {}
 
 func (x *Venue) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[4]
+	mi := &file_broker_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -667,7 +898,7 @@ func (x *Venue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Venue.ProtoReflect.Descriptor instead.
 func (*Venue) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{4}
+	return file_broker_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Venue) GetName() string {
@@ -777,7 +1008,7 @@ type MovieList struct {
 
 func (x *MovieList) Reset() {
 	*x = MovieList{}
-	mi := &file_broker_proto_msgTypes[5]
+	mi := &file_broker_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -789,7 +1020,7 @@ func (x *MovieList) String() string {
 func (*MovieList) ProtoMessage() {}
 
 func (x *MovieList) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[5]
+	mi := &file_broker_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -802,7 +1033,7 @@ func (x *MovieList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MovieList.ProtoReflect.Descriptor instead.
 func (*MovieList) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{5}
+	return file_broker_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *MovieList) GetMovies() []*Movie {
@@ -823,7 +1054,7 @@ type MovieRequest struct {
 
 func (x *MovieRequest) Reset() {
 	*x = MovieRequest{}
-	mi := &file_broker_proto_msgTypes[6]
+	mi := &file_broker_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -835,7 +1066,7 @@ func (x *MovieRequest) String() string {
 func (*MovieRequest) ProtoMessage() {}
 
 func (x *MovieRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[6]
+	mi := &file_broker_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -848,7 +1079,7 @@ func (x *MovieRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MovieRequest.ProtoReflect.Descriptor instead.
 func (*MovieRequest) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{6}
+	return file_broker_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *MovieRequest) GetTitle() string {
@@ -884,7 +1115,7 @@ type MovieResponse struct {
 
 func (x *MovieResponse) Reset() {
 	*x = MovieResponse{}
-	mi := &file_broker_proto_msgTypes[7]
+	mi := &file_broker_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -896,7 +1127,7 @@ func (x *MovieResponse) String() string {
 func (*MovieResponse) ProtoMessage() {}
 
 func (x *MovieResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[7]
+	mi := &file_broker_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -909,7 +1140,7 @@ func (x *MovieResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MovieResponse.ProtoReflect.Descriptor instead.
 func (*MovieResponse) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{7}
+	return file_broker_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *MovieResponse) GetStatus() int32 {
@@ -952,7 +1183,7 @@ type MovieListResponse struct {
 
 func (x *MovieListResponse) Reset() {
 	*x = MovieListResponse{}
-	mi := &file_broker_proto_msgTypes[8]
+	mi := &file_broker_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -964,7 +1195,7 @@ func (x *MovieListResponse) String() string {
 func (*MovieListResponse) ProtoMessage() {}
 
 func (x *MovieListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[8]
+	mi := &file_broker_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -977,7 +1208,7 @@ func (x *MovieListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MovieListResponse.ProtoReflect.Descriptor instead.
 func (*MovieListResponse) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{8}
+	return file_broker_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *MovieListResponse) GetStatus() int32 {
@@ -1020,7 +1251,7 @@ type VenueResponse struct {
 
 func (x *VenueResponse) Reset() {
 	*x = VenueResponse{}
-	mi := &file_broker_proto_msgTypes[9]
+	mi := &file_broker_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1032,7 +1263,7 @@ func (x *VenueResponse) String() string {
 func (*VenueResponse) ProtoMessage() {}
 
 func (x *VenueResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[9]
+	mi := &file_broker_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1045,7 +1276,7 @@ func (x *VenueResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VenueResponse.ProtoReflect.Descriptor instead.
 func (*VenueResponse) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{9}
+	return file_broker_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *VenueResponse) GetStatus() int32 {
@@ -1085,7 +1316,7 @@ type GetUpcomingMovieRequest struct {
 
 func (x *GetUpcomingMovieRequest) Reset() {
 	*x = GetUpcomingMovieRequest{}
-	mi := &file_broker_proto_msgTypes[10]
+	mi := &file_broker_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1097,7 +1328,7 @@ func (x *GetUpcomingMovieRequest) String() string {
 func (*GetUpcomingMovieRequest) ProtoMessage() {}
 
 func (x *GetUpcomingMovieRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[10]
+	mi := &file_broker_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1110,7 +1341,7 @@ func (x *GetUpcomingMovieRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUpcomingMovieRequest.ProtoReflect.Descriptor instead.
 func (*GetUpcomingMovieRequest) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{10}
+	return file_broker_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetUpcomingMovieRequest) GetDate() string {
@@ -1132,7 +1363,7 @@ type GetUpcomingMovieResponse struct {
 
 func (x *GetUpcomingMovieResponse) Reset() {
 	*x = GetUpcomingMovieResponse{}
-	mi := &file_broker_proto_msgTypes[11]
+	mi := &file_broker_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1144,7 +1375,7 @@ func (x *GetUpcomingMovieResponse) String() string {
 func (*GetUpcomingMovieResponse) ProtoMessage() {}
 
 func (x *GetUpcomingMovieResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[11]
+	mi := &file_broker_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1157,7 +1388,7 @@ func (x *GetUpcomingMovieResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUpcomingMovieResponse.ProtoReflect.Descriptor instead.
 func (*GetUpcomingMovieResponse) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{11}
+	return file_broker_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetUpcomingMovieResponse) GetStatus() int32 {
@@ -1198,7 +1429,7 @@ type GetNowPlayingMovieRequest struct {
 
 func (x *GetNowPlayingMovieRequest) Reset() {
 	*x = GetNowPlayingMovieRequest{}
-	mi := &file_broker_proto_msgTypes[12]
+	mi := &file_broker_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1210,7 +1441,7 @@ func (x *GetNowPlayingMovieRequest) String() string {
 func (*GetNowPlayingMovieRequest) ProtoMessage() {}
 
 func (x *GetNowPlayingMovieRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_broker_proto_msgTypes[12]
+	mi := &file_broker_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1223,7 +1454,7 @@ func (x *GetNowPlayingMovieRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNowPlayingMovieRequest.ProtoReflect.Descriptor instead.
 func (*GetNowPlayingMovieRequest) Descriptor() ([]byte, []int) {
-	return file_broker_proto_rawDescGZIP(), []int{12}
+	return file_broker_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetNowPlayingMovieRequest) GetLongitude() int64 {
@@ -1240,23 +1471,1898 @@ func (x *GetNowPlayingMovieRequest) GetLatitude() int64 {
 	return 0
 }
 
+type Review struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MovieID       int32                  `protobuf:"varint,1,opt,name=movieID,proto3" json:"movieID,omitempty"`
+	UserID        int32                  `protobuf:"varint,2,opt,name=userID,proto3" json:"userID,omitempty"`
+	Rating        int32                  `protobuf:"varint,3,opt,name=rating,proto3" json:"rating,omitempty"`
+	Comment       string                 `protobuf:"bytes,4,opt,name=comment,proto3" json:"comment,omitempty"`
+	Title         string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
+	ReviewID      int32                  `protobuf:"varint,6,opt,name=reviewID,proto3" json:"reviewID,omitempty"`
+	CreatedAt     int32                  `protobuf:"varint,7,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	ReviewerName  string                 `protobuf:"bytes,8,opt,name=reviewerName,proto3" json:"reviewerName,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Review) Reset() {
+	*x = Review{}
+	mi := &file_broker_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Review) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Review) ProtoMessage() {}
+
+func (x *Review) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Review.ProtoReflect.Descriptor instead.
+func (*Review) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *Review) GetMovieID() int32 {
+	if x != nil {
+		return x.MovieID
+	}
+	return 0
+}
+
+func (x *Review) GetUserID() int32 {
+	if x != nil {
+		return x.UserID
+	}
+	return 0
+}
+
+func (x *Review) GetRating() int32 {
+	if x != nil {
+		return x.Rating
+	}
+	return 0
+}
+
+func (x *Review) GetComment() string {
+	if x != nil {
+		return x.Comment
+	}
+	return ""
+}
+
+func (x *Review) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *Review) GetReviewID() int32 {
+	if x != nil {
+		return x.ReviewID
+	}
+	return 0
+}
+
+func (x *Review) GetCreatedAt() int32 {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return 0
+}
+
+func (x *Review) GetReviewerName() string {
+	if x != nil {
+		return x.ReviewerName
+	}
+	return ""
+}
+
+type ReviewUpdateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserID        int32                  `protobuf:"varint,1,opt,name=userID,proto3" json:"userID,omitempty"`
+	ReviewID      int32                  `protobuf:"varint,2,opt,name=reviewID,proto3" json:"reviewID,omitempty"`
+	MovieID       int32                  `protobuf:"varint,3,opt,name=movieID,proto3" json:"movieID,omitempty"`
+	Comment       string                 `protobuf:"bytes,4,opt,name=comment,proto3" json:"comment,omitempty"`
+	Title         string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
+	Rating        int32                  `protobuf:"varint,6,opt,name=rating,proto3" json:"rating,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewUpdateRequest) Reset() {
+	*x = ReviewUpdateRequest{}
+	mi := &file_broker_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewUpdateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewUpdateRequest) ProtoMessage() {}
+
+func (x *ReviewUpdateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewUpdateRequest.ProtoReflect.Descriptor instead.
+func (*ReviewUpdateRequest) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *ReviewUpdateRequest) GetUserID() int32 {
+	if x != nil {
+		return x.UserID
+	}
+	return 0
+}
+
+func (x *ReviewUpdateRequest) GetReviewID() int32 {
+	if x != nil {
+		return x.ReviewID
+	}
+	return 0
+}
+
+func (x *ReviewUpdateRequest) GetMovieID() int32 {
+	if x != nil {
+		return x.MovieID
+	}
+	return 0
+}
+
+func (x *ReviewUpdateRequest) GetComment() string {
+	if x != nil {
+		return x.Comment
+	}
+	return ""
+}
+
+func (x *ReviewUpdateRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *ReviewUpdateRequest) GetRating() int32 {
+	if x != nil {
+		return x.Rating
+	}
+	return 0
+}
+
+type ReviewResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Review        *Review                `protobuf:"bytes,3,opt,name=review,proto3" json:"review,omitempty"`
+	Error         string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewResponse) Reset() {
+	*x = ReviewResponse{}
+	mi := &file_broker_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewResponse) ProtoMessage() {}
+
+func (x *ReviewResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewResponse.ProtoReflect.Descriptor instead.
+func (*ReviewResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *ReviewResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *ReviewResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *ReviewResponse) GetReview() *Review {
+	if x != nil {
+		return x.Review
+	}
+	return nil
+}
+
+func (x *ReviewResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type ReviewRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserID        int32                  `protobuf:"varint,1,opt,name=userID,proto3" json:"userID,omitempty"`
+	ReviewID      int32                  `protobuf:"varint,2,opt,name=reviewID,proto3" json:"reviewID,omitempty"`
+	MovieID       int32                  `protobuf:"varint,3,opt,name=movieID,proto3" json:"movieID,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewRequest) Reset() {
+	*x = ReviewRequest{}
+	mi := &file_broker_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewRequest) ProtoMessage() {}
+
+func (x *ReviewRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewRequest.ProtoReflect.Descriptor instead.
+func (*ReviewRequest) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *ReviewRequest) GetUserID() int32 {
+	if x != nil {
+		return x.UserID
+	}
+	return 0
+}
+
+func (x *ReviewRequest) GetReviewID() int32 {
+	if x != nil {
+		return x.ReviewID
+	}
+	return 0
+}
+
+func (x *ReviewRequest) GetMovieID() int32 {
+	if x != nil {
+		return x.MovieID
+	}
+	return 0
+}
+
+type ReviewList struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Reviews       []*Review              `protobuf:"bytes,1,rep,name=reviews,proto3" json:"reviews,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewList) Reset() {
+	*x = ReviewList{}
+	mi := &file_broker_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewList) ProtoMessage() {}
+
+func (x *ReviewList) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewList.ProtoReflect.Descriptor instead.
+func (*ReviewList) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *ReviewList) GetReviews() []*Review {
+	if x != nil {
+		return x.Reviews
+	}
+	return nil
+}
+
+type ReviewListResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Status           int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message          string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	ReviewList       *ReviewList            `protobuf:"bytes,3,opt,name=review_list,json=reviewList,proto3" json:"review_list,omitempty"`
+	Error            string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	TotalReviewCount int32                  `protobuf:"varint,5,opt,name=totalReviewCount,proto3" json:"totalReviewCount,omitempty"`
+	TotalVotes       int32                  `protobuf:"varint,6,opt,name=totalVotes,proto3" json:"totalVotes,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ReviewListResponse) Reset() {
+	*x = ReviewListResponse{}
+	mi := &file_broker_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewListResponse) ProtoMessage() {}
+
+func (x *ReviewListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewListResponse.ProtoReflect.Descriptor instead.
+func (*ReviewListResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ReviewListResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *ReviewListResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *ReviewListResponse) GetReviewList() *ReviewList {
+	if x != nil {
+		return x.ReviewList
+	}
+	return nil
+}
+
+func (x *ReviewListResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+func (x *ReviewListResponse) GetTotalReviewCount() int32 {
+	if x != nil {
+		return x.TotalReviewCount
+	}
+	return 0
+}
+
+func (x *ReviewListResponse) GetTotalVotes() int32 {
+	if x != nil {
+		return x.TotalVotes
+	}
+	return 0
+}
+
+type GetAllMovieReviewsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MovieID       int32                  `protobuf:"varint,1,opt,name=movieID,proto3" json:"movieID,omitempty"`
+	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        int32                  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
+	SortBy        SortBy                 `protobuf:"varint,5,opt,name=sortBy,proto3,enum=moviedb_service.SortBy" json:"sortBy,omitempty"`
+	FilterBy      FilterBy               `protobuf:"varint,6,opt,name=filterBy,proto3,enum=moviedb_service.FilterBy" json:"filterBy,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAllMovieReviewsRequest) Reset() {
+	*x = GetAllMovieReviewsRequest{}
+	mi := &file_broker_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAllMovieReviewsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAllMovieReviewsRequest) ProtoMessage() {}
+
+func (x *GetAllMovieReviewsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAllMovieReviewsRequest.ProtoReflect.Descriptor instead.
+func (*GetAllMovieReviewsRequest) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *GetAllMovieReviewsRequest) GetMovieID() int32 {
+	if x != nil {
+		return x.MovieID
+	}
+	return 0
+}
+
+func (x *GetAllMovieReviewsRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *GetAllMovieReviewsRequest) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+func (x *GetAllMovieReviewsRequest) GetSortBy() SortBy {
+	if x != nil {
+		return x.SortBy
+	}
+	return SortBy_ASCENDING
+}
+
+func (x *GetAllMovieReviewsRequest) GetFilterBy() FilterBy {
+	if x != nil {
+		return x.FilterBy
+	}
+	return FilterBy_RATING
+}
+
+type GetMovieTimeSlotRequest struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	Movieid   string                 `protobuf:"bytes,1,opt,name=movieid,proto3" json:"movieid,omitempty"`
+	StartDate string                 `protobuf:"bytes,3,opt,name=startDate,proto3" json:"startDate,omitempty"`
+	EndDate   string                 `protobuf:"bytes,4,opt,name=endDate,proto3" json:"endDate,omitempty"`
+	// Deprecated: Marked as deprecated in broker.proto.
+	OldLongitude int64 `protobuf:"varint,5,opt,name=old_longitude,json=oldLongitude,proto3" json:"old_longitude,omitempty"`
+	// Deprecated: Marked as deprecated in broker.proto.
+	OldLatitude   int64   `protobuf:"varint,6,opt,name=old_latitude,json=oldLatitude,proto3" json:"old_latitude,omitempty"`
+	Longitude     float32 `protobuf:"fixed32,7,opt,name=longitude,proto3" json:"longitude,omitempty"`
+	Latitude      float32 `protobuf:"fixed32,8,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMovieTimeSlotRequest) Reset() {
+	*x = GetMovieTimeSlotRequest{}
+	mi := &file_broker_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMovieTimeSlotRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMovieTimeSlotRequest) ProtoMessage() {}
+
+func (x *GetMovieTimeSlotRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMovieTimeSlotRequest.ProtoReflect.Descriptor instead.
+func (*GetMovieTimeSlotRequest) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *GetMovieTimeSlotRequest) GetMovieid() string {
+	if x != nil {
+		return x.Movieid
+	}
+	return ""
+}
+
+func (x *GetMovieTimeSlotRequest) GetStartDate() string {
+	if x != nil {
+		return x.StartDate
+	}
+	return ""
+}
+
+func (x *GetMovieTimeSlotRequest) GetEndDate() string {
+	if x != nil {
+		return x.EndDate
+	}
+	return ""
+}
+
+// Deprecated: Marked as deprecated in broker.proto.
+func (x *GetMovieTimeSlotRequest) GetOldLongitude() int64 {
+	if x != nil {
+		return x.OldLongitude
+	}
+	return 0
+}
+
+// Deprecated: Marked as deprecated in broker.proto.
+func (x *GetMovieTimeSlotRequest) GetOldLatitude() int64 {
+	if x != nil {
+		return x.OldLatitude
+	}
+	return 0
+}
+
+func (x *GetMovieTimeSlotRequest) GetLongitude() float32 {
+	if x != nil {
+		return x.Longitude
+	}
+	return 0
+}
+
+func (x *GetMovieTimeSlotRequest) GetLatitude() float32 {
+	if x != nil {
+		return x.Latitude
+	}
+	return 0
+}
+
+type GetMovieTimeSlotResponse struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Status         int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message        string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	MovieTimeSlots []*MovieTimeSlot       `protobuf:"bytes,3,rep,name=movie_time_slots,json=movieTimeSlots,proto3" json:"movie_time_slots,omitempty"`
+	Error          string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	Venues         []*Venue               `protobuf:"bytes,5,rep,name=venues,proto3" json:"venues,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *GetMovieTimeSlotResponse) Reset() {
+	*x = GetMovieTimeSlotResponse{}
+	mi := &file_broker_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMovieTimeSlotResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMovieTimeSlotResponse) ProtoMessage() {}
+
+func (x *GetMovieTimeSlotResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMovieTimeSlotResponse.ProtoReflect.Descriptor instead.
+func (*GetMovieTimeSlotResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *GetMovieTimeSlotResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *GetMovieTimeSlotResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *GetMovieTimeSlotResponse) GetMovieTimeSlots() []*MovieTimeSlot {
+	if x != nil {
+		return x.MovieTimeSlots
+	}
+	return nil
+}
+
+func (x *GetMovieTimeSlotResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+func (x *GetMovieTimeSlotResponse) GetVenues() []*Venue {
+	if x != nil {
+		return x.Venues
+	}
+	return nil
+}
+
+type MovieTimeSlotResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MovieTimeSlotResponse) Reset() {
+	*x = MovieTimeSlotResponse{}
+	mi := &file_broker_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MovieTimeSlotResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MovieTimeSlotResponse) ProtoMessage() {}
+
+func (x *MovieTimeSlotResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MovieTimeSlotResponse.ProtoReflect.Descriptor instead.
+func (*MovieTimeSlotResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *MovieTimeSlotResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *MovieTimeSlotResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *MovieTimeSlotResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type MovieTimeSlotUpdateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	MovieTimeSlot *MovieTimeSlot         `protobuf:"bytes,3,opt,name=movie_time_slot,json=movieTimeSlot,proto3" json:"movie_time_slot,omitempty"`
+	Error         string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MovieTimeSlotUpdateResponse) Reset() {
+	*x = MovieTimeSlotUpdateResponse{}
+	mi := &file_broker_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MovieTimeSlotUpdateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MovieTimeSlotUpdateResponse) ProtoMessage() {}
+
+func (x *MovieTimeSlotUpdateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MovieTimeSlotUpdateResponse.ProtoReflect.Descriptor instead.
+func (*MovieTimeSlotUpdateResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *MovieTimeSlotUpdateResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *MovieTimeSlotUpdateResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *MovieTimeSlotUpdateResponse) GetMovieTimeSlot() *MovieTimeSlot {
+	if x != nil {
+		return x.MovieTimeSlot
+	}
+	return nil
+}
+
+func (x *MovieTimeSlotUpdateResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type MovieTimeSlotUpdate struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	StartTime       string                 `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	EndTime         string                 `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	Duration        int32                  `protobuf:"varint,3,opt,name=duration,proto3" json:"duration,omitempty"`
+	Date            string                 `protobuf:"bytes,4,opt,name=date,proto3" json:"date,omitempty"`
+	MovieFormat     SeatType               `protobuf:"varint,5,opt,name=movie_format,json=movieFormat,proto3,enum=moviedb_service.SeatType" json:"movie_format,omitempty"`
+	Movieid         int32                  `protobuf:"varint,6,opt,name=movieid,proto3" json:"movieid,omitempty"`
+	Venueid         int32                  `protobuf:"varint,7,opt,name=venueid,proto3" json:"venueid,omitempty"`
+	MovieTimeSlotId int32                  `protobuf:"varint,8,opt,name=movie_time_slot_id,json=movieTimeSlotId,proto3" json:"movie_time_slot_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *MovieTimeSlotUpdate) Reset() {
+	*x = MovieTimeSlotUpdate{}
+	mi := &file_broker_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MovieTimeSlotUpdate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MovieTimeSlotUpdate) ProtoMessage() {}
+
+func (x *MovieTimeSlotUpdate) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MovieTimeSlotUpdate.ProtoReflect.Descriptor instead.
+func (*MovieTimeSlotUpdate) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *MovieTimeSlotUpdate) GetStartTime() string {
+	if x != nil {
+		return x.StartTime
+	}
+	return ""
+}
+
+func (x *MovieTimeSlotUpdate) GetEndTime() string {
+	if x != nil {
+		return x.EndTime
+	}
+	return ""
+}
+
+func (x *MovieTimeSlotUpdate) GetDuration() int32 {
+	if x != nil {
+		return x.Duration
+	}
+	return 0
+}
+
+func (x *MovieTimeSlotUpdate) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *MovieTimeSlotUpdate) GetMovieFormat() SeatType {
+	if x != nil {
+		return x.MovieFormat
+	}
+	return SeatType_TWO_D
+}
+
+func (x *MovieTimeSlotUpdate) GetMovieid() int32 {
+	if x != nil {
+		return x.Movieid
+	}
+	return 0
+}
+
+func (x *MovieTimeSlotUpdate) GetVenueid() int32 {
+	if x != nil {
+		return x.Venueid
+	}
+	return 0
+}
+
+func (x *MovieTimeSlotUpdate) GetMovieTimeSlotId() int32 {
+	if x != nil {
+		return x.MovieTimeSlotId
+	}
+	return 0
+}
+
+type MovieTimeSlotDelete struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	MovieTimeSlotId int32                  `protobuf:"varint,1,opt,name=movie_time_slot_id,json=movieTimeSlotId,proto3" json:"movie_time_slot_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *MovieTimeSlotDelete) Reset() {
+	*x = MovieTimeSlotDelete{}
+	mi := &file_broker_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MovieTimeSlotDelete) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MovieTimeSlotDelete) ProtoMessage() {}
+
+func (x *MovieTimeSlotDelete) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MovieTimeSlotDelete.ProtoReflect.Descriptor instead.
+func (*MovieTimeSlotDelete) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *MovieTimeSlotDelete) GetMovieTimeSlotId() int32 {
+	if x != nil {
+		return x.MovieTimeSlotId
+	}
+	return 0
+}
+
+type GetSeatMatrixRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Venueid       int32                  `protobuf:"varint,1,opt,name=venueid,proto3" json:"venueid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSeatMatrixRequest) Reset() {
+	*x = GetSeatMatrixRequest{}
+	mi := &file_broker_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSeatMatrixRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSeatMatrixRequest) ProtoMessage() {}
+
+func (x *GetSeatMatrixRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSeatMatrixRequest.ProtoReflect.Descriptor instead.
+func (*GetSeatMatrixRequest) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *GetSeatMatrixRequest) GetVenueid() int32 {
+	if x != nil {
+		return x.Venueid
+	}
+	return 0
+}
+
+type GetSeatMatrixResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Seats         []*SeatMatrix          `protobuf:"bytes,3,rep,name=seats,proto3" json:"seats,omitempty"`
+	Error         string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSeatMatrixResponse) Reset() {
+	*x = GetSeatMatrixResponse{}
+	mi := &file_broker_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSeatMatrixResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSeatMatrixResponse) ProtoMessage() {}
+
+func (x *GetSeatMatrixResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSeatMatrixResponse.ProtoReflect.Descriptor instead.
+func (*GetSeatMatrixResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *GetSeatMatrixResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *GetSeatMatrixResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *GetSeatMatrixResponse) GetSeats() []*SeatMatrix {
+	if x != nil {
+		return x.Seats
+	}
+	return nil
+}
+
+func (x *GetSeatMatrixResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type UpdateSeatMatrixRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Venueid       int32                  `protobuf:"varint,1,opt,name=venueid,proto3" json:"venueid,omitempty"`
+	Seats         []*SeatMatrix          `protobuf:"bytes,2,rep,name=seats,proto3" json:"seats,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateSeatMatrixRequest) Reset() {
+	*x = UpdateSeatMatrixRequest{}
+	mi := &file_broker_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateSeatMatrixRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSeatMatrixRequest) ProtoMessage() {}
+
+func (x *UpdateSeatMatrixRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSeatMatrixRequest.ProtoReflect.Descriptor instead.
+func (*UpdateSeatMatrixRequest) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *UpdateSeatMatrixRequest) GetVenueid() int32 {
+	if x != nil {
+		return x.Venueid
+	}
+	return 0
+}
+
+func (x *UpdateSeatMatrixRequest) GetSeats() []*SeatMatrix {
+	if x != nil {
+		return x.Seats
+	}
+	return nil
+}
+
+type UpdateSeatMatrixResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateSeatMatrixResponse) Reset() {
+	*x = UpdateSeatMatrixResponse{}
+	mi := &file_broker_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateSeatMatrixResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSeatMatrixResponse) ProtoMessage() {}
+
+func (x *UpdateSeatMatrixResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSeatMatrixResponse.ProtoReflect.Descriptor instead.
+func (*UpdateSeatMatrixResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *UpdateSeatMatrixResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *UpdateSeatMatrixResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *UpdateSeatMatrixResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type DeleteSeatMatrixRequest struct {
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Venueid int32                  `protobuf:"varint,1,opt,name=venueid,proto3" json:"venueid,omitempty"`
+	// Deprecated: Marked as deprecated in broker.proto.
+	Seats         []*SeatMatrix `protobuf:"bytes,2,rep,name=seats,proto3" json:"seats,omitempty"`
+	SeatMatrixId  int32         `protobuf:"varint,3,opt,name=seat_matrix_id,json=seatMatrixId,proto3" json:"seat_matrix_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSeatMatrixRequest) Reset() {
+	*x = DeleteSeatMatrixRequest{}
+	mi := &file_broker_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSeatMatrixRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSeatMatrixRequest) ProtoMessage() {}
+
+func (x *DeleteSeatMatrixRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteSeatMatrixRequest.ProtoReflect.Descriptor instead.
+func (*DeleteSeatMatrixRequest) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *DeleteSeatMatrixRequest) GetVenueid() int32 {
+	if x != nil {
+		return x.Venueid
+	}
+	return 0
+}
+
+// Deprecated: Marked as deprecated in broker.proto.
+func (x *DeleteSeatMatrixRequest) GetSeats() []*SeatMatrix {
+	if x != nil {
+		return x.Seats
+	}
+	return nil
+}
+
+func (x *DeleteSeatMatrixRequest) GetSeatMatrixId() int32 {
+	if x != nil {
+		return x.SeatMatrixId
+	}
+	return 0
+}
+
+type DeleteSeatMatrixResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSeatMatrixResponse) Reset() {
+	*x = DeleteSeatMatrixResponse{}
+	mi := &file_broker_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSeatMatrixResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSeatMatrixResponse) ProtoMessage() {}
+
+func (x *DeleteSeatMatrixResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteSeatMatrixResponse.ProtoReflect.Descriptor instead.
+func (*DeleteSeatMatrixResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *DeleteSeatMatrixResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *DeleteSeatMatrixResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *DeleteSeatMatrixResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type DeleteEntireSeatMatrixRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Venueid       int32                  `protobuf:"varint,1,opt,name=venueid,proto3" json:"venueid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteEntireSeatMatrixRequest) Reset() {
+	*x = DeleteEntireSeatMatrixRequest{}
+	mi := &file_broker_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteEntireSeatMatrixRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteEntireSeatMatrixRequest) ProtoMessage() {}
+
+func (x *DeleteEntireSeatMatrixRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteEntireSeatMatrixRequest.ProtoReflect.Descriptor instead.
+func (*DeleteEntireSeatMatrixRequest) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *DeleteEntireSeatMatrixRequest) GetVenueid() int32 {
+	if x != nil {
+		return x.Venueid
+	}
+	return 0
+}
+
+type DeleteEntireSeatMatrixResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteEntireSeatMatrixResponse) Reset() {
+	*x = DeleteEntireSeatMatrixResponse{}
+	mi := &file_broker_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteEntireSeatMatrixResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteEntireSeatMatrixResponse) ProtoMessage() {}
+
+func (x *DeleteEntireSeatMatrixResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteEntireSeatMatrixResponse.ProtoReflect.Descriptor instead.
+func (*DeleteEntireSeatMatrixResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *DeleteEntireSeatMatrixResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *DeleteEntireSeatMatrixResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *DeleteEntireSeatMatrixResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type AddSingleSeatMatrixInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Venueid       int32                  `protobuf:"varint,1,opt,name=venueid,proto3" json:"venueid,omitempty"`
+	Seat          *SeatMatrix            `protobuf:"bytes,2,opt,name=seat,proto3" json:"seat,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddSingleSeatMatrixInput) Reset() {
+	*x = AddSingleSeatMatrixInput{}
+	mi := &file_broker_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddSingleSeatMatrixInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddSingleSeatMatrixInput) ProtoMessage() {}
+
+func (x *AddSingleSeatMatrixInput) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddSingleSeatMatrixInput.ProtoReflect.Descriptor instead.
+func (*AddSingleSeatMatrixInput) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *AddSingleSeatMatrixInput) GetVenueid() int32 {
+	if x != nil {
+		return x.Venueid
+	}
+	return 0
+}
+
+func (x *AddSingleSeatMatrixInput) GetSeat() *SeatMatrix {
+	if x != nil {
+		return x.Seat
+	}
+	return nil
+}
+
+type AddSingleSeatMatrixResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddSingleSeatMatrixResponse) Reset() {
+	*x = AddSingleSeatMatrixResponse{}
+	mi := &file_broker_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddSingleSeatMatrixResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddSingleSeatMatrixResponse) ProtoMessage() {}
+
+func (x *AddSingleSeatMatrixResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddSingleSeatMatrixResponse.ProtoReflect.Descriptor instead.
+func (*AddSingleSeatMatrixResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *AddSingleSeatMatrixResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *AddSingleSeatMatrixResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *AddSingleSeatMatrixResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type BookedSeats struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	SeatNumber      string                 `protobuf:"bytes,2,opt,name=seat_number,json=seatNumber,proto3" json:"seat_number,omitempty"`
+	MovieTimeSlotID int32                  `protobuf:"varint,3,opt,name=movieTimeSlotID,proto3" json:"movieTimeSlotID,omitempty"`
+	SeatMatrixID    int32                  `protobuf:"varint,4,opt,name=seatMatrixID,proto3" json:"seatMatrixID,omitempty"`
+	IsBooked        bool                   `protobuf:"varint,5,opt,name=is_booked,json=isBooked,proto3" json:"is_booked,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *BookedSeats) Reset() {
+	*x = BookedSeats{}
+	mi := &file_broker_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BookedSeats) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BookedSeats) ProtoMessage() {}
+
+func (x *BookedSeats) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BookedSeats.ProtoReflect.Descriptor instead.
+func (*BookedSeats) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *BookedSeats) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *BookedSeats) GetSeatNumber() string {
+	if x != nil {
+		return x.SeatNumber
+	}
+	return ""
+}
+
+func (x *BookedSeats) GetMovieTimeSlotID() int32 {
+	if x != nil {
+		return x.MovieTimeSlotID
+	}
+	return 0
+}
+
+func (x *BookedSeats) GetSeatMatrixID() int32 {
+	if x != nil {
+		return x.SeatMatrixID
+	}
+	return 0
+}
+
+func (x *BookedSeats) GetIsBooked() bool {
+	if x != nil {
+		return x.IsBooked
+	}
+	return false
+}
+
+type BookSeatsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Deprecated: Marked as deprecated in broker.proto.
+	MovieTimeSlot   *MovieTimeSlot `protobuf:"bytes,1,opt,name=movie_time_slot,json=movieTimeSlot,proto3" json:"movie_time_slot,omitempty"`
+	Seats           []*BookedSeats `protobuf:"bytes,2,rep,name=seats,proto3" json:"seats,omitempty"`
+	MovieTimeSlotId int32          `protobuf:"varint,3,opt,name=movie_time_slot_id,json=movieTimeSlotId,proto3" json:"movie_time_slot_id,omitempty"`
+	Email           string         `protobuf:"bytes,5,opt,name=email,proto3" json:"email,omitempty"`
+	PhoneNumber     int64          `protobuf:"varint,6,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *BookSeatsRequest) Reset() {
+	*x = BookSeatsRequest{}
+	mi := &file_broker_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BookSeatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BookSeatsRequest) ProtoMessage() {}
+
+func (x *BookSeatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BookSeatsRequest.ProtoReflect.Descriptor instead.
+func (*BookSeatsRequest) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{39}
+}
+
+// Deprecated: Marked as deprecated in broker.proto.
+func (x *BookSeatsRequest) GetMovieTimeSlot() *MovieTimeSlot {
+	if x != nil {
+		return x.MovieTimeSlot
+	}
+	return nil
+}
+
+func (x *BookSeatsRequest) GetSeats() []*BookedSeats {
+	if x != nil {
+		return x.Seats
+	}
+	return nil
+}
+
+func (x *BookSeatsRequest) GetMovieTimeSlotId() int32 {
+	if x != nil {
+		return x.MovieTimeSlotId
+	}
+	return 0
+}
+
+func (x *BookSeatsRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *BookSeatsRequest) GetPhoneNumber() int64 {
+	if x != nil {
+		return x.PhoneNumber
+	}
+	return 0
+}
+
+type BookSeatsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	BookSeatsId   []int32                `protobuf:"varint,3,rep,packed,name=book_seats_id,json=bookSeatsId,proto3" json:"book_seats_id,omitempty"`
+	Error         string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BookSeatsResponse) Reset() {
+	*x = BookSeatsResponse{}
+	mi := &file_broker_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BookSeatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BookSeatsResponse) ProtoMessage() {}
+
+func (x *BookSeatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BookSeatsResponse.ProtoReflect.Descriptor instead.
+func (*BookSeatsResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *BookSeatsResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *BookSeatsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *BookSeatsResponse) GetBookSeatsId() []int32 {
+	if x != nil {
+		return x.BookSeatsId
+	}
+	return nil
+}
+
+func (x *BookSeatsResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type GetBookedSeatsRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	MovieTimeSlotId int32                  `protobuf:"varint,1,opt,name=movie_time_slot_id,json=movieTimeSlotId,proto3" json:"movie_time_slot_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetBookedSeatsRequest) Reset() {
+	*x = GetBookedSeatsRequest{}
+	mi := &file_broker_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetBookedSeatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetBookedSeatsRequest) ProtoMessage() {}
+
+func (x *GetBookedSeatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetBookedSeatsRequest.ProtoReflect.Descriptor instead.
+func (*GetBookedSeatsRequest) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *GetBookedSeatsRequest) GetMovieTimeSlotId() int32 {
+	if x != nil {
+		return x.MovieTimeSlotId
+	}
+	return 0
+}
+
+type GetBookedSeatsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	BookedSeats   []*BookedSeats         `protobuf:"bytes,3,rep,name=booked_seats,json=bookedSeats,proto3" json:"booked_seats,omitempty"`
+	Error         string                 `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetBookedSeatsResponse) Reset() {
+	*x = GetBookedSeatsResponse{}
+	mi := &file_broker_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetBookedSeatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetBookedSeatsResponse) ProtoMessage() {}
+
+func (x *GetBookedSeatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_broker_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetBookedSeatsResponse.ProtoReflect.Descriptor instead.
+func (*GetBookedSeatsResponse) Descriptor() ([]byte, []int) {
+	return file_broker_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *GetBookedSeatsResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *GetBookedSeatsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *GetBookedSeatsResponse) GetBookedSeats() []*BookedSeats {
+	if x != nil {
+		return x.BookedSeats
+	}
+	return nil
+}
+
+func (x *GetBookedSeatsResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
 var File_broker_proto protoreflect.FileDescriptor
 
 const file_broker_proto_rawDesc = "" +
 	"\n" +
-	"\fbroker.proto\x12\x0fmoviedb_service\x1a\x1bgoogle/protobuf/empty.proto\"\x9a\x01\n" +
+	"\fbroker.proto\x12\x0fmoviedb_service\x1a\x1bgoogle/protobuf/empty.proto\"\xcd\x01\n" +
+	"\n" +
+	"SeatMatrix\x12\x1f\n" +
+	"\vseat_number\x18\x01 \x01(\tR\n" +
+	"seatNumber\x12\x1f\n" +
+	"\tis_booked\x18\x02 \x01(\bB\x02\x18\x01R\bisBooked\x12\x14\n" +
+	"\x05price\x18\x03 \x01(\x05R\x05price\x12\x10\n" +
+	"\x03row\x18\x04 \x01(\x05R\x03row\x12\x16\n" +
+	"\x06column\x18\x05 \x01(\x05R\x06column\x12-\n" +
+	"\x04type\x18\x06 \x01(\x0e2\x19.moviedb_service.SeatTypeR\x04type\x12\x0e\n" +
+	"\x02id\x18\a \x01(\x05R\x02id\"a\n" +
+	"\x12AddSeatMatrixInput\x12\x18\n" +
+	"\avenueid\x18\x01 \x01(\x05R\avenueid\x121\n" +
+	"\x05seats\x18\x02 \x03(\v2\x1b.moviedb_service.SeatMatrixR\x05seats\"_\n" +
+	"\x15AddSeatMatrixResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\"\x9a\x01\n" +
 	"\vCastAndCrew\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x124\n" +
 	"\x04type\x18\x02 \x01(\x0e2 .moviedb_service.CastAndCrewTypeR\x04type\x12%\n" +
 	"\x0echaracter_name\x18\x03 \x01(\tR\rcharacterName\x12\x1a\n" +
-	"\bphotourl\x18\x04 \x01(\tR\bphotourl\"\xb7\x01\n" +
+	"\bphotourl\x18\x04 \x01(\tR\bphotourl\"\xeb\x01\n" +
 	"\rMovieTimeSlot\x12\x1d\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\tR\tstartTime\x12\x19\n" +
 	"\bend_time\x18\x02 \x01(\tR\aendTime\x12\x1a\n" +
 	"\bduration\x18\x03 \x01(\x05R\bduration\x12\x12\n" +
 	"\x04date\x18\x04 \x01(\tR\x04date\x12<\n" +
-	"\fmovie_format\x18\x05 \x01(\x0e2\x19.moviedb_service.SeatTypeR\vmovieFormat\"\xce\x03\n" +
+	"\fmovie_format\x18\x05 \x01(\x0e2\x19.moviedb_service.SeatTypeR\vmovieFormat\x12\x18\n" +
+	"\amovieid\x18\x06 \x01(\x05R\amovieid\x12\x18\n" +
+	"\avenueid\x18\a \x01(\x05R\avenueid\"\xca\x03\n" +
 	"\x05Movie\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1a\n" +
@@ -1271,19 +3377,10 @@ const file_broker_proto_rawDesc = "" +
 	"\frelease_date\x18\t \x01(\tR\vreleaseDate\x12)\n" +
 	"\x10movie_resolution\x18\n" +
 	" \x03(\tR\x0fmovieResolution\x12.\n" +
-	"\x06venues\x18\v \x03(\v2\x16.moviedb_service.VenueR\x06venues\x12\x18\n" +
-	"\amovieid\x18\f \x01(\tR\amovieid\x12\x14\n" +
+	"\x06venues\x18\v \x03(\v2\x16.moviedb_service.VenueR\x06venues\x12\x14\n" +
 	"\x05votes\x18\r \x01(\x03R\x05votes\x12\x18\n" +
-	"\aranking\x18\x0e \x01(\x05R\aranking\"\xb9\x01\n" +
-	"\n" +
-	"SeatMatrix\x12\x1f\n" +
-	"\vseat_number\x18\x01 \x01(\tR\n" +
-	"seatNumber\x12\x1b\n" +
-	"\tis_booked\x18\x02 \x01(\bR\bisBooked\x12\x14\n" +
-	"\x05price\x18\x03 \x01(\x05R\x05price\x12\x10\n" +
-	"\x03row\x18\x04 \x01(\x05R\x03row\x12\x16\n" +
-	"\x06column\x18\x05 \x01(\x05R\x06column\x12-\n" +
-	"\x04type\x18\x06 \x01(\x0e2\x19.moviedb_service.SeatTypeR\x04type\"\x94\x04\n" +
+	"\aranking\x18\x0e \x01(\x05R\aranking\x12\x0e\n" +
+	"\x02id\x18\x0f \x01(\x05R\x02idJ\x04\b\f\x10\r\"\x94\x04\n" +
 	"\x05Venue\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\aaddress\x18\x02 \x01(\tR\aaddress\x12.\n" +
@@ -1332,7 +3429,154 @@ const file_broker_proto_rawDesc = "" +
 	"\x05error\x18\x04 \x01(\tR\x05error\"U\n" +
 	"\x19GetNowPlayingMovieRequest\x12\x1c\n" +
 	"\tlongitude\x18\x01 \x01(\x03R\tlongitude\x12\x1a\n" +
-	"\blatitude\x18\x02 \x01(\x03R\blatitude*\xb8\x03\n" +
+	"\blatitude\x18\x02 \x01(\x03R\blatitude\"\xe0\x01\n" +
+	"\x06Review\x12\x18\n" +
+	"\amovieID\x18\x01 \x01(\x05R\amovieID\x12\x16\n" +
+	"\x06userID\x18\x02 \x01(\x05R\x06userID\x12\x16\n" +
+	"\x06rating\x18\x03 \x01(\x05R\x06rating\x12\x18\n" +
+	"\acomment\x18\x04 \x01(\tR\acomment\x12\x14\n" +
+	"\x05title\x18\x05 \x01(\tR\x05title\x12\x1a\n" +
+	"\breviewID\x18\x06 \x01(\x05R\breviewID\x12\x1c\n" +
+	"\tcreatedAt\x18\a \x01(\x05R\tcreatedAt\x12\"\n" +
+	"\freviewerName\x18\b \x01(\tR\freviewerName\"\xab\x01\n" +
+	"\x13ReviewUpdateRequest\x12\x16\n" +
+	"\x06userID\x18\x01 \x01(\x05R\x06userID\x12\x1a\n" +
+	"\breviewID\x18\x02 \x01(\x05R\breviewID\x12\x18\n" +
+	"\amovieID\x18\x03 \x01(\x05R\amovieID\x12\x18\n" +
+	"\acomment\x18\x04 \x01(\tR\acomment\x12\x14\n" +
+	"\x05title\x18\x05 \x01(\tR\x05title\x12\x16\n" +
+	"\x06rating\x18\x06 \x01(\x05R\x06rating\"\x89\x01\n" +
+	"\x0eReviewResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12/\n" +
+	"\x06review\x18\x03 \x01(\v2\x17.moviedb_service.ReviewR\x06review\x12\x14\n" +
+	"\x05error\x18\x04 \x01(\tR\x05error\"]\n" +
+	"\rReviewRequest\x12\x16\n" +
+	"\x06userID\x18\x01 \x01(\x05R\x06userID\x12\x1a\n" +
+	"\breviewID\x18\x02 \x01(\x05R\breviewID\x12\x18\n" +
+	"\amovieID\x18\x03 \x01(\x05R\amovieID\"?\n" +
+	"\n" +
+	"ReviewList\x121\n" +
+	"\areviews\x18\x01 \x03(\v2\x17.moviedb_service.ReviewR\areviews\"\xe6\x01\n" +
+	"\x12ReviewListResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12<\n" +
+	"\vreview_list\x18\x03 \x01(\v2\x1b.moviedb_service.ReviewListR\n" +
+	"reviewList\x12\x14\n" +
+	"\x05error\x18\x04 \x01(\tR\x05error\x12*\n" +
+	"\x10totalReviewCount\x18\x05 \x01(\x05R\x10totalReviewCount\x12\x1e\n" +
+	"\n" +
+	"totalVotes\x18\x06 \x01(\x05R\n" +
+	"totalVotes\"\xcb\x01\n" +
+	"\x19GetAllMovieReviewsRequest\x12\x18\n" +
+	"\amovieID\x18\x01 \x01(\x05R\amovieID\x12\x14\n" +
+	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
+	"\x06offset\x18\x03 \x01(\x05R\x06offset\x12/\n" +
+	"\x06sortBy\x18\x05 \x01(\x0e2\x17.moviedb_service.SortByR\x06sortBy\x125\n" +
+	"\bfilterBy\x18\x06 \x01(\x0e2\x19.moviedb_service.FilterByR\bfilterBy\"\xfb\x01\n" +
+	"\x17GetMovieTimeSlotRequest\x12\x18\n" +
+	"\amovieid\x18\x01 \x01(\tR\amovieid\x12\x1c\n" +
+	"\tstartDate\x18\x03 \x01(\tR\tstartDate\x12\x18\n" +
+	"\aendDate\x18\x04 \x01(\tR\aendDate\x12'\n" +
+	"\rold_longitude\x18\x05 \x01(\x03B\x02\x18\x01R\foldLongitude\x12%\n" +
+	"\fold_latitude\x18\x06 \x01(\x03B\x02\x18\x01R\voldLatitude\x12\x1c\n" +
+	"\tlongitude\x18\a \x01(\x02R\tlongitude\x12\x1a\n" +
+	"\blatitude\x18\b \x01(\x02R\blatitudeJ\x04\b\x02\x10\x03\"\xdc\x01\n" +
+	"\x18GetMovieTimeSlotResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12H\n" +
+	"\x10movie_time_slots\x18\x03 \x03(\v2\x1e.moviedb_service.MovieTimeSlotR\x0emovieTimeSlots\x12\x14\n" +
+	"\x05error\x18\x04 \x01(\tR\x05error\x12.\n" +
+	"\x06venues\x18\x05 \x03(\v2\x16.moviedb_service.VenueR\x06venues\"_\n" +
+	"\x15MovieTimeSlotResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\"\xad\x01\n" +
+	"\x1bMovieTimeSlotUpdateResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12F\n" +
+	"\x0fmovie_time_slot\x18\x03 \x01(\v2\x1e.moviedb_service.MovieTimeSlotR\rmovieTimeSlot\x12\x14\n" +
+	"\x05error\x18\x04 \x01(\tR\x05error\"\x9e\x02\n" +
+	"\x13MovieTimeSlotUpdate\x12\x1d\n" +
+	"\n" +
+	"start_time\x18\x01 \x01(\tR\tstartTime\x12\x19\n" +
+	"\bend_time\x18\x02 \x01(\tR\aendTime\x12\x1a\n" +
+	"\bduration\x18\x03 \x01(\x05R\bduration\x12\x12\n" +
+	"\x04date\x18\x04 \x01(\tR\x04date\x12<\n" +
+	"\fmovie_format\x18\x05 \x01(\x0e2\x19.moviedb_service.SeatTypeR\vmovieFormat\x12\x18\n" +
+	"\amovieid\x18\x06 \x01(\x05R\amovieid\x12\x18\n" +
+	"\avenueid\x18\a \x01(\x05R\avenueid\x12+\n" +
+	"\x12movie_time_slot_id\x18\b \x01(\x05R\x0fmovieTimeSlotId\"B\n" +
+	"\x13MovieTimeSlotDelete\x12+\n" +
+	"\x12movie_time_slot_id\x18\x01 \x01(\x05R\x0fmovieTimeSlotId\"0\n" +
+	"\x14GetSeatMatrixRequest\x12\x18\n" +
+	"\avenueid\x18\x01 \x01(\x05R\avenueid\"\x92\x01\n" +
+	"\x15GetSeatMatrixResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x121\n" +
+	"\x05seats\x18\x03 \x03(\v2\x1b.moviedb_service.SeatMatrixR\x05seats\x12\x14\n" +
+	"\x05error\x18\x04 \x01(\tR\x05error\"f\n" +
+	"\x17UpdateSeatMatrixRequest\x12\x18\n" +
+	"\avenueid\x18\x01 \x01(\x05R\avenueid\x121\n" +
+	"\x05seats\x18\x02 \x03(\v2\x1b.moviedb_service.SeatMatrixR\x05seats\"b\n" +
+	"\x18UpdateSeatMatrixResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\"\x90\x01\n" +
+	"\x17DeleteSeatMatrixRequest\x12\x18\n" +
+	"\avenueid\x18\x01 \x01(\x05R\avenueid\x125\n" +
+	"\x05seats\x18\x02 \x03(\v2\x1b.moviedb_service.SeatMatrixB\x02\x18\x01R\x05seats\x12$\n" +
+	"\x0eseat_matrix_id\x18\x03 \x01(\x05R\fseatMatrixId\"b\n" +
+	"\x18DeleteSeatMatrixResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\"9\n" +
+	"\x1dDeleteEntireSeatMatrixRequest\x12\x18\n" +
+	"\avenueid\x18\x01 \x01(\x05R\avenueid\"h\n" +
+	"\x1eDeleteEntireSeatMatrixResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\"e\n" +
+	"\x18AddSingleSeatMatrixInput\x12\x18\n" +
+	"\avenueid\x18\x01 \x01(\x05R\avenueid\x12/\n" +
+	"\x04seat\x18\x02 \x01(\v2\x1b.moviedb_service.SeatMatrixR\x04seat\"e\n" +
+	"\x1bAddSingleSeatMatrixResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\"\xb5\x01\n" +
+	"\vBookedSeats\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1f\n" +
+	"\vseat_number\x18\x02 \x01(\tR\n" +
+	"seatNumber\x12(\n" +
+	"\x0fmovieTimeSlotID\x18\x03 \x01(\x05R\x0fmovieTimeSlotID\x12\"\n" +
+	"\fseatMatrixID\x18\x04 \x01(\x05R\fseatMatrixID\x12\x1b\n" +
+	"\tis_booked\x18\x05 \x01(\bR\bisBookedJ\x04\b\x06\x10\aJ\x04\b\a\x10\b\"\xfe\x01\n" +
+	"\x10BookSeatsRequest\x12J\n" +
+	"\x0fmovie_time_slot\x18\x01 \x01(\v2\x1e.moviedb_service.MovieTimeSlotB\x02\x18\x01R\rmovieTimeSlot\x122\n" +
+	"\x05seats\x18\x02 \x03(\v2\x1c.moviedb_service.BookedSeatsR\x05seats\x12+\n" +
+	"\x12movie_time_slot_id\x18\x03 \x01(\x05R\x0fmovieTimeSlotId\x12\x14\n" +
+	"\x05email\x18\x05 \x01(\tR\x05email\x12!\n" +
+	"\fphone_number\x18\x06 \x01(\x03R\vphoneNumberJ\x04\b\x04\x10\x05\"\x7f\n" +
+	"\x11BookSeatsResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\"\n" +
+	"\rbook_seats_id\x18\x03 \x03(\x05R\vbookSeatsId\x12\x14\n" +
+	"\x05error\x18\x04 \x01(\tR\x05error\"D\n" +
+	"\x15GetBookedSeatsRequest\x12+\n" +
+	"\x12movie_time_slot_id\x18\x01 \x01(\x05R\x0fmovieTimeSlotId\"\xa1\x01\n" +
+	"\x16GetBookedSeatsResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12?\n" +
+	"\fbooked_seats\x18\x03 \x03(\v2\x1c.moviedb_service.BookedSeatsR\vbookedSeats\x12\x14\n" +
+	"\x05error\x18\x04 \x01(\tR\x05error*C\n" +
+	"\bSeatType\x12\t\n" +
+	"\x05TWO_D\x10\x00\x12\v\n" +
+	"\aTHREE_D\x10\x01\x12\n" +
+	"\n" +
+	"\x06FOUR_D\x10\x02\x12\n" +
+	"\n" +
+	"\x06NORMAL\x10\x03\x12\a\n" +
+	"\x03VIP\x10\x04*\xb8\x03\n" +
 	"\x0fCastAndCrewType\x12\t\n" +
 	"\x05ACTOR\x10\x00\x12\f\n" +
 	"\bDIRECTOR\x10\x01\x12\f\n" +
@@ -1368,15 +3612,15 @@ const file_broker_proto_rawDesc = "" +
 	"\x05MOVIE\x10\x00\x12\v\n" +
 	"\aCONCERT\x10\x01\x12\b\n" +
 	"\x04PLAY\x10\x02\x12\v\n" +
-	"\aSTANDUP\x10\x03*C\n" +
-	"\bSeatType\x12\t\n" +
-	"\x05TWO_D\x10\x00\x12\v\n" +
-	"\aTHREE_D\x10\x01\x12\n" +
+	"\aSTANDUP\x10\x03*'\n" +
+	"\x06SortBy\x12\r\n" +
+	"\tASCENDING\x10\x00\x12\x0e\n" +
 	"\n" +
-	"\x06FOUR_D\x10\x02\x12\n" +
+	"DESCENDING\x10\x01* \n" +
+	"\bFilterBy\x12\n" +
 	"\n" +
-	"\x06NORMAL\x10\x03\x12\a\n" +
-	"\x03VIP\x10\x042\xc8\a\n" +
+	"\x06RATING\x10\x00\x12\b\n" +
+	"\x04DATE\x10\x012\xb4\x14\n" +
 	"\x0eMovieDBService\x12B\n" +
 	"\bAddMovie\x12\x16.moviedb_service.Movie\x1a\x1e.moviedb_service.MovieResponse\x12I\n" +
 	"\bGetMovie\x12\x1d.moviedb_service.MovieRequest\x1a\x1e.moviedb_service.MovieResponse\x12J\n" +
@@ -1389,7 +3633,24 @@ const file_broker_proto_rawDesc = "" +
 	"\vUpdateVenue\x12\x16.moviedb_service.Venue\x1a\x1e.moviedb_service.VenueResponse\x12L\n" +
 	"\vDeleteVenue\x12\x1d.moviedb_service.MovieRequest\x1a\x1e.moviedb_service.MovieResponse\x12h\n" +
 	"\x11GetUpcomingMovies\x12(.moviedb_service.GetUpcomingMovieRequest\x1a).moviedb_service.GetUpcomingMovieResponse\x12l\n" +
-	"\x13GetNowPlayingMovies\x12*.moviedb_service.GetNowPlayingMovieRequest\x1a).moviedb_service.GetUpcomingMovieResponseBFZDgithub.com/kartik7120/booking_moviedb_service/cmd/grpcServer;moviedbb\x06proto3"
+	"\x13GetNowPlayingMovies\x12*.moviedb_service.GetNowPlayingMovieRequest\x1a).moviedb_service.GetUpcomingMovieResponse\x12E\n" +
+	"\tAddReview\x12\x17.moviedb_service.Review\x1a\x1f.moviedb_service.ReviewResponse\x12L\n" +
+	"\tGetReview\x12\x1e.moviedb_service.ReviewRequest\x1a\x1f.moviedb_service.ReviewResponse\x12U\n" +
+	"\fUpdateReview\x12$.moviedb_service.ReviewUpdateRequest\x1a\x1f.moviedb_service.ReviewResponse\x12O\n" +
+	"\fDeleteReview\x12\x1e.moviedb_service.ReviewRequest\x1a\x1f.moviedb_service.ReviewResponse\x12e\n" +
+	"\x12GetAllMovieReviews\x12*.moviedb_service.GetAllMovieReviewsRequest\x1a#.moviedb_service.ReviewListResponse\x12h\n" +
+	"\x11GetMovieTimeSlots\x12(.moviedb_service.GetMovieTimeSlotRequest\x1a).moviedb_service.GetMovieTimeSlotResponse\x12Z\n" +
+	"\x10AddMovieTimeSlot\x12\x1e.moviedb_service.MovieTimeSlot\x1a&.moviedb_service.MovieTimeSlotResponse\x12i\n" +
+	"\x13UpdateMovieTimeSlot\x12$.moviedb_service.MovieTimeSlotUpdate\x1a,.moviedb_service.MovieTimeSlotUpdateResponse\x12c\n" +
+	"\x13DeleteMovieTimeSlot\x12$.moviedb_service.MovieTimeSlotDelete\x1a&.moviedb_service.MovieTimeSlotResponse\x12\\\n" +
+	"\rAddSeatMatrix\x12#.moviedb_service.AddSeatMatrixInput\x1a&.moviedb_service.AddSeatMatrixResponse\x12n\n" +
+	"\x13AddSingleSeatMatrix\x12).moviedb_service.AddSingleSeatMatrixInput\x1a,.moviedb_service.AddSingleSeatMatrixResponse\x12^\n" +
+	"\rGetSeatMatrix\x12%.moviedb_service.GetSeatMatrixRequest\x1a&.moviedb_service.GetSeatMatrixResponse\x12g\n" +
+	"\x10UpdateSeatMatrix\x12(.moviedb_service.UpdateSeatMatrixRequest\x1a).moviedb_service.UpdateSeatMatrixResponse\x12g\n" +
+	"\x10DeleteSeatMatrix\x12(.moviedb_service.DeleteSeatMatrixRequest\x1a).moviedb_service.DeleteSeatMatrixResponse\x12y\n" +
+	"\x16DeleteEntireSeatMatrix\x12..moviedb_service.DeleteEntireSeatMatrixRequest\x1a/.moviedb_service.DeleteEntireSeatMatrixResponse\x12R\n" +
+	"\tBookSeats\x12!.moviedb_service.BookSeatsRequest\x1a\".moviedb_service.BookSeatsResponse\x12a\n" +
+	"\x0eGetBookedSeats\x12&.moviedb_service.GetBookedSeatsRequest\x1a'.moviedb_service.GetBookedSeatsResponseBFZDgithub.com/kartik7120/booking_moviedb_service/cmd/grpcServer;moviedbb\x06proto3"
 
 var (
 	file_broker_proto_rawDescOnce sync.Once
@@ -1403,71 +3664,154 @@ func file_broker_proto_rawDescGZIP() []byte {
 	return file_broker_proto_rawDescData
 }
 
-var file_broker_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_broker_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_broker_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_broker_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
 var file_broker_proto_goTypes = []any{
-	(CastAndCrewType)(0),              // 0: moviedb_service.CastAndCrewType
-	(VenueType)(0),                    // 1: moviedb_service.VenueType
-	(SeatType)(0),                     // 2: moviedb_service.SeatType
-	(*CastAndCrew)(nil),               // 3: moviedb_service.CastAndCrew
-	(*MovieTimeSlot)(nil),             // 4: moviedb_service.MovieTimeSlot
-	(*Movie)(nil),                     // 5: moviedb_service.Movie
-	(*SeatMatrix)(nil),                // 6: moviedb_service.SeatMatrix
-	(*Venue)(nil),                     // 7: moviedb_service.Venue
-	(*MovieList)(nil),                 // 8: moviedb_service.MovieList
-	(*MovieRequest)(nil),              // 9: moviedb_service.MovieRequest
-	(*MovieResponse)(nil),             // 10: moviedb_service.MovieResponse
-	(*MovieListResponse)(nil),         // 11: moviedb_service.MovieListResponse
-	(*VenueResponse)(nil),             // 12: moviedb_service.VenueResponse
-	(*GetUpcomingMovieRequest)(nil),   // 13: moviedb_service.GetUpcomingMovieRequest
-	(*GetUpcomingMovieResponse)(nil),  // 14: moviedb_service.GetUpcomingMovieResponse
-	(*GetNowPlayingMovieRequest)(nil), // 15: moviedb_service.GetNowPlayingMovieRequest
-	(*empty.Empty)(nil),               // 16: google.protobuf.Empty
+	(SeatType)(0),                          // 0: moviedb_service.SeatType
+	(CastAndCrewType)(0),                   // 1: moviedb_service.CastAndCrewType
+	(VenueType)(0),                         // 2: moviedb_service.VenueType
+	(SortBy)(0),                            // 3: moviedb_service.SortBy
+	(FilterBy)(0),                          // 4: moviedb_service.FilterBy
+	(*SeatMatrix)(nil),                     // 5: moviedb_service.SeatMatrix
+	(*AddSeatMatrixInput)(nil),             // 6: moviedb_service.AddSeatMatrixInput
+	(*AddSeatMatrixResponse)(nil),          // 7: moviedb_service.AddSeatMatrixResponse
+	(*CastAndCrew)(nil),                    // 8: moviedb_service.CastAndCrew
+	(*MovieTimeSlot)(nil),                  // 9: moviedb_service.MovieTimeSlot
+	(*Movie)(nil),                          // 10: moviedb_service.Movie
+	(*Venue)(nil),                          // 11: moviedb_service.Venue
+	(*MovieList)(nil),                      // 12: moviedb_service.MovieList
+	(*MovieRequest)(nil),                   // 13: moviedb_service.MovieRequest
+	(*MovieResponse)(nil),                  // 14: moviedb_service.MovieResponse
+	(*MovieListResponse)(nil),              // 15: moviedb_service.MovieListResponse
+	(*VenueResponse)(nil),                  // 16: moviedb_service.VenueResponse
+	(*GetUpcomingMovieRequest)(nil),        // 17: moviedb_service.GetUpcomingMovieRequest
+	(*GetUpcomingMovieResponse)(nil),       // 18: moviedb_service.GetUpcomingMovieResponse
+	(*GetNowPlayingMovieRequest)(nil),      // 19: moviedb_service.GetNowPlayingMovieRequest
+	(*Review)(nil),                         // 20: moviedb_service.Review
+	(*ReviewUpdateRequest)(nil),            // 21: moviedb_service.ReviewUpdateRequest
+	(*ReviewResponse)(nil),                 // 22: moviedb_service.ReviewResponse
+	(*ReviewRequest)(nil),                  // 23: moviedb_service.ReviewRequest
+	(*ReviewList)(nil),                     // 24: moviedb_service.ReviewList
+	(*ReviewListResponse)(nil),             // 25: moviedb_service.ReviewListResponse
+	(*GetAllMovieReviewsRequest)(nil),      // 26: moviedb_service.GetAllMovieReviewsRequest
+	(*GetMovieTimeSlotRequest)(nil),        // 27: moviedb_service.GetMovieTimeSlotRequest
+	(*GetMovieTimeSlotResponse)(nil),       // 28: moviedb_service.GetMovieTimeSlotResponse
+	(*MovieTimeSlotResponse)(nil),          // 29: moviedb_service.MovieTimeSlotResponse
+	(*MovieTimeSlotUpdateResponse)(nil),    // 30: moviedb_service.MovieTimeSlotUpdateResponse
+	(*MovieTimeSlotUpdate)(nil),            // 31: moviedb_service.MovieTimeSlotUpdate
+	(*MovieTimeSlotDelete)(nil),            // 32: moviedb_service.MovieTimeSlotDelete
+	(*GetSeatMatrixRequest)(nil),           // 33: moviedb_service.GetSeatMatrixRequest
+	(*GetSeatMatrixResponse)(nil),          // 34: moviedb_service.GetSeatMatrixResponse
+	(*UpdateSeatMatrixRequest)(nil),        // 35: moviedb_service.UpdateSeatMatrixRequest
+	(*UpdateSeatMatrixResponse)(nil),       // 36: moviedb_service.UpdateSeatMatrixResponse
+	(*DeleteSeatMatrixRequest)(nil),        // 37: moviedb_service.DeleteSeatMatrixRequest
+	(*DeleteSeatMatrixResponse)(nil),       // 38: moviedb_service.DeleteSeatMatrixResponse
+	(*DeleteEntireSeatMatrixRequest)(nil),  // 39: moviedb_service.DeleteEntireSeatMatrixRequest
+	(*DeleteEntireSeatMatrixResponse)(nil), // 40: moviedb_service.DeleteEntireSeatMatrixResponse
+	(*AddSingleSeatMatrixInput)(nil),       // 41: moviedb_service.AddSingleSeatMatrixInput
+	(*AddSingleSeatMatrixResponse)(nil),    // 42: moviedb_service.AddSingleSeatMatrixResponse
+	(*BookedSeats)(nil),                    // 43: moviedb_service.BookedSeats
+	(*BookSeatsRequest)(nil),               // 44: moviedb_service.BookSeatsRequest
+	(*BookSeatsResponse)(nil),              // 45: moviedb_service.BookSeatsResponse
+	(*GetBookedSeatsRequest)(nil),          // 46: moviedb_service.GetBookedSeatsRequest
+	(*GetBookedSeatsResponse)(nil),         // 47: moviedb_service.GetBookedSeatsResponse
+	(*empty.Empty)(nil),                    // 48: google.protobuf.Empty
 }
 var file_broker_proto_depIdxs = []int32{
-	0,  // 0: moviedb_service.CastAndCrew.type:type_name -> moviedb_service.CastAndCrewType
-	2,  // 1: moviedb_service.MovieTimeSlot.movie_format:type_name -> moviedb_service.SeatType
-	3,  // 2: moviedb_service.Movie.cast_crew:type_name -> moviedb_service.CastAndCrew
-	7,  // 3: moviedb_service.Movie.venues:type_name -> moviedb_service.Venue
-	2,  // 4: moviedb_service.SeatMatrix.type:type_name -> moviedb_service.SeatType
-	1,  // 5: moviedb_service.Venue.type:type_name -> moviedb_service.VenueType
-	6,  // 6: moviedb_service.Venue.seats:type_name -> moviedb_service.SeatMatrix
-	4,  // 7: moviedb_service.Venue.movie_time_slots:type_name -> moviedb_service.MovieTimeSlot
-	5,  // 8: moviedb_service.Venue.movies:type_name -> moviedb_service.Movie
-	5,  // 9: moviedb_service.MovieList.movies:type_name -> moviedb_service.Movie
-	5,  // 10: moviedb_service.MovieResponse.movie:type_name -> moviedb_service.Movie
-	8,  // 11: moviedb_service.MovieListResponse.movie_list:type_name -> moviedb_service.MovieList
-	7,  // 12: moviedb_service.VenueResponse.Venue:type_name -> moviedb_service.Venue
-	5,  // 13: moviedb_service.GetUpcomingMovieResponse.movie_list:type_name -> moviedb_service.Movie
-	5,  // 14: moviedb_service.MovieDBService.AddMovie:input_type -> moviedb_service.Movie
-	9,  // 15: moviedb_service.MovieDBService.GetMovie:input_type -> moviedb_service.MovieRequest
-	16, // 16: moviedb_service.MovieDBService.GetAllMovies:input_type -> google.protobuf.Empty
-	5,  // 17: moviedb_service.MovieDBService.UpdateMovie:input_type -> moviedb_service.Movie
-	9,  // 18: moviedb_service.MovieDBService.DeleteMovie:input_type -> moviedb_service.MovieRequest
-	7,  // 19: moviedb_service.MovieDBService.AddVenue:input_type -> moviedb_service.Venue
-	9,  // 20: moviedb_service.MovieDBService.GetVenue:input_type -> moviedb_service.MovieRequest
-	16, // 21: moviedb_service.MovieDBService.GetAllVenues:input_type -> google.protobuf.Empty
-	7,  // 22: moviedb_service.MovieDBService.UpdateVenue:input_type -> moviedb_service.Venue
-	9,  // 23: moviedb_service.MovieDBService.DeleteVenue:input_type -> moviedb_service.MovieRequest
-	13, // 24: moviedb_service.MovieDBService.GetUpcomingMovies:input_type -> moviedb_service.GetUpcomingMovieRequest
-	15, // 25: moviedb_service.MovieDBService.GetNowPlayingMovies:input_type -> moviedb_service.GetNowPlayingMovieRequest
-	10, // 26: moviedb_service.MovieDBService.AddMovie:output_type -> moviedb_service.MovieResponse
-	10, // 27: moviedb_service.MovieDBService.GetMovie:output_type -> moviedb_service.MovieResponse
-	11, // 28: moviedb_service.MovieDBService.GetAllMovies:output_type -> moviedb_service.MovieListResponse
-	10, // 29: moviedb_service.MovieDBService.UpdateMovie:output_type -> moviedb_service.MovieResponse
-	10, // 30: moviedb_service.MovieDBService.DeleteMovie:output_type -> moviedb_service.MovieResponse
-	12, // 31: moviedb_service.MovieDBService.AddVenue:output_type -> moviedb_service.VenueResponse
-	12, // 32: moviedb_service.MovieDBService.GetVenue:output_type -> moviedb_service.VenueResponse
-	11, // 33: moviedb_service.MovieDBService.GetAllVenues:output_type -> moviedb_service.MovieListResponse
-	12, // 34: moviedb_service.MovieDBService.UpdateVenue:output_type -> moviedb_service.VenueResponse
-	10, // 35: moviedb_service.MovieDBService.DeleteVenue:output_type -> moviedb_service.MovieResponse
-	14, // 36: moviedb_service.MovieDBService.GetUpcomingMovies:output_type -> moviedb_service.GetUpcomingMovieResponse
-	14, // 37: moviedb_service.MovieDBService.GetNowPlayingMovies:output_type -> moviedb_service.GetUpcomingMovieResponse
-	26, // [26:38] is the sub-list for method output_type
-	14, // [14:26] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	0,  // 0: moviedb_service.SeatMatrix.type:type_name -> moviedb_service.SeatType
+	5,  // 1: moviedb_service.AddSeatMatrixInput.seats:type_name -> moviedb_service.SeatMatrix
+	1,  // 2: moviedb_service.CastAndCrew.type:type_name -> moviedb_service.CastAndCrewType
+	0,  // 3: moviedb_service.MovieTimeSlot.movie_format:type_name -> moviedb_service.SeatType
+	8,  // 4: moviedb_service.Movie.cast_crew:type_name -> moviedb_service.CastAndCrew
+	11, // 5: moviedb_service.Movie.venues:type_name -> moviedb_service.Venue
+	2,  // 6: moviedb_service.Venue.type:type_name -> moviedb_service.VenueType
+	5,  // 7: moviedb_service.Venue.seats:type_name -> moviedb_service.SeatMatrix
+	9,  // 8: moviedb_service.Venue.movie_time_slots:type_name -> moviedb_service.MovieTimeSlot
+	10, // 9: moviedb_service.Venue.movies:type_name -> moviedb_service.Movie
+	10, // 10: moviedb_service.MovieList.movies:type_name -> moviedb_service.Movie
+	10, // 11: moviedb_service.MovieResponse.movie:type_name -> moviedb_service.Movie
+	12, // 12: moviedb_service.MovieListResponse.movie_list:type_name -> moviedb_service.MovieList
+	11, // 13: moviedb_service.VenueResponse.Venue:type_name -> moviedb_service.Venue
+	10, // 14: moviedb_service.GetUpcomingMovieResponse.movie_list:type_name -> moviedb_service.Movie
+	20, // 15: moviedb_service.ReviewResponse.review:type_name -> moviedb_service.Review
+	20, // 16: moviedb_service.ReviewList.reviews:type_name -> moviedb_service.Review
+	24, // 17: moviedb_service.ReviewListResponse.review_list:type_name -> moviedb_service.ReviewList
+	3,  // 18: moviedb_service.GetAllMovieReviewsRequest.sortBy:type_name -> moviedb_service.SortBy
+	4,  // 19: moviedb_service.GetAllMovieReviewsRequest.filterBy:type_name -> moviedb_service.FilterBy
+	9,  // 20: moviedb_service.GetMovieTimeSlotResponse.movie_time_slots:type_name -> moviedb_service.MovieTimeSlot
+	11, // 21: moviedb_service.GetMovieTimeSlotResponse.venues:type_name -> moviedb_service.Venue
+	9,  // 22: moviedb_service.MovieTimeSlotUpdateResponse.movie_time_slot:type_name -> moviedb_service.MovieTimeSlot
+	0,  // 23: moviedb_service.MovieTimeSlotUpdate.movie_format:type_name -> moviedb_service.SeatType
+	5,  // 24: moviedb_service.GetSeatMatrixResponse.seats:type_name -> moviedb_service.SeatMatrix
+	5,  // 25: moviedb_service.UpdateSeatMatrixRequest.seats:type_name -> moviedb_service.SeatMatrix
+	5,  // 26: moviedb_service.DeleteSeatMatrixRequest.seats:type_name -> moviedb_service.SeatMatrix
+	5,  // 27: moviedb_service.AddSingleSeatMatrixInput.seat:type_name -> moviedb_service.SeatMatrix
+	9,  // 28: moviedb_service.BookSeatsRequest.movie_time_slot:type_name -> moviedb_service.MovieTimeSlot
+	43, // 29: moviedb_service.BookSeatsRequest.seats:type_name -> moviedb_service.BookedSeats
+	43, // 30: moviedb_service.GetBookedSeatsResponse.booked_seats:type_name -> moviedb_service.BookedSeats
+	10, // 31: moviedb_service.MovieDBService.AddMovie:input_type -> moviedb_service.Movie
+	13, // 32: moviedb_service.MovieDBService.GetMovie:input_type -> moviedb_service.MovieRequest
+	48, // 33: moviedb_service.MovieDBService.GetAllMovies:input_type -> google.protobuf.Empty
+	10, // 34: moviedb_service.MovieDBService.UpdateMovie:input_type -> moviedb_service.Movie
+	13, // 35: moviedb_service.MovieDBService.DeleteMovie:input_type -> moviedb_service.MovieRequest
+	11, // 36: moviedb_service.MovieDBService.AddVenue:input_type -> moviedb_service.Venue
+	13, // 37: moviedb_service.MovieDBService.GetVenue:input_type -> moviedb_service.MovieRequest
+	48, // 38: moviedb_service.MovieDBService.GetAllVenues:input_type -> google.protobuf.Empty
+	11, // 39: moviedb_service.MovieDBService.UpdateVenue:input_type -> moviedb_service.Venue
+	13, // 40: moviedb_service.MovieDBService.DeleteVenue:input_type -> moviedb_service.MovieRequest
+	17, // 41: moviedb_service.MovieDBService.GetUpcomingMovies:input_type -> moviedb_service.GetUpcomingMovieRequest
+	19, // 42: moviedb_service.MovieDBService.GetNowPlayingMovies:input_type -> moviedb_service.GetNowPlayingMovieRequest
+	20, // 43: moviedb_service.MovieDBService.AddReview:input_type -> moviedb_service.Review
+	23, // 44: moviedb_service.MovieDBService.GetReview:input_type -> moviedb_service.ReviewRequest
+	21, // 45: moviedb_service.MovieDBService.UpdateReview:input_type -> moviedb_service.ReviewUpdateRequest
+	23, // 46: moviedb_service.MovieDBService.DeleteReview:input_type -> moviedb_service.ReviewRequest
+	26, // 47: moviedb_service.MovieDBService.GetAllMovieReviews:input_type -> moviedb_service.GetAllMovieReviewsRequest
+	27, // 48: moviedb_service.MovieDBService.GetMovieTimeSlots:input_type -> moviedb_service.GetMovieTimeSlotRequest
+	9,  // 49: moviedb_service.MovieDBService.AddMovieTimeSlot:input_type -> moviedb_service.MovieTimeSlot
+	31, // 50: moviedb_service.MovieDBService.UpdateMovieTimeSlot:input_type -> moviedb_service.MovieTimeSlotUpdate
+	32, // 51: moviedb_service.MovieDBService.DeleteMovieTimeSlot:input_type -> moviedb_service.MovieTimeSlotDelete
+	6,  // 52: moviedb_service.MovieDBService.AddSeatMatrix:input_type -> moviedb_service.AddSeatMatrixInput
+	41, // 53: moviedb_service.MovieDBService.AddSingleSeatMatrix:input_type -> moviedb_service.AddSingleSeatMatrixInput
+	33, // 54: moviedb_service.MovieDBService.GetSeatMatrix:input_type -> moviedb_service.GetSeatMatrixRequest
+	35, // 55: moviedb_service.MovieDBService.UpdateSeatMatrix:input_type -> moviedb_service.UpdateSeatMatrixRequest
+	37, // 56: moviedb_service.MovieDBService.DeleteSeatMatrix:input_type -> moviedb_service.DeleteSeatMatrixRequest
+	39, // 57: moviedb_service.MovieDBService.DeleteEntireSeatMatrix:input_type -> moviedb_service.DeleteEntireSeatMatrixRequest
+	44, // 58: moviedb_service.MovieDBService.BookSeats:input_type -> moviedb_service.BookSeatsRequest
+	46, // 59: moviedb_service.MovieDBService.GetBookedSeats:input_type -> moviedb_service.GetBookedSeatsRequest
+	14, // 60: moviedb_service.MovieDBService.AddMovie:output_type -> moviedb_service.MovieResponse
+	14, // 61: moviedb_service.MovieDBService.GetMovie:output_type -> moviedb_service.MovieResponse
+	15, // 62: moviedb_service.MovieDBService.GetAllMovies:output_type -> moviedb_service.MovieListResponse
+	14, // 63: moviedb_service.MovieDBService.UpdateMovie:output_type -> moviedb_service.MovieResponse
+	14, // 64: moviedb_service.MovieDBService.DeleteMovie:output_type -> moviedb_service.MovieResponse
+	16, // 65: moviedb_service.MovieDBService.AddVenue:output_type -> moviedb_service.VenueResponse
+	16, // 66: moviedb_service.MovieDBService.GetVenue:output_type -> moviedb_service.VenueResponse
+	15, // 67: moviedb_service.MovieDBService.GetAllVenues:output_type -> moviedb_service.MovieListResponse
+	16, // 68: moviedb_service.MovieDBService.UpdateVenue:output_type -> moviedb_service.VenueResponse
+	14, // 69: moviedb_service.MovieDBService.DeleteVenue:output_type -> moviedb_service.MovieResponse
+	18, // 70: moviedb_service.MovieDBService.GetUpcomingMovies:output_type -> moviedb_service.GetUpcomingMovieResponse
+	18, // 71: moviedb_service.MovieDBService.GetNowPlayingMovies:output_type -> moviedb_service.GetUpcomingMovieResponse
+	22, // 72: moviedb_service.MovieDBService.AddReview:output_type -> moviedb_service.ReviewResponse
+	22, // 73: moviedb_service.MovieDBService.GetReview:output_type -> moviedb_service.ReviewResponse
+	22, // 74: moviedb_service.MovieDBService.UpdateReview:output_type -> moviedb_service.ReviewResponse
+	22, // 75: moviedb_service.MovieDBService.DeleteReview:output_type -> moviedb_service.ReviewResponse
+	25, // 76: moviedb_service.MovieDBService.GetAllMovieReviews:output_type -> moviedb_service.ReviewListResponse
+	28, // 77: moviedb_service.MovieDBService.GetMovieTimeSlots:output_type -> moviedb_service.GetMovieTimeSlotResponse
+	29, // 78: moviedb_service.MovieDBService.AddMovieTimeSlot:output_type -> moviedb_service.MovieTimeSlotResponse
+	30, // 79: moviedb_service.MovieDBService.UpdateMovieTimeSlot:output_type -> moviedb_service.MovieTimeSlotUpdateResponse
+	29, // 80: moviedb_service.MovieDBService.DeleteMovieTimeSlot:output_type -> moviedb_service.MovieTimeSlotResponse
+	7,  // 81: moviedb_service.MovieDBService.AddSeatMatrix:output_type -> moviedb_service.AddSeatMatrixResponse
+	42, // 82: moviedb_service.MovieDBService.AddSingleSeatMatrix:output_type -> moviedb_service.AddSingleSeatMatrixResponse
+	34, // 83: moviedb_service.MovieDBService.GetSeatMatrix:output_type -> moviedb_service.GetSeatMatrixResponse
+	36, // 84: moviedb_service.MovieDBService.UpdateSeatMatrix:output_type -> moviedb_service.UpdateSeatMatrixResponse
+	38, // 85: moviedb_service.MovieDBService.DeleteSeatMatrix:output_type -> moviedb_service.DeleteSeatMatrixResponse
+	40, // 86: moviedb_service.MovieDBService.DeleteEntireSeatMatrix:output_type -> moviedb_service.DeleteEntireSeatMatrixResponse
+	45, // 87: moviedb_service.MovieDBService.BookSeats:output_type -> moviedb_service.BookSeatsResponse
+	47, // 88: moviedb_service.MovieDBService.GetBookedSeats:output_type -> moviedb_service.GetBookedSeatsResponse
+	60, // [60:89] is the sub-list for method output_type
+	31, // [31:60] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_broker_proto_init() }
@@ -1480,8 +3824,8 @@ func file_broker_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_broker_proto_rawDesc), len(file_broker_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   13,
+			NumEnums:      5,
+			NumMessages:   43,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

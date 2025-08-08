@@ -1,0 +1,198 @@
+syntax = "proto3";
+
+package moviedb_service;
+
+option go_package = "github.com/kartik7120/booking_payment_service/cmd/grpcServer;payment_service";
+
+import "google/protobuf/timestamp.proto";
+
+enum Currency {
+    INR = 0; // Indian Rupee
+    USD = 1; // US Dollar
+    EUR = 2; // Euro
+    GBP = 3; // British Pound
+    JPY = 4; // Japanese Yen
+    AUD = 5; // Australian Dollar
+    CAD = 6; // Canadian Dollar
+    CNY = 7; // Chinese Yuan
+    CHF = 8; // Swiss Franc
+    SEK = 9; // Swedish Krona
+    NZD = 10; // New Zealand Dollar
+    RUB = 11; // Russian Ruble
+    ZAR = 12; // South African Rand
+    KRW = 13; // South Korean Won
+    SGD = 14; // Singapore Dollar
+    HKD = 15; // Hong Kong Dollar
+    AED = 16; // United Arab Emirates Dirham
+    BRL = 17; // Brazilian Real
+    MXN = 18; // Mexican Peso
+    TRY = 19; // Turkish Lira
+    IDR = 20; // Indonesian Rupiah
+    MYR = 21; // Malaysian Ringgit
+}
+
+enum PaymentStatus {
+    PAYMENT_STATUS_UNSPECIFIED = 0;
+    PAYMENT_STATUS_SUCCESS = 1;
+    PAYMENT_STATUS_FAILED = 2;
+}
+
+enum PaymentType {
+    TICKET_BOOKING = 0;
+    MEALS = 1;
+}
+
+message CheckoutSessionLineItemParam {
+    int32 price = 1;
+    int32 quantity = 2;
+    PaymentType paymentType = 3;
+    string success_url = 4;
+    string cancel_url = 5;
+}
+
+message PaymentIntent {
+  string id = 1;
+  int64 amount = 2;
+  string currency = 3;
+  string status = 4;
+  string client_secret = 5;
+  repeated string payment_method_types = 6;
+  google.protobuf.Timestamp created = 7;
+}
+
+message CreateCheckoutSessionRequest {
+    int32 movieID = 1;
+    repeated CheckoutSessionLineItemParam payment_items = 2;
+}
+
+message CreateCheckoutSessionResponse {
+    int32 status = 1;
+    string error = 2;
+    string message = 3;
+}
+
+message ProductBookedSeats {
+    int32 BookedSeatID = 1;
+}
+
+message Create_Payment_Intent_INR_Request {
+    // int32 quintity = 1;
+    reserved 1;
+    reserved 2;
+    string success_url = 3;
+    Currency currency = 4;
+    // int32 price = 5;
+    reserved 5;
+    string phone_number = 6;
+    string email = 7;
+    // string name = 8;
+    reserved 8;
+    string cancel_url = 9;
+    string country = 10;
+    string state = 11;
+    string city = 12;
+    int32 zipcode = 13;
+    string street = 14;
+    // string movieName = 15;
+    reserved 15;
+    // string movieID = 16;
+    reserved 16;
+    // repeated int32 BookedSeatID = 17;
+    reserved 17;
+    repeated int32 seatMatrixIDs = 18;
+    int32 venue_id = 19;
+    int32 movie_time_slot_id = 20;
+    string customer_name = 21;
+}
+
+message IsValidIdempotentKeyRequest {
+    string idempotent_key = 1;
+}
+
+message IsValidIdempotentKeyResponse {
+    bool is_valid = 1;
+    string error = 2;
+    string message = 3;
+}
+
+message CommitIdempotentKeyRequest {
+    string idempotent_key = 1;
+    string customer_id = 2;
+    repeated string orderIds = 3;
+}
+
+message Create_Payment_Intent_INR_Response {
+    int32 status = 1;
+    string error = 2;
+    string message = 3;
+    reserved 4;
+    reserved 5;
+    string payment_link = 6;
+}
+
+message Order {
+    string product_name = 1;
+    int32 product_price = 2;
+    string product_description = 3;
+}
+
+message Create_Order_Request {
+    reserved 1;
+    reserved 2;
+    reserved 3;
+    // repeated Order orders = 4;
+    reserved 4;
+    string idempotent_key = 5;
+    repeated int32 seatMatrixIDs = 6;
+    int32 venue_id = 7;
+    int32 movie_time_slot_id = 8;
+}
+
+message Create_Order_Response {
+    int32 status = 1;
+    string error = 2;
+    string message = 3;
+    repeated string order_id = 4;
+}
+
+message CreateCustomerRequest {
+    string customer_name = 1;
+    string phone_number = 2;
+    string email = 3;
+    string country = 4;
+    string state = 5;
+    string city = 6;
+    int32 zipcode = 7;
+    string street = 8;
+    string idempotent_key = 9;
+}
+
+message CreateCustomerResponse {
+    int32 status = 1;
+    string error = 2;
+    string message = 3;
+    string customer_id = 4;
+}
+
+message CreatePaymentLinkRequest {
+    string idempotent_key = 1;
+}
+
+message CreatePaymentLinkResponse {
+    int32 status = 1;
+    string error = 2;
+    string message = 3;
+    string payment_link = 4;
+}
+
+service PaymentService {
+    rpc CreateCheckOutSession(CreateCheckoutSessionRequest) returns (CreateCheckoutSessionResponse);
+    rpc CreatePaymentLink(Create_Payment_Intent_INR_Request) returns (Create_Payment_Intent_INR_Response);
+    rpc IsValidIdempotentKey(IsValidIdempotentKeyRequest) returns (IsValidIdempotentKeyResponse);
+    rpc CommitIdempotentKey(CommitIdempotentKeyRequest) returns (Create_Payment_Intent_INR_Response);
+    rpc CreateOrder(Create_Order_Request) returns (Create_Order_Response);
+    rpc CommitCustomerID(CommitIdempotentKeyRequest) returns (Create_Payment_Intent_INR_Response);
+    rpc CommitOrderIds(CommitIdempotentKeyRequest) returns (Create_Payment_Intent_INR_Response);
+    rpc CreateCustomer(CreateCustomerRequest) returns (CreateCustomerResponse);
+    rpc GeneratePaymentLink(CreatePaymentLinkRequest) returns (CreatePaymentLinkResponse);
+}
