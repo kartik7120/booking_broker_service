@@ -38,7 +38,7 @@ func (c *Config) Routes() http.Handler {
 	})
 
 	mux.Get("/getupcomingmovies/{date}", c.GetUpcomingMovies)
-	mux.Get("/getnowplayingmovies", c.GetNowPlayingMovies)
+	mux.Post("/getnowplayingmovies", c.GetNowPlayingMovies)
 	mux.Get("/getMovie/{id}", c.GetMovieDetails)
 	mux.Post("/getAllMovieReview/{id}", c.GetMovieReviews)
 	mux.Post("/addReview/{id}", c.AddMovieReview)

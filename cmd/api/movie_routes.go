@@ -75,8 +75,9 @@ func (c *Config) GetNowPlayingMovies(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = json.Unmarshal(bodyBytes, &requestBody)
+
 	if err != nil {
-		http.Error(w, "Error unmarshalling JSON from request body", http.StatusBadRequest)
+		http.Error(w, "error unmarshalling JSON from request body", http.StatusBadRequest)
 		return
 	}
 
