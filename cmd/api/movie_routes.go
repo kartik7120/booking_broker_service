@@ -62,8 +62,8 @@ func (c *Config) GetUpcomingMovies(w http.ResponseWriter, r *http.Request) {
 
 func (c *Config) GetNowPlayingMovies(w http.ResponseWriter, r *http.Request) {
 	var requestBody struct {
-		Longitude int64 `json:"longitude"`
-		Latitude  int64 `json:"latitude"`
+		Longitude float64 `json:"longitude"`
+		Latitude  float64 `json:"latitude"`
 	}
 
 	// Read and parse the request body
@@ -83,9 +83,10 @@ func (c *Config) GetNowPlayingMovies(w http.ResponseWriter, r *http.Request) {
 
 	// Call the gRPC service
 	response, err := c.MovieDB_service.GetNowPlayingMovies(context.Background(), &pb.GetNowPlayingMovieRequest{
-		Longitude: requestBody.Longitude,
-		Latitude:  requestBody.Latitude,
+		Longitude: int64(requestBody.Longitude),
+		Latitude:  int64(requestBody.Latitude),
 	})
+
 	if err != nil {
 		http.Error(w, "Error getting now playing movies from service", http.StatusInternalServerError)
 		return
