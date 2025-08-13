@@ -8,12 +8,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"github.com/kartik7120/booking_broker-service/cmd/api"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
 	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
 	"github.com/kartik7120/booking_broker-service/cmd/api/payment_service"
 )
@@ -28,7 +30,9 @@ func main() {
 		return
 	}
 
-	app := api.Config{}
+	app := api.Config{
+		Validator: validator.New(),
+	}
 
 	srv := &http.Server{
 		Addr:    ":8080",
@@ -72,8 +76,17 @@ func main() {
 
 	paymentClient := payment_service.NewPaymentServiceClient(conn2)
 
+	conn3, err := grpc.NewClient(":1101", opts...)
+
+	if err != nil {
+		log.Error("error connecting to auth service", err)
+		os.Exit(1)
+		return
+	}
+
 	app.MovieDB_service = client
 	app.Payment_service = paymentClient
+	app.Auth_Service = at.NewAuthServiceClient(conn3)
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

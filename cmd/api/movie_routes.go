@@ -7,18 +7,244 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	dodopayments "github.com/dodopayments/dodopayments-go"
 	"github.com/go-chi/chi/v5"
 
+	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
 	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
 	"github.com/kartik7120/booking_broker-service/cmd/api/payment_service"
 	"github.com/kartik7120/booking_broker-service/cmd/api/utils"
 )
 
+func (c *Config) ValidateToken(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("Authorization")
+
+	if token == "" {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, `{"error": "Missing Authorization header"}`, http.StatusUnauthorized)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	response, err := c.Auth_Service.ValidateToken(ctx, &at.ValdateTokenRequest{
+		Token: token,
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error validating token: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	if response == nil || response.Valid {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, `{"error": "Invalid token"}`, http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	jsonResponse, err := json.Marshal(map[string]string{
+		"message": "Token is valid",
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error marshalling JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = w.Write(jsonResponse)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (c *Config) Login(w http.ResponseWriter, r *http.Request) {
+
+	var requestBody struct {
+		Email    string `json:"email" validate:"required,email"`
+		Password string `json:"password" validate:"required,min=8,max=32"`
+	}
+
+	bodyBytes, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error reading request body", http.StatusBadRequest)
+		return
+	}
+
+	err = json.Unmarshal(bodyBytes, &requestBody)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error unmarshalling request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err = c.Validator.Struct(requestBody); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error validating request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	response, err := c.Auth_Service.Login(ctx, &at.LoginUser{
+		Email:    requestBody.Email,
+		Password: requestBody.Password,
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error logging in: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	if response == nil || response.Status != 200 || response.Error != "" {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error logging in: %s"}`, response.Error), http.StatusInternalServerError)
+		return
+	}
+
+	cookie := &http.Cookie{
+		Name:     "auth_token",
+		Value:    response.Token,
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
+	}
+
+	http.SetCookie(w, cookie)
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusOK)
+	jsonResponse, err := json.Marshal(map[string]string{
+		"message": "User logged in successfully",
+		"token":   response.Token,
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error marshalling JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = w.Write(jsonResponse)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (c *Config) RegisterUser(w http.ResponseWriter, r *http.Request) {
+
+	var requestBody struct {
+		Email       string `json:"email" validate:"required,email"`
+		Password    string `json:"password" validate:"required,min=8,max=32"`
+		PhoneNumber string `json:"phoneNumber" validate:"required,e164"` // assuming E.164 format
+		Role        string `json:"role" validate:"required,oneof=admin user"`
+	}
+
+	bodyyBytes, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error reading request body", http.StatusBadRequest)
+		return
+	}
+
+	err = json.Unmarshal(bodyyBytes, &requestBody)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error unmarshalling request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err = c.Validator.Struct(requestBody); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error validating request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var role at.Role
+
+	if requestBody.Role == "admin" {
+		role = at.Role_ADMIN
+	} else if requestBody.Role == "user" {
+		role = at.Role_USER
+	}
+
+	response, err := c.Auth_Service.Resigter(ctx, &at.User{
+		Email:    requestBody.Email,
+		Password: requestBody.Password,
+		Role:     role,
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error registering user: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	if response == nil || response.Status != 200 || response.Error != "" {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error registering user: %s"}`, response.Error), http.StatusInternalServerError)
+		return
+	}
+
+	cookie := &http.Cookie{
+		Name:     "auth_token",
+		Value:    response.Token,
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
+	}
+
+	http.SetCookie(w, cookie)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	jsonResponse, err := json.Marshal(map[string]string{
+		"message": "User registered successfully",
+		"token":   response.Token,
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error marshalling JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = w.Write(jsonResponse)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+}
+
 func (c *Config) GetUpcomingMovies(w http.ResponseWriter, r *http.Request) {
 	// Extract the "date" parameter from the URL
 	dateParam := chi.URLParam(r, "date")
+
+	fmt.Println("dateParam: ", dateParam)
+
 	if dateParam == "" {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, `{"error": "Missing 'date' parameter in URL"}`, http.StatusBadRequest)

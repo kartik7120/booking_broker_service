@@ -7,6 +7,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
+	validator "github.com/go-playground/validator/v10"
+	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
 	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
 	ps "github.com/kartik7120/booking_broker-service/cmd/api/payment_service"
 )
@@ -14,6 +16,8 @@ import (
 type Config struct {
 	MovieDB_service pb.MovieDBServiceClient
 	Payment_service ps.PaymentServiceClient
+	Auth_Service    at.AuthServiceClient
+	Validator       *validator.Validate
 }
 
 func (c *Config) Routes() http.Handler {
@@ -53,6 +57,7 @@ func (c *Config) Routes() http.Handler {
 	mux.Post("/createCustomer", c.Create_Customer)
 	mux.Post("/createOrder", c.CreateOrder)
 	mux.Post("/createPaymentLink", c.CreatePaymentLink)
+	mux.Post("/validateToken", c.ValidateToken)
 
 	return mux
 }
