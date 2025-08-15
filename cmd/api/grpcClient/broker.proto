@@ -97,6 +97,7 @@ message Movie {
     int32 ranking = 14;
     int32 id = 15;
     reserved 12;
+    string screen_wide_poster_url = 16;
 }
 
 enum VenueType {

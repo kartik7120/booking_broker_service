@@ -11,12 +11,189 @@ import (
 
 	dodopayments "github.com/dodopayments/dodopayments-go"
 	"github.com/go-chi/chi/v5"
+	redis "github.com/redis/go-redis/v9"
 
 	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
 	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
 	"github.com/kartik7120/booking_broker-service/cmd/api/payment_service"
 	"github.com/kartik7120/booking_broker-service/cmd/api/utils"
 )
+
+func (c *Config) GenerateOTP(w http.ResponseWriter, r *http.Request) {
+
+	// First retrieve the email from the request body
+	// Genreate OTP
+	// Insert data in the redis cache
+	// Return the OTP to the user via email
+
+	var requestBody struct {
+		Email string `json:"email" validate:"required,email"`
+	}
+
+	bodyBytes, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error reading request body", http.StatusBadRequest)
+		return
+	}
+
+	err = json.Unmarshal(bodyBytes, &requestBody)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error unmarshalling request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err = c.Validator.Struct(requestBody); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error validating request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	otp, err := utils.GenerateOTP(6)
+
+	fmt.Println("Generated OTP: ", otp)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error generating OTP: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	// Send OTP to the user via email
+
+	templt := utils.SendOTPMailTemplate(requestBody.Email, otp)
+
+	err = utils.SendMail(templt)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error sending OTP email: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	// Store the OTP in Redis with a 5-minute expiration time
+
+	err = c.RedisClient.Set(ctx, requestBody.Email, otp, 5*time.Minute).Err()
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error storing OTP in Redis: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusOK)
+
+	jsonResponse, err := json.Marshal(map[string]string{
+		"message": "OTP sent successfully",
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error marshalling JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = w.Write(jsonResponse)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+}
+
+func (c *Config) ValidateOTP(w http.ResponseWriter, r *http.Request) {
+	// Validate the OTP provided by the user
+	// Check if the OTP exists in Redis
+	// If it exists, delete it from Redis and return success
+	// If it doesn't exist, return an error
+
+	var requestBody struct {
+		Email string `json:"email" validate:"required,email"`
+		OTP   string `json:"otp" validate:"required,len=6"`
+	}
+
+	bodyBytes, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error reading request body", http.StatusBadRequest)
+		return
+	}
+
+	err = json.Unmarshal(bodyBytes, &requestBody)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error unmarshalling request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err = c.Validator.Struct(requestBody); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error validating request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	storedOTP, err := c.RedisClient.Get(ctx, requestBody.Email).Result()
+
+	if err == redis.Nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, `{"error": "OTP not found or expired"}`, http.StatusNotFound)
+		return
+	} else if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error retrieving OTP from Redis: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	if storedOTP != requestBody.OTP {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, `{"error": "Invalid OTP"}`, http.StatusUnauthorized)
+		return
+	}
+
+	err = c.RedisClient.Del(ctx, requestBody.Email).Err()
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error deleting OTP from Redis: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusOK)
+
+	jsonResponse, err := json.Marshal(map[string]string{
+		"message": "OTP validated successfully",
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error marshalling JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = w.Write(jsonResponse)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+}
 
 func (c *Config) ValidateToken(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("Authorization")

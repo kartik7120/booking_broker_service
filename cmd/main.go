@@ -11,6 +11,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"github.com/kartik7120/booking_broker-service/cmd/api"
+	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -30,8 +31,18 @@ func main() {
 		return
 	}
 
+	redisClient := redis.NewClient(
+		&redis.Options{
+			Addr:     "localhost:6379",
+			Password: "", // No password set
+			DB:       0,  // Use default DB
+			Protocol: 2,  // Connection protocol
+		},
+	)
+
 	app := api.Config{
-		Validator: validator.New(),
+		Validator:   validator.New(),
+		RedisClient: redisClient,
 	}
 
 	srv := &http.Server{

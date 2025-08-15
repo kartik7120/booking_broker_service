@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	redis "github.com/redis/go-redis/v9"
 
 	validator "github.com/go-playground/validator/v10"
 	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
@@ -18,6 +19,7 @@ type Config struct {
 	Payment_service ps.PaymentServiceClient
 	Auth_Service    at.AuthServiceClient
 	Validator       *validator.Validate
+	RedisClient     *redis.Client
 }
 
 func (c *Config) Routes() http.Handler {
@@ -57,7 +59,8 @@ func (c *Config) Routes() http.Handler {
 	mux.Post("/createCustomer", c.Create_Customer)
 	mux.Post("/createOrder", c.CreateOrder)
 	mux.Post("/createPaymentLink", c.CreatePaymentLink)
-	mux.Post("/validateToken", c.ValidateToken)
+	mux.Get("/validateToken", c.ValidateToken)
+	mux.Post("/generateOTP", c.GenerateOTP)
 
 	return mux
 }
