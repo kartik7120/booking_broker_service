@@ -19,6 +19,69 @@ import (
 	"github.com/kartik7120/booking_broker-service/cmd/api/utils"
 )
 
+func (c *Config) CheckIfUserExists(w http.ResponseWriter, r *http.Request) {
+
+	email := chi.URLParam(r, "email")
+
+	var requestBody struct {
+		Email string `json:"email" validate:"required,email"`
+	}
+
+	requestBody.Email = email
+
+	// bodyBytes, err := io.ReadAll(r.Body)
+
+	// if err != nil {
+
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	http.Error(w, "error reading request body", http.StatusInternalServerError)
+	// 	return
+	// }
+
+	// err = json.Unmarshal(bodyBytes, &requestBody)
+
+	// if err != nil {
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	http.Error(w, "error reading request body", http.StatusInternalServerError)
+	// 	return
+	// }
+
+	if err := c.Validator.Struct(requestBody); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error validating input: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	response, err := c.Auth_Service.CheckUserExists(context.Background(), &at.CheckUserExistsRequest{
+		Email: requestBody.Email,
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error checking user exists: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	jsonResponse, err := json.Marshal(response)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error marshing response: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	_, err = w.Write(jsonResponse)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "error writing response: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 func (c *Config) GenerateOTP(w http.ResponseWriter, r *http.Request) {
 
 	// First retrieve the email from the request body
@@ -326,10 +389,10 @@ func (c *Config) Login(w http.ResponseWriter, r *http.Request) {
 func (c *Config) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	var requestBody struct {
-		Email       string `json:"email" validate:"required,email"`
-		Password    string `json:"password" validate:"required,min=8,max=32"`
-		PhoneNumber string `json:"phoneNumber" validate:"required,e164"` // assuming E.164 format
-		Role        string `json:"role" validate:"required,oneof=admin user"`
+		Email    string `json:"email" validate:"required,email"`
+		Password string `json:"password" validate:"required,min=8,max=32"`
+		// PhoneNumber string `json:"phoneNumber" validate:"required,e164"` // assuming E.164 format
+		Role string `json:"role" validate:"required,oneof=admin user"`
 	}
 
 	bodyyBytes, err := io.ReadAll(r.Body)

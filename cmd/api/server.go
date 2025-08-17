@@ -26,7 +26,7 @@ func (c *Config) Routes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedOrigins:   []string{"https://*", "http://*", "http://127.0.0.1:5173"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
@@ -61,6 +61,10 @@ func (c *Config) Routes() http.Handler {
 	mux.Post("/createPaymentLink", c.CreatePaymentLink)
 	mux.Get("/validateToken", c.ValidateToken)
 	mux.Post("/generateOTP", c.GenerateOTP)
+	mux.Post("/validateOTP", c.ValidateOTP)
+	mux.Post("/registerUser", c.RegisterUser)
+	mux.Post("/loginUser", c.Login)
+	mux.Get("/checkIfUserExists/{email}", c.CheckIfUserExists)
 
 	return mux
 }

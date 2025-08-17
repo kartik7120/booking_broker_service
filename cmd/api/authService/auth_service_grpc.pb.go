@@ -24,6 +24,7 @@ const (
 	AuthService_ValidateToken_FullMethodName         = "/auth.AuthService/ValidateToken"
 	AuthService_SendResetPasswordMail_FullMethodName = "/auth.AuthService/SendResetPasswordMail"
 	AuthService_ResetPassword_FullMethodName         = "/auth.AuthService/ResetPassword"
+	AuthService_CheckUserExists_FullMethodName       = "/auth.AuthService/CheckUserExists"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -35,6 +36,7 @@ type AuthServiceClient interface {
 	ValidateToken(ctx context.Context, in *ValdateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
 	SendResetPasswordMail(ctx context.Context, in *SendResetPasswordMailRequest, opts ...grpc.CallOption) (*Response, error)
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*Response, error)
+	CheckUserExists(ctx context.Context, in *CheckUserExistsRequest, opts ...grpc.CallOption) (*CheckUserExistsResponse, error)
 }
 
 type authServiceClient struct {
@@ -95,6 +97,16 @@ func (c *authServiceClient) ResetPassword(ctx context.Context, in *ResetPassword
 	return out, nil
 }
 
+func (c *authServiceClient) CheckUserExists(ctx context.Context, in *CheckUserExistsRequest, opts ...grpc.CallOption) (*CheckUserExistsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckUserExistsResponse)
+	err := c.cc.Invoke(ctx, AuthService_CheckUserExists_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -104,6 +116,7 @@ type AuthServiceServer interface {
 	ValidateToken(context.Context, *ValdateTokenRequest) (*ValidateTokenResponse, error)
 	SendResetPasswordMail(context.Context, *SendResetPasswordMailRequest) (*Response, error)
 	ResetPassword(context.Context, *ResetPasswordRequest) (*Response, error)
+	CheckUserExists(context.Context, *CheckUserExistsRequest) (*CheckUserExistsResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -128,6 +141,9 @@ func (UnimplementedAuthServiceServer) SendResetPasswordMail(context.Context, *Se
 }
 func (UnimplementedAuthServiceServer) ResetPassword(context.Context, *ResetPasswordRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) CheckUserExists(context.Context, *CheckUserExistsRequest) (*CheckUserExistsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckUserExists not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -240,6 +256,24 @@ func _AuthService_ResetPassword_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_CheckUserExists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckUserExistsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).CheckUserExists(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_CheckUserExists_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).CheckUserExists(ctx, req.(*CheckUserExistsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -266,6 +300,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResetPassword",
 			Handler:    _AuthService_ResetPassword_Handler,
+		},
+		{
+			MethodName: "CheckUserExists",
+			Handler:    _AuthService_CheckUserExists_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

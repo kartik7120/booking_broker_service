@@ -16,6 +16,14 @@ message User {
     Role role = 4;
 }
 
+message CheckUserExistsRequest {
+    string email = 1;
+}
+
+message CheckUserExistsResponse {
+    bool exists = 1;
+}
+
 message LoginUser {
     // string username = 1;
     reserved 1;
@@ -55,4 +63,5 @@ service AuthService {
     rpc ValidateToken (ValdateTokenRequest) returns (ValidateTokenResponse);
     rpc SendResetPasswordMail (SendResetPasswordMailRequest) returns (Response);
     rpc ResetPassword (ResetPasswordRequest) returns (Response);
+    rpc CheckUserExists(CheckUserExistsRequest) returns (CheckUserExistsResponse);
 }
