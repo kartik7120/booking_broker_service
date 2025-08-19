@@ -123,6 +123,7 @@ func (c *Config) GenerateOTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Generated OTP: ", otp)
 
 	if err != nil {
+		fmt.Println("error generating OTP: ", err)
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf(`{"error": "Error generating OTP: %v"}`, err), http.StatusInternalServerError)
 		return
