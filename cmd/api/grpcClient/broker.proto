@@ -78,6 +78,7 @@ message MovieTimeSlot {
     SeatType movie_format = 5;
     int32 movieid = 6;
     int32 venueid = 7;
+    int32 MovieTimeSlotID = 8;
 }
 
 message Movie {
@@ -98,6 +99,7 @@ message Movie {
     int32 id = 15;
     reserved 12;
     string screen_wide_poster_url = 16;
+    string logoImageURL = 17;
 }
 
 enum VenueType {
@@ -345,6 +347,8 @@ message BookedSeats {
     bool is_booked = 5;
     reserved 6;
     reserved 7;
+    int32 price = 8;
+    string movieName = 9;
 }
 
 message BookSeatsRequest {
@@ -353,7 +357,9 @@ message BookSeatsRequest {
     int32 movie_time_slot_id = 3;
     reserved 4;
     string email = 5;
-    int64 phone_number = 6;
+    // int64 phone_number = 6;
+    reserved 6;
+    string phone_number = 7;
 }
 
 message BookSeatsResponse {
@@ -372,6 +378,43 @@ message GetBookedSeatsResponse {
     string message = 2;
     repeated BookedSeats booked_seats = 3;
     string error = 4;
+}
+
+message GetBookedSeatsDetailsRequest {
+    repeated int32 booked_seats_ids = 1;
+}
+
+message GetBookedSeatsDetailsResponse {
+    int32 status = 1;
+    string message = 2;
+    repeated BookedSeats booked_seats = 3;
+    string error = 4;
+}
+
+message IsValidToCommitSeatsForBooking_Request {
+    int32 movie_time_slot_id = 1;
+    repeated int32 seatMatrixIds = 2;
+}
+
+message IsValidToCommitSeatsForBooking_Response {
+    bool isvalid = 1;
+    string error = 2;
+    int32 status = 3;
+    repeated BookedSeats toBeBookedSeats = 4;
+}
+
+message CreateTicketRequest {
+    string idempotent_key = 1;
+    string trasaction_id = 2;
+}
+
+message CreateRequestResponse {
+    int32 status = 1;
+    string error = 2;
+}
+
+message GetMovieTimeSlotDetailsRequest  {
+    int32 movie_time_slot_id = 1;
 }
 
 service MovieDBService {
@@ -404,4 +447,9 @@ service MovieDBService {
     rpc DeleteEntireSeatMatrix(DeleteEntireSeatMatrixRequest) returns (DeleteEntireSeatMatrixResponse);
     rpc BookSeats(BookSeatsRequest) returns (BookSeatsResponse);
     rpc GetBookedSeats(GetBookedSeatsRequest) returns (GetBookedSeatsResponse);
+    // rpc GetBookedSeatsDetails(GetBookedSeatsDetailsRequest) returns (GetBookedSeatsDetailsResponse);
+    rpc IsValidToCommitSeatsForBooking(IsValidToCommitSeatsForBooking_Request) returns (IsValidToCommitSeatsForBooking_Response);
+    rpc LockBookedSeats(GetBookedSeatsDetailsRequest) returns (GetBookedSeatsDetailsResponse);
+    rpc CreateTicket(CreateTicketRequest) returns (CreateRequestResponse);
+    rpc GetMovieTimeSlot(GetMovieTimeSlotDetailsRequest) returns (MovieTimeSlot);
 }

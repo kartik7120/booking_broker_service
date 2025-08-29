@@ -65,6 +65,8 @@ func (c *Config) Routes() http.Handler {
 	mux.Post("/registerUser", c.RegisterUser)
 	mux.Post("/loginUser", c.Login)
 	mux.Get("/checkIfUserExists/{email}", c.CheckIfUserExists)
+	mux.Get("/getVenue/{venueID}", c.GetVenue)
+	mux.Get("/getMovieTimeSlot/{movieTimeSlotID}", c.GetMovieTimeSlot)
 
 	return mux
 }
