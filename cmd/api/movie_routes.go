@@ -20,28 +20,30 @@ import (
 )
 
 func (c *Config) GetMovieTimeSlot(w http.ResponseWriter, r *http.Request) {
-	var requestBody struct {
-		MovieTimeSlotID int32 `json:"movie_time_slot_id"`
-	}
+	// var requestBody struct {
+	// 	MovieTimeSlotID int32 `json:"movie_time_slot_id"`
+	// }
 
-	bodyBytes, err := io.ReadAll(r.Body)
+	// bodyBytes, err := io.ReadAll(r.Body)
 
-	if err != nil {
+	movieTimeSlotID := chi.URLParam(r, "movieTimeSlotID")
+
+	if movieTimeSlotID == "" {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf(`{"error": "error reading requestBody: %s"}`, err.Error()), http.StatusInternalServerError)
+		http.Error(w, `{"error": "movie time slot ID cannot be empty"}`, http.StatusBadRequest)
 		return
 	}
 
-	err = json.Unmarshal(bodyBytes, &requestBody)
+	movieTimeSlotInt, err := strconv.Atoi(movieTimeSlotID)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf(`{"error": "error unmarshalling json: %s"}`, err.Error()), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error": "error converting movie time slot to int: %s"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
 
 	response, err := c.MovieDB_service.GetMovieTimeSlot(context.Background(), &pb.GetMovieTimeSlotDetailsRequest{
-		MovieTimeSlotId: requestBody.MovieTimeSlotID,
+		MovieTimeSlotId: int32(movieTimeSlotInt),
 	})
 
 	if err != nil {
@@ -50,7 +52,7 @@ func (c *Config) GetMovieTimeSlot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var responseBody *moviedb.MovieTimeSlot
+	var responseBody = &moviedb.MovieTimeSlot{}
 
 	responseBody.Date = response.Date
 	responseBody.Duration = response.Duration
@@ -73,34 +75,42 @@ func (c *Config) GetMovieTimeSlot(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	_, err = w.Write(jsonResponse)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "error writing to response body: %s"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (c *Config) GetVenue(w http.ResponseWriter, r *http.Request) {
 
-	var requestBody struct {
-		VenueID int32 `json:"venue_id"`
-	}
+	// var requestBody struct {
+	// 	VenueID int32 `json:"venue_id"`
+	// }
 
-	bodyBytes, err := io.ReadAll(r.Body)
+	// bodyBytes, err := io.ReadAll(r.Body)
 
-	if err != nil {
+	venueID := chi.URLParam(r, "venueID")
+
+	if venueID == "" {
 		w.Header().Set("Content-Type", "application/json")
 
-		http.Error(w, fmt.Sprintf(`{"error": "error reading request body: %v"}`, err.Error()), http.StatusInternalServerError)
+		http.Error(w, `{"error": "venueID is empty"}`, http.StatusInternalServerError)
 		return
 	}
 
-	err = json.Unmarshal(bodyBytes, &requestBody)
+	// err = json.Unmarshal(bodyBytes, &requestBody)
 
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
+	// if err != nil {
+	// 	w.Header().Set("Content-Type", "application/json")
 
-		http.Error(w, fmt.Sprintf(`{"error": "error unmarshalling json: %v"}`, err.Error()), http.StatusInternalServerError)
-		return
-	}
+	// 	http.Error(w, fmt.Sprintf(`{"error": "error unmarshalling json: %v"}`, err.Error()), http.StatusInternalServerError)
+	// 	return
+	// }
 
 	response, err := c.MovieDB_service.GetVenue(context.Background(), &pb.MovieRequest{
-		Venueid: string(requestBody.VenueID),
+		Venueid: venueID,
 	})
 
 	if err != nil {
@@ -1259,7 +1269,7 @@ func (c *Config) GetBookedSeats(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if len(response.BookedSeats) == 0 {
-			http.Error(w, "No booked seats could be found", http.StatusNotFound)
+			http.Error(w, `{"error": "No booked seats could be found"}`, http.StatusOK)
 			return
 		}
 	}
