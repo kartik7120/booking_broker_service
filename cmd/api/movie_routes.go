@@ -12,12 +12,71 @@ import (
 	dodopayments "github.com/dodopayments/dodopayments-go"
 	"github.com/go-chi/chi/v5"
 	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
-	moviedb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
+
 	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
 	"github.com/kartik7120/booking_broker-service/cmd/api/payment_service"
 	"github.com/kartik7120/booking_broker-service/cmd/api/utils"
 	redis "github.com/redis/go-redis/v9"
 )
+
+func (c *Config) LockSeats(w http.ResponseWriter, r *http.Request) {
+
+	var requestBody pb.GetBookedSeatsDetailsRequest
+
+	bodyBytes, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error reading request body: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	err = json.Unmarshal(bodyBytes, &requestBody)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error unmarshalling request body: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	response, err := c.MovieDB_service.LockBookedSeats(context.Background(), &requestBody)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error calling locked seats function: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	if response.Error != "" {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error calling locked seats function: %s", response.Error), http.StatusInternalServerError)
+		return
+	}
+
+	var responseBody struct {
+		LockedSeats []*pb.BookedSeats `json:"locked_seats"`
+	}
+
+	responseBody.LockedSeats = response.BookedSeats
+
+	jsonResponse, err := json.Marshal(responseBody)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error marshalling json response: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	_, err = w.Write(jsonResponse)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error marshalling json response: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+}
 
 func (c *Config) GetMovieTimeSlot(w http.ResponseWriter, r *http.Request) {
 	// var requestBody struct {
@@ -52,7 +111,7 @@ func (c *Config) GetMovieTimeSlot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var responseBody = &moviedb.MovieTimeSlot{}
+	var responseBody = &pb.MovieTimeSlot{}
 
 	responseBody.Date = response.Date
 	responseBody.Duration = response.Duration
