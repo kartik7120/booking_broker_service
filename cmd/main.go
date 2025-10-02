@@ -18,6 +18,7 @@ import (
 
 	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
 	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
+	rabbitmq_producer "github.com/kartik7120/booking_broker-service/cmd/api/payment_producer_service"
 	"github.com/kartik7120/booking_broker-service/cmd/api/payment_service"
 )
 
@@ -33,10 +34,10 @@ func main() {
 
 	redisClient := redis.NewClient(
 		&redis.Options{
-			Addr:     "localhost:6379",
-			Password: "", // No password set
-			DB:       0,  // Use default DB
-			Protocol: 2,  // Connection protocol
+			Addr:     "127.0.0.1:6379", // Redis server address
+			Password: "",               // No password set
+			DB:       0,                // Use default DB
+			Protocol: 2,                // Connection protocol
 		},
 	)
 
@@ -95,9 +96,18 @@ func main() {
 		return
 	}
 
+	conn4, err := grpc.NewClient(":1105", opts...)
+
+	if err != nil {
+		log.Error("error connecting to payment service", err)
+		os.Exit(1)
+		return
+	}
+
 	app.MovieDB_service = client
 	app.Payment_service = paymentClient
 	app.Auth_Service = at.NewAuthServiceClient(conn3)
+	app.Payment_Producer_service = rabbitmq_producer.NewRabbitmqProducerServiceClient(conn4)
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

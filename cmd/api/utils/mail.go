@@ -207,3 +207,80 @@ func SendOTPMailTemplate(email, otp string) SendMailStruct {
 		Subject:  "Your OTP Code",
 	}
 }
+
+func SendMailUsingMailtrap(email, subject, htmlMessage string) error {
+
+	url := "https://api.mailjet.com/v3/send"
+	method := "POST"
+
+	payload := strings.NewReader(fmt.Sprintf(`{
+	"FromEmail": "kartikshukla8300@gmail.com",
+	"FromName": "Ticket booking app",
+	"Recipients": [
+		{
+			"Email": "%s",
+			"Name": "User"
+		}
+	],
+	"Subject": "%s",
+	"Html-part": "%s"
+}`, email, subject, htmlMessage))
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, payload)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	// use basic auth
+
+	// fmt.Println(os.Getenv("MAILJET_USERNAME"), os.Getenv("MAILJET_PASSWORD"))
+
+	fmt.Println(`Using username: ` + os.Getenv("MAILJET_USERNAME") + ` and password: ` + os.Getenv("MAILJET_PASSWORD"))
+
+	req.SetBasicAuth(os.Getenv("MAILJET_USERNAME"), os.Getenv("MAILJET_PASSWORD"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	fmt.Println(string(body))
+
+	var successResponse struct {
+		Sent []struct {
+			Email       string `json:"Email"`
+			MessageID   int64  `json:"MessageID"`
+			MessageUUID string `json:"MessageUUID"`
+		} `json:"Sent"`
+	}
+
+	err = json.Unmarshal(body, &successResponse)
+
+	if err != nil {
+		log.Error("Error unmarshalling response ", err)
+		return err
+	}
+
+	if len(successResponse.Sent) == 0 {
+		log.Error("No email sent", err)
+		return errors.New("no email sent")
+	}
+
+	log.Info("Email sent successfully to ", successResponse.Sent)
+
+	return nil
+}

@@ -800,12 +800,14 @@ func (x *IsValidIdempotentKeyResponse) GetMessage() string {
 }
 
 type CommitIdempotentKeyRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	IdempotentKey string                 `protobuf:"bytes,1,opt,name=idempotent_key,json=idempotentKey,proto3" json:"idempotent_key,omitempty"`
-	CustomerId    string                 `protobuf:"bytes,2,opt,name=customer_id,json=customerId,proto3" json:"customer_id,omitempty"`
-	OrderIds      []string               `protobuf:"bytes,3,rep,name=orderIds,proto3" json:"orderIds,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	IdempotentKey   string                 `protobuf:"bytes,1,opt,name=idempotent_key,json=idempotentKey,proto3" json:"idempotent_key,omitempty"`
+	CustomerId      string                 `protobuf:"bytes,2,opt,name=customer_id,json=customerId,proto3" json:"customer_id,omitempty"`
+	OrderIds        []string               `protobuf:"bytes,3,rep,name=orderIds,proto3" json:"orderIds,omitempty"`
+	MovieTimeSlotId int32                  `protobuf:"varint,4,opt,name=movie_time_slot_id,json=movieTimeSlotId,proto3" json:"movie_time_slot_id,omitempty"`
+	BookedSeatsIds  []int32                `protobuf:"varint,5,rep,packed,name=booked_seats_ids,json=bookedSeatsIds,proto3" json:"booked_seats_ids,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *CommitIdempotentKeyRequest) Reset() {
@@ -855,6 +857,20 @@ func (x *CommitIdempotentKeyRequest) GetCustomerId() string {
 func (x *CommitIdempotentKeyRequest) GetOrderIds() []string {
 	if x != nil {
 		return x.OrderIds
+	}
+	return nil
+}
+
+func (x *CommitIdempotentKeyRequest) GetMovieTimeSlotId() int32 {
+	if x != nil {
+		return x.MovieTimeSlotId
+	}
+	return 0
+}
+
+func (x *CommitIdempotentKeyRequest) GetBookedSeatsIds() []int32 {
+	if x != nil {
+		return x.BookedSeatsIds
 	}
 	return nil
 }
@@ -1464,12 +1480,14 @@ const file_payment_proto_rawDesc = "" +
 	"\x1cIsValidIdempotentKeyResponse\x12\x19\n" +
 	"\bis_valid\x18\x01 \x01(\bR\aisValid\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\"\x80\x01\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"\xd7\x01\n" +
 	"\x1aCommitIdempotentKeyRequest\x12%\n" +
 	"\x0eidempotent_key\x18\x01 \x01(\tR\ridempotentKey\x12\x1f\n" +
 	"\vcustomer_id\x18\x02 \x01(\tR\n" +
 	"customerId\x12\x1a\n" +
-	"\borderIds\x18\x03 \x03(\tR\borderIds\"\x9b\x01\n" +
+	"\borderIds\x18\x03 \x03(\tR\borderIds\x12+\n" +
+	"\x12movie_time_slot_id\x18\x04 \x01(\x05R\x0fmovieTimeSlotId\x12(\n" +
+	"\x10booked_seats_ids\x18\x05 \x03(\x05R\x0ebookedSeatsIds\"\x9b\x01\n" +
 	"\"Create_Payment_Intent_INR_Response\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\x12\x18\n" +

@@ -408,6 +408,13 @@ message CreateTicketRequest {
     string trasaction_id = 2;
 }
 
+message CreateTicketResponse {
+    int32 status = 1;
+    string error = 2;
+    string message = 3;
+    string TicketID = 4;
+}
+
 message CreateRequestResponse {
     int32 status = 1;
     string error = 2;
@@ -415,6 +422,25 @@ message CreateRequestResponse {
 
 message GetMovieTimeSlotDetailsRequest  {
     int32 movie_time_slot_id = 1;
+}
+
+message GetTicketDetailsRequest {
+    string ticketID = 1;
+}
+
+message GetTicketDetailsResponse {
+    string imageURL = 1;         // Poster image URL
+    string movieTitle = 2;
+    string cinemaName = 3;
+    string showTime = 4;
+    repeated string seatNumbers = 5;
+    string bookingID = 6;
+    string qrCodeURL = 7;        // QR code image URL
+    string language = 8;
+    string format = 9;           // e.g., "2D", "3D", "IMAX"
+    string date = 10;            // e.g., "2023-10-15"
+    string venueName = 11;
+    string screenNumber = 12;
 }
 
 service MovieDBService {
@@ -450,6 +476,7 @@ service MovieDBService {
     // rpc GetBookedSeatsDetails(GetBookedSeatsDetailsRequest) returns (GetBookedSeatsDetailsResponse);
     rpc IsValidToCommitSeatsForBooking(IsValidToCommitSeatsForBooking_Request) returns (IsValidToCommitSeatsForBooking_Response);
     rpc LockBookedSeats(GetBookedSeatsDetailsRequest) returns (GetBookedSeatsDetailsResponse);
-    rpc CreateTicket(CreateTicketRequest) returns (CreateRequestResponse);
+    rpc CreateTicket(CreateTicketRequest) returns (CreateTicketResponse);
     rpc GetMovieTimeSlot(GetMovieTimeSlotDetailsRequest) returns (MovieTimeSlot);
+    rpc GetTicketDetails(GetTicketDetailsRequest) returns (GetTicketDetailsResponse);
 }

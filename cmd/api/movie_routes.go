@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"time"
 
-	dodopayments "github.com/dodopayments/dodopayments-go"
 	"github.com/go-chi/chi/v5"
 	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
 
@@ -18,6 +17,102 @@ import (
 	"github.com/kartik7120/booking_broker-service/cmd/api/utils"
 	redis "github.com/redis/go-redis/v9"
 )
+
+type WebhookEvent struct {
+	Type      string    `json:"type"`
+	Timestamp string    `json:"timestamp"`
+	Data      EventData `json:"data"`
+}
+
+type EventData struct {
+	PaymentID          string    `json:"payment_id"`
+	PaymentLink        string    `json:"payment_link"`
+	Status             string    `json:"status"`
+	Currency           string    `json:"currency"`
+	TotalAmount        int64     `json:"total_amount"`
+	SettlementAmount   int64     `json:"settlement_amount"`
+	SettlementTax      int64     `json:"settlement_tax"`
+	PaymentMethod      string    `json:"payment_method"`
+	PaymentMethodType  string    `json:"payment_method_type"`
+	CreatedAt          string    `json:"created_at"`
+	UpdatedAt          *string   `json:"updated_at"`
+	BusinessID         string    `json:"business_id"`
+	BrandID            string    `json:"brand_id"`
+	Customer           Customer  `json:"customer"`
+	Billing            Billing   `json:"billing"`
+	ProductCart        []Product `json:"product_cart"`
+	Refunds            []Refund  `json:"refunds"`
+	Disputes           []Dispute `json:"disputes"`
+	Metadata           Metadata  `json:"metadata"`
+	SubscriptionID     *string   `json:"subscription_id"`
+	CheckoutSessionID  *string   `json:"checkout_session_id"`
+	CardIssuingCountry *string   `json:"card_issuing_country"`
+	CardLastFour       *string   `json:"card_last_four"`
+	CardNetwork        *string   `json:"card_network"`
+	CardType           *string   `json:"card_type"`
+	DigitalProducts    bool      `json:"digital_products_delivered"`
+	ErrorCode          *string   `json:"error_code"`
+	ErrorMessage       *string   `json:"error_message"`
+	DiscountID         *string   `json:"discount_id"`
+	SettlementCurrency string    `json:"settlement_currency"`
+	Tax                int64     `json:"tax"`
+	PayloadType        string    `json:"payload_type"`
+}
+
+type Customer struct {
+	CustomerID string `json:"customer_id"`
+	Email      string `json:"email"`
+	Name       string `json:"name"`
+}
+
+type Billing struct {
+	City    string `json:"city"`
+	State   string `json:"state"`
+	Street  string `json:"street"`
+	Zipcode string `json:"zipcode"`
+	Country string `json:"country"`
+}
+
+type Product struct {
+	ProductID string `json:"product_id"`
+	Quantity  int    `json:"quantity"`
+}
+
+type Refund struct {
+	// fill when refunds are supported
+}
+
+type Dispute struct {
+	// fill when disputes are supported
+}
+
+type Metadata struct {
+	BookedSeatsID   string `json:"booked_seats_id"`
+	CustomerID      string `json:"customer_id"`
+	CustomerPhone   string `json:"customer_phone"` // ✅ added phone number
+	IdempotentKey   string `json:"idempotent_key"`
+	MovieTimeSlotID string `json:"movie_time_slot_id"`
+}
+
+type RedisIdempotentValue struct {
+	CustomerID      string   `json:"customer_id"`
+	OrderIDs        []string `json:"order_ids"`
+	BookedSeatsIDs  []int32  `json:"booked_seats_ids"`
+	MovieTimeSlotID int32    `json:"movie_time_slot_id"`
+	IsTicketSent    bool     `json:"is_ticket_sent"`
+	IsMailSent      bool     `json:"is_mail_sent"`
+	TicketID        string   `json:"ticket_ids"`
+	PaymentStatus   string   `json:"payment_status"`
+	ErrorMessage    string   `json:"error_message"`
+}
+
+func (r RedisIdempotentValue) MarshalBinary() ([]byte, error) {
+	return json.Marshal(r)
+}
+
+func (r *RedisIdempotentValue) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, r)
+}
 
 func (c *Config) LockSeats(w http.ResponseWriter, r *http.Request) {
 
@@ -1353,66 +1448,974 @@ func (c *Config) GetBookedSeats(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (c *Config) HandleWebhookEvents(w http.ResponseWriter, r *http.Request) {
+func (c *Config) GetTicketDetails(w http.ResponseWriter, r *http.Request) {
 
-	var dummyResponse struct {
-		IsValid bool
+	// var requestBody struct {
+	// 	TicketID string `json:"ticket_id"`
+	// }
+
+	ticketID := chi.URLParam(r, "ticketID")
+
+	// bodyBytes, err := io.ReadAll(r.Body)
+
+	// if err != nil {
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	fmt.Println("error reading request body")
+	// 	http.Error(w, fmt.Sprintf(`{"error":"error reading request body: %v"}`, err.Error()), http.StatusBadRequest)
+	// 	return
+	// }
+
+	// err = json.Unmarshal(bodyBytes, &requestBody)
+
+	// if err != nil {
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	fmt.Println("error unmarshalling json")
+	// 	http.Error(w, fmt.Sprintf(`{"error":"error unmarshalling json: %v"}`, err.Error()), http.StatusBadRequest)
+	// 	return
+	// }
+
+	response, err := c.MovieDB_service.GetTicketDetails(context.Background(), &pb.GetTicketDetailsRequest{
+		TicketID: ticketID,
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Println("error calling get ticket details function")
+		http.Error(w, fmt.Sprintf(`{"error":"error calling get ticket details function: %v"}`, err.Error()), http.StatusInternalServerError)
+		return
 	}
 
-	var requestBody dodopayments.WebhookEvent
+	if response == nil {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Println("response of get ticket function is nil")
+		http.Error(w, fmt.Sprintf(`{"error":"response of get ticket function is nil: %v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	jsonResponse, err := json.Marshal(response)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+
+		fmt.Println("error marshalling response json")
+		http.Error(w, fmt.Sprintf(`{"error":"error marshalling response json: %v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	_, err = w.Write(jsonResponse)
+
+	if err != nil {
+		fmt.Println("error sending response")
+		http.Error(w, fmt.Sprintf(`{"error":"error sending response: %v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (c *Config) HandleWebhookEvents(w http.ResponseWriter, r *http.Request) {
+	bodyBytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "read body: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	var event WebhookEvent
+	if err := json.Unmarshal(bodyBytes, &event); err != nil {
+		fmt.Println(`error unmarshalling event: ` + err.Error())
+		http.Error(w, fmt.Sprintf(`{"error": "unmarshal: %v"}`, err), http.StatusBadRequest)
+		return
+	}
+
+	idKey := event.Data.Metadata.IdempotentKey
+	fmt.Println("📩 Webhook received:", event.Type, "for", idKey)
+
+	// common Redis object
+	redisValue := RedisIdempotentValue{
+		CustomerID:      event.Data.Metadata.CustomerID,
+		MovieTimeSlotID: 0,
+		IsTicketSent:    false,
+		IsMailSent:      false,
+		PaymentStatus:   "pending",
+	}
+
+	// parse movie slot id
+	movieTimeSlotID, _ := strconv.Atoi(event.Data.Metadata.MovieTimeSlotID)
+	redisValue.MovieTimeSlotID = int32(movieTimeSlotID)
+
+	switch event.Type {
+	case "payment.succeeded":
+		fmt.Println("✅ Payment succeeded")
+
+		fmt.Println("event object :", event)
+		// parse booked seats
+		var seatIDs []int32
+		if err := json.Unmarshal([]byte(event.Data.Metadata.BookedSeatsID), &seatIDs); err != nil {
+			fmt.Println("error parsing booked seats:", err)
+			redisValue.PaymentStatus = "failed"
+			redisValue.ErrorMessage = "invalid booked_seats_id format"
+			break
+		}
+
+		seats := make([]*pb.BookedSeats, 0)
+		for _, s := range seatIDs {
+			seats = append(seats, &pb.BookedSeats{SeatMatrixID: s})
+		}
+
+		fmt.Printf("Calling the booked seats function %v", event)
+
+		bookResp, err := c.MovieDB_service.BookSeats(context.Background(), &pb.BookSeatsRequest{
+			Seats:           seats,
+			MovieTimeSlotId: int32(movieTimeSlotID),
+			Email:           event.Data.Customer.Email,
+			PhoneNumber:     event.Data.Metadata.CustomerPhone,
+		})
+
+		fmt.Println("Finished calling booked seats function")
+
+		if err != nil || bookResp.Status != 200 {
+			redisValue.PaymentStatus = "failed"
+			redisValue.ErrorMessage = fmt.Sprintf("booking error: %v", err)
+			if err != nil {
+				fmt.Println("error calling book seats function " + (err.Error()))
+			}
+
+			if bookResp.Status != 200 {
+				fmt.Println("Book Seats function status not 200: ", bookResp.Message)
+			}
+
+			break
+		}
+
+		fmt.Println("Calling the ticket create function")
+		// Create ticket
+		ticketResp, err := c.MovieDB_service.CreateTicket(context.Background(), &pb.CreateTicketRequest{
+			IdempotentKey: event.Data.Metadata.IdempotentKey,
+			TrasactionId:  event.Data.PaymentID,
+		})
+
+		fmt.Println("Finished calling the create ticket endpoint")
+
+		if err != nil || ticketResp.Status != 200 {
+			redisValue.PaymentStatus = "failed"
+			redisValue.ErrorMessage = fmt.Sprintf("ticket error: %v", err)
+
+			fmt.Println("error calling create ticket function " + err.Error())
+			break
+		}
+
+		fmt.Println("Calling the sent mail function")
+
+		// send mail (optional, failures won’t block)
+		err = utils.SendMailUsingMailtrap(event.Data.Customer.Email,
+			"Your tickets are booked!",
+			fmt.Sprintf("Ticket ID: %s", ticketResp.TicketID))
+
+		if err != nil {
+			fmt.Println("error sending the mail to the user", err.Error())
+		} else {
+			// success
+			redisValue.IsTicketSent = true
+			redisValue.PaymentStatus = "succeeded"
+			redisValue.TicketID = ticketResp.TicketID
+		}
+		fmt.Println("FInished calling the mail trap function")
+
+	case "payment.failed":
+		fmt.Println("❌ Payment failed")
+		redisValue.PaymentStatus = "failed"
+
+	default:
+		fmt.Println("ℹ️ Unknown event:", event.Type)
+		redisValue.PaymentStatus = "ignored"
+	}
+
+	// persist in Redis (5 min or longer)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := c.RedisClient.Set(ctx, idKey, redisValue, 20*time.Minute).Err(); err != nil {
+		fmt.Println("Redis set error:", err)
+	}
+
+	// always return 200 so gateway doesn’t retry
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"status":"ok"}`))
+}
+
+// TODO: Implement the webhook handler to listen to payment success and failure events
+// TODO: On payment success, call the book seats function and create ticket function
+// func (c *Config) HandleWebhookEvents(w http.ResponseWriter, r *http.Request) {
+
+// 	// var dummyResponse struct {
+// 	// 	IsValid bool
+// 	// }
+
+// 	var requestBody WebhookEvent
+
+// 	bodyBytes, err := io.ReadAll(r.Body)
+
+// 	if err != nil {
+// 		w.Header().Set("Content-Type", "application/json")
+// 		http.Error(w, fmt.Sprintf(`{"errors": "Error writing JSON response %v"}`, err), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	err = json.Unmarshal(bodyBytes, &requestBody)
+
+// 	if err != nil {
+// 		w.Header().Set("Content-Type", "application/json")
+// 		http.Error(w, fmt.Sprintf(`{"errors": "Error unmarshaling json %v"}`, err), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	fmt.Println(requestBody)
+
+// 	fmt.Println("Event Type: ", requestBody.Type)
+
+// 	// Need to call the create ticket function and book seats function
+// 	// Need to call the send mail producer to send mail to user
+
+// 	// After calling the book seats function, we will get the booked seats ids
+// 	// After calling the create ticket function, we will get the ticket ids
+
+// 	// We will update the idempotent key in redis with the booked seats ids and ticket ids
+// 	// We will also set the isTicketSent to true
+
+// 	// If any of the functions fail, we will not update the idempotent key in redis
+// 	// This way, if the webhook is called again, we can retry the operations
+
+// 	// We will also need to handle the case where the payment fails
+// 	// In this case, we will not call the book seats and create ticket functions
+
+// 	// We can use the idempotent key to ensure that we do not process the same payment event multiple times
+
+// 	// convert movietimeslotid to int32
+
+// 	movieTimeSlotIDInt32, err := strconv.Atoi(requestBody.Data.Metadata.MovieTimeSlotID)
+
+// 	if err != nil {
+// 		w.Header().Set("Content-Type", "application/json")
+// 		http.Error(w, fmt.Sprintf(`{"errors": "Error converting movie time slot id to int32 %v"}`, err), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	switch requestBody.Type {
+// 	case "payment.succeeded":
+// 		fmt.Println("✅ Payment succeeded")
+
+// 		// Call the book seats function
+
+// 		seatsToBeBooked := make([]*pb.BookedSeats, 0)
+
+// 		for _, seatID := range requestBody.Data.Metadata.BookedSeatsID {
+
+// 			seatIDInt, err := strconv.Atoi(seatID)
+
+// 			if err != nil {
+// 				w.Header().Set("Content-Type", "application/json")
+// 				http.Error(w, fmt.Sprintf(`{"errors": "Error converting seat id to int32 %v"}`, err), http.StatusInternalServerError)
+// 				return
+// 			}
+
+// 			seatsToBeBooked = append(seatsToBeBooked, &pb.BookedSeats{
+// 				SeatMatrixID: int32(seatIDInt),
+// 			})
+// 		}
+
+// 		response, err := c.MovieDB_service.BookSeats(context.Background(), &pb.BookSeatsRequest{
+// 			Seats:           seatsToBeBooked,
+// 			MovieTimeSlotId: int32(movieTimeSlotIDInt32),
+// 			Email:           requestBody.Data.Customer.Email,
+// 			PhoneNumber:     requestBody.Data.Metadata.CustomerPhone,
+// 		})
+
+// 		if err != nil {
+// 			w.Header().Set("Content-Type", "application/json")
+
+// 			http.Error(w, fmt.Sprintf(`{"errors": "Error booking seats %v"}`, err), http.StatusInternalServerError)
+
+// 			// Log the error in redis against the idempotent key
+
+// 			// So that we can retry the operation later
+
+// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 			defer cancel()
+
+// 			var redisValueObj RedisIdempotentValue
+
+// 			c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 			redisValueObj.ErrorMessage = fmt.Sprintf("Error booking seats: %v", err)
+
+// 			err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 			if err != nil {
+// 				fmt.Println("Error updating idempotent key in redis: ", err)
+// 			}
+
+// 			// End of logging the error in redis
+
+// 			// We will return 200 OK to the payment gateway
+// 			// So that it does not retry the webhook
+// 			// We will handle the retry logic ourselves
+
+// 			// http.Error(w, fmt.Sprintf(`{"errors": "Error booking seats %v"}`, err), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		if response == nil || response.Status != 200 {
+// 			w.Header().Set("Content-Type", "application/json")
+// 			http.Error(w, fmt.Sprintf(`{"errors": "Error booking seats %v"}`, "response is nil or status is not 200"), http.StatusInternalServerError)
+
+// 			// Log the error in redis against the idempotent key
+
+// 			// So that we can retry the operation later
+
+// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 			defer cancel()
+
+// 			var redisValueObj RedisIdempotentValue
+
+// 			c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 			redisValueObj.ErrorMessage = "Error booking seats: response is nil or status is not 200"
+
+// 			err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 			if err != nil {
+// 				fmt.Println("Error updating idempotent key in redis: ", err)
+// 			}
+
+// 			// End of logging the error in redis
+
+// 			// We will return 200 OK to the payment gateway
+// 			// So that it does not retry the webhook
+// 			// We will handle the retry logic ourselves
+
+// 			// http.Error(w, fmt.Sprintf(`{"errors": "Error booking seats %v"}`, "response is nil or status is not 200"), http.StatusInternalServerError)
+
+// 			return
+// 		}
+
+// 		fmt.Println("Booked Seats Response: ", response)
+
+// 		// Call the create ticket function
+
+// 		createTicketResp, err := c.MovieDB_service.CreateTicket(context.Background(), &pb.CreateTicketRequest{
+// 			IdempotentKey: requestBody.Data.Metadata.IdempotentKey,
+// 			TrasactionId:  requestBody.Data.PaymentID,
+// 		})
+
+// 		if err != nil {
+// 			w.Header().Set("Content-Type", "application/json")
+// 			http.Error(w, fmt.Sprintf(`{"errors": "Error creating ticket %v"}`, err), http.StatusInternalServerError)
+
+// 			// Log the error in redis against the idempotent key
+
+// 			// So that we can retry the operation later
+
+// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 			defer cancel()
+
+// 			var redisValueObj RedisIdempotentValue
+
+// 			c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 			redisValueObj.ErrorMessage = fmt.Sprintf("Error creating ticket: %v", err)
+
+// 			err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 			if err != nil {
+// 				fmt.Println("Error updating idempotent key in redis: ", err)
+// 			}
+
+// 			// End of logging the error in redis
+
+// 			// We will return 200 OK to the payment gateway
+// 			// So that it does not retry the webhook
+// 			// We will handle the retry logic ourselves
+
+// 			// http.Error(w, fmt.Sprintf(`{"errors": "Error creating ticket %v"}`, err), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		if createTicketResp == nil || createTicketResp.Status != 200 {
+// 			w.Header().Set("Content-Type", "application/json")
+// 			http.Error(w, fmt.Sprintf(`{"errors": "Error creating ticket %v"}`, "response is nil or status is not 200"), http.StatusInternalServerError)
+
+// 			// Log the error in redis against the idempotent key
+
+// 			// So that we can retry the operation later
+
+// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 			defer cancel()
+
+// 			var redisValueObj RedisIdempotentValue
+
+// 			c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 			redisValueObj.ErrorMessage = "Error creating ticket: response is nil or status is not 200"
+
+// 			err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 			if err != nil {
+// 				fmt.Println("Error updating idempotent key in redis: ", err)
+// 			}
+
+// 			// End of logging the error in redis
+
+// 			// We will return 200 OK to the payment gateway
+
+// 			// So that it does not retry the webhook
+// 			// We will handle the retry logic ourselves
+
+// 			// http.Error(w, fmt.Sprintf(`{"errors": "Error creating ticket %v"}`, "response is nil or status is not 200"), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		fmt.Println("Create Ticket Response: ", createTicketResp)
+
+// 		// Now, how do I redirect the user to the ticket page in frontend?
+// 		// I think I can send the ticket ids in the response of book seats function
+// 		// Then, the frontend can redirect the user to the ticket page
+
+// 		// Update the idempotent key in redis with the booked seats ids and ticket ids
+// 		// Set isTicketSent to true
+
+// 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 		defer cancel()
+
+// 		redisValueObj := RedisIdempotentValue{
+// 			CustomerID:      requestBody.Data.Metadata.CustomerID,
+// 			MovieTimeSlotID: int32(movieTimeSlotIDInt32),
+// 			IsTicketSent:    true,
+// 			IsMailSent:      false,
+// 			TicketID:        createTicketResp.TicketID,
+// 			PaymentStatus:   "succeeded",
+// 		}
+
+// 		c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 		// Redirect the user to the ticket page in frontend with the ticket ids
+
+// 		err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 		if err != nil {
+// 			w.Header().Set("Content-Type", "application/json")
+// 			http.Error(w, fmt.Sprintf(`{"errors": "Error updating idempotent key in redis %v"}`, err), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		// How to redirect the user to the ticket page in frontend from here?
+
+// 		fmt.Println("User can be redirected to ticket page with ticket ids: ", createTicketResp.TicketID)
+
+// 		err = utils.SendMailUsingMailtrap(requestBody.Data.Customer.Email, `Your tickets are booked!`, fmt.Sprintf("Your tickets are booked! Your ticket ids are: %v", createTicketResp.TicketID))
+
+// 		if err != nil {
+// 			fmt.Println("Error sending mail: ", err)
+
+// 			// We will not return error to payment gateway
+// 			// We will log the error in redis against the idempotent key
+
+// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 			defer cancel()
+
+// 			var redisValueObj RedisIdempotentValue
+
+// 			c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 			redisValueObj.ErrorMessage = fmt.Sprintf("Error sending mail: %v", err)
+
+// 			err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 			if err != nil {
+// 				fmt.Println("Error updating idempotent key in redis: ", err)
+// 			}
+
+// 			// End of logging the error in redis
+
+// 			// We will return 200 OK to the payment gateway
+// 			// So that it does not retry the webhook
+// 			// We will handle the retry logic ourselves
+
+// 			// http.Error(w, fmt.Sprintf(`{"errors": "Error sending mail %v"}`, err), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		// Maybe I can send the ticket ids in the response of this webhook handler
+// 		// Then, the frontend can redirect the user to the ticket page
+
+// 		// But, how will the frontend know that the payment is successful and it needs to call this webhook handler?
+
+// 		// I think the frontend can poll an endpoint to check if the payment is successful
+// 		// Once the payment is successful, the frontend can call this webhook handler
+// 		// The frontend can get the ticket ids from the response of this webhook handler
+// 		// Then, the frontend can redirect the user to the ticket page
+
+// 	case "payment.failed":
+// 		fmt.Println("❌ Payment failed")
+
+// 		// Set payment failed in redis
+
+// 		redisValueObj := RedisIdempotentValue{
+// 			CustomerID:      requestBody.Data.Metadata.CustomerID,
+// 			MovieTimeSlotID: int32(movieTimeSlotIDInt32),
+// 			IsTicketSent:    false,
+// 			IsMailSent:      false,
+// 			PaymentStatus:   "failed",
+// 		}
+
+// 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 		defer cancel()
+
+// 		c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 		redisValueObj.ErrorMessage = fmt.Sprintf("Error received from payment: %v", err)
+
+// 		err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 		if err != nil {
+// 			fmt.Println("error setting payment failiure event")
+// 			return
+// 		}
+
+// 	default:
+// 		fmt.Println("ℹ️ Unknown event:", requestBody.Type)
+// 	}
+
+// 	// dummyResponse.IsValid = true
+
+// 	// jsonResponse, err := json.Marshal(dummyResponse)
+
+// 	// if err != nil {
+// 	// 	w.Header().Set("Content-Type", "application/json")
+// 	// 	w.WriteHeader(http.StatusOK)
+// 	// }
+// 	// _, err = w.Write(jsonResponse)
+
+// 	// if err != nil {
+// 	// 	w.Header().Set("Content-Type", "application/json")
+// 	// 	http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
+// 	// 	return
+// 	// }
+// }
+
+// func (c *Config) HandleWebhookEvents(w http.ResponseWriter, r *http.Request) {
+
+// 	// var dummyResponse struct {
+// 	// 	IsValid bool
+// 	// }
+
+// 	var requestBody WebhookEvent
+
+// 	bodyBytes, err := io.ReadAll(r.Body)
+
+// 	if err != nil {
+// 		w.Header().Set("Content-Type", "application/json")
+// 		http.Error(w, fmt.Sprintf(`{"errors": "Error writing JSON response %v"}`, err), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	err = json.Unmarshal(bodyBytes, &requestBody)
+
+// 	if err != nil {
+// 		w.Header().Set("Content-Type", "application/json")
+// 		http.Error(w, fmt.Sprintf(`{"errors": "Error unmarshaling json %v"}`, err), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	fmt.Println(requestBody)
+
+// 	fmt.Println("Event Type: ", requestBody.Type)
+
+// 	// Need to call the create ticket function and book seats function
+// 	// Need to call the send mail producer to send mail to user
+
+// 	// After calling the book seats function, we will get the booked seats ids
+// 	// After calling the create ticket function, we will get the ticket ids
+
+// 	// We will update the idempotent key in redis with the booked seats ids and ticket ids
+// 	// We will also set the isTicketSent to true
+
+// 	// If any of the functions fail, we will not update the idempotent key in redis
+// 	// This way, if the webhook is called again, we can retry the operations
+
+// 	// We will also need to handle the case where the payment fails
+// 	// In this case, we will not call the book seats and create ticket functions
+
+// 	// We can use the idempotent key to ensure that we do not process the same payment event multiple times
+
+// 	// convert movietimeslotid to int32
+
+// 	movieTimeSlotIDInt32, err := strconv.Atoi(requestBody.Data.Metadata.MovieTimeSlotID)
+
+// 	if err != nil {
+// 		w.Header().Set("Content-Type", "application/json")
+// 		http.Error(w, fmt.Sprintf(`{"errors": "Error converting movie time slot id to int32 %v"}`, err), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	switch requestBody.Type {
+// 	case "payment.succeeded":
+// 		fmt.Println("✅ Payment succeeded")
+
+// 		// Call the book seats function
+
+// 		seatsToBeBooked := make([]*pb.BookedSeats, 0)
+
+// 		for _, seatID := range requestBody.Data.Metadata.BookedSeatsID {
+
+// 			seatIDInt, err := strconv.Atoi(seatID)
+
+// 			if err != nil {
+// 				w.Header().Set("Content-Type", "application/json")
+// 				http.Error(w, fmt.Sprintf(`{"errors": "Error converting seat id to int32 %v"}`, err), http.StatusInternalServerError)
+// 				return
+// 			}
+
+// 			seatsToBeBooked = append(seatsToBeBooked, &pb.BookedSeats{
+// 				SeatMatrixID: int32(seatIDInt),
+// 			})
+// 		}
+
+// 		response, err := c.MovieDB_service.BookSeats(context.Background(), &pb.BookSeatsRequest{
+// 			Seats:           seatsToBeBooked,
+// 			MovieTimeSlotId: int32(movieTimeSlotIDInt32),
+// 			Email:           requestBody.Data.Customer.Email,
+// 			PhoneNumber:     requestBody.Data.Metadata.CustomerPhone,
+// 		})
+
+// 		if err != nil {
+// 			w.Header().Set("Content-Type", "application/json")
+
+// 			http.Error(w, fmt.Sprintf(`{"errors": "Error booking seats %v"}`, err), http.StatusInternalServerError)
+
+// 			// Log the error in redis against the idempotent key
+
+// 			// So that we can retry the operation later
+
+// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 			defer cancel()
+
+// 			var redisValueObj RedisIdempotentValue
+
+// 			c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 			redisValueObj.ErrorMessage = fmt.Sprintf("Error booking seats: %v", err)
+
+// 			err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 			if err != nil {
+// 				fmt.Println("Error updating idempotent key in redis: ", err)
+// 			}
+
+// 			// End of logging the error in redis
+
+// 			// We will return 200 OK to the payment gateway
+// 			// So that it does not retry the webhook
+// 			// We will handle the retry logic ourselves
+
+// 			// http.Error(w, fmt.Sprintf(`{"errors": "Error booking seats %v"}`, err), http.StatusInternalServerError)
+// 			return
+
+// 		}
+
+// 		if response == nil || response.Status != 200 {
+// 			w.Header().Set("Content-Type", "application/json")
+// 			http.Error(w, fmt.Sprintf(`{"errors": "Error booking seats %v"}`, "response is nil or status is not 200"), http.StatusInternalServerError)
+
+// 			// Log the error in redis against the idempotent key
+
+// 			// So that we can retry the operation later
+
+// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 			defer cancel()
+
+// 			var redisValueObj RedisIdempotentValue
+
+// 			c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 			redisValueObj.ErrorMessage = "Error booking seats: response is nil or status is not 200"
+
+// 			err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 			if err != nil {
+// 				fmt.Println("Error updating idempotent key in redis: ", err)
+// 			}
+
+// 			// End of logging the error in redis
+
+// 			// We will return 200 OK to the payment gateway
+// 			// So that it does not retry the webhook
+// 			// We will handle the retry logic ourselves
+
+// 			// http.Error(w, fmt.Sprintf(`{"errors": "Error booking seats %v"}`, "response is nil or status is not 200"), http.StatusInternalServerError)
+
+// 			return
+// 		}
+
+// 		fmt.Println("Booked Seats Response: ", response)
+
+// 		// Call the create ticket function
+
+// 		createTicketResp, err := c.MovieDB_service.CreateTicket(context.Background(), &pb.CreateTicketRequest{
+// 			IdempotentKey: requestBody.Data.Metadata.IdempotentKey,
+// 			TrasactionId:  requestBody.Data.PaymentID,
+// 		})
+
+// 		if err != nil {
+// 			w.Header().Set("Content-Type", "application/json")
+// 			http.Error(w, fmt.Sprintf(`{"errors": "Error creating ticket %v"}`, err), http.StatusInternalServerError)
+
+// 			// Log the error in redis against the idempotent key
+
+// 			// So that we can retry the operation later
+
+// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 			defer cancel()
+
+// 			var redisValueObj RedisIdempotentValue
+
+// 			c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 			redisValueObj.ErrorMessage = fmt.Sprintf("Error creating ticket: %v", err)
+
+// 			err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 			if err != nil {
+// 				fmt.Println("Error updating idempotent key in redis: ", err)
+// 			}
+
+// 			// End of logging the error in redis
+
+// 			// We will return 200 OK to the payment gateway
+// 			// So that it does not retry the webhook
+// 			// We will handle the retry logic ourselves
+
+// 			// http.Error(w, fmt.Sprintf(`{"errors": "Error creating ticket %v"}`, err), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		if createTicketResp == nil || createTicketResp.Status != 200 {
+// 			w.Header().Set("Content-Type", "application/json")
+// 			http.Error(w, fmt.Sprintf(`{"errors": "Error creating ticket %v"}`, "response is nil or status is not 200"), http.StatusInternalServerError)
+
+// 			// Log the error in redis against the idempotent key
+
+// 			// So that we can retry the operation later
+
+// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 			defer cancel()
+
+// 			var redisValueObj RedisIdempotentValue
+
+// 			c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 			redisValueObj.ErrorMessage = "Error creating ticket: response is nil or status is not 200"
+
+// 			err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 			if err != nil {
+// 				fmt.Println("Error updating idempotent key in redis: ", err)
+// 			}
+
+// 			// End of logging the error in redis
+
+// 			// We will return 200 OK to the payment gateway
+
+// 			// So that it does not retry the webhook
+// 			// We will handle the retry logic ourselves
+
+// 			// http.Error(w, fmt.Sprintf(`{"errors": "Error creating ticket %v"}`, "response is nil or status is not 200"), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		fmt.Println("Create Ticket Response: ", createTicketResp)
+
+// 		// Now, how do I redirect the user to the ticket page in frontend?
+// 		// I think I can send the ticket ids in the response of book seats function
+// 		// Then, the frontend can redirect the user to the ticket page
+
+// 		// Update the idempotent key in redis with the booked seats ids and ticket ids
+// 		// Set isTicketSent to true
+
+// 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 		defer cancel()
+
+// 		redisValueObj := RedisIdempotentValue{
+// 			CustomerID:      requestBody.Data.Metadata.CustomerID,
+// 			MovieTimeSlotID: int32(movieTimeSlotIDInt32),
+// 			IsTicketSent:    true,
+// 			IsMailSent:      false,
+// 			TicketID:        createTicketResp.TicketID,
+// 			PaymentStatus:   "succeeded",
+// 		}
+
+// 		c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 		// Redirect the user to the ticket page in frontend with the ticket ids
+
+// 		err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 		if err != nil {
+// 			w.Header().Set("Content-Type", "application/json")
+// 			http.Error(w, fmt.Sprintf(`{"errors": "Error updating idempotent key in redis %v"}`, err), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		// How to redirect the user to the ticket page in frontend from here?
+
+// 		fmt.Println("User can be redirected to ticket page with ticket ids: ", createTicketResp.TicketID)
+
+// 		err = utils.SendMailUsingMailtrap(requestBody.Data.Customer.Email, `Your tickets are booked!`, fmt.Sprintf("Your tickets are booked! Your ticket ids are: %v", createTicketResp.TicketID))
+
+// 		if err != nil {
+// 			fmt.Println("Error sending mail: ", err)
+
+// 			// We will not return error to payment gateway
+// 			// We will log the error in redis against the idempotent key
+
+// 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 			defer cancel()
+
+// 			var redisValueObj RedisIdempotentValue
+
+// 			c.RedisClient.Get(ctx, requestBody.Data.Metadata.IdempotentKey).Scan(&redisValueObj)
+
+// 			redisValueObj.ErrorMessage = fmt.Sprintf("Error sending mail: %v", err)
+
+// 			err = c.RedisClient.Set(ctx, requestBody.Data.Metadata.IdempotentKey, redisValueObj, 5*time.Minute).Err()
+
+// 			if err != nil {
+// 				fmt.Println("Error updating idempotent key in redis: ", err)
+// 			}
+
+// 			// End of logging the error in redis
+
+// 			// We will return 200 OK to the payment gateway
+// 			// So that it does not retry the webhook
+// 			// We will handle the retry logic ourselves
+
+// 			// http.Error(w, fmt.Sprintf(`{"errors": "Error sending mail %v"}`, err), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		// Maybe I can send the ticket ids in the response of this webhook handler
+// 		// Then, the frontend can redirect the user to the ticket page
+
+// 		// But, how will the frontend know that the payment is successful and it needs to call this webhook handler?
+
+// 		// I think the frontend can poll an endpoint to check if the payment is successful
+// 		// Once the payment is successful, the frontend can call this webhook handler
+// 		// The frontend can get the ticket ids from the response of this webhook handler
+// 		// Then, the frontend can redirect the user to the ticket page
+
+// 	case "payment.failed":
+// 		fmt.Println("❌ Payment failed")
+// 	default:
+// 		fmt.Println("ℹ️ Unknown event:", requestBody.Type)
+// 	}
+
+// 	// dummyResponse.IsValid = true
+
+// 	// jsonResponse, err := json.Marshal(dummyResponse)
+
+// 	// if err != nil {
+// 	// 	w.Header().Set("Content-Type", "application/json")
+// 	// 	w.WriteHeader(http.StatusOK)
+// 	// }
+// 	// _, err = w.Write(jsonResponse)
+
+// 	// if err != nil {
+// 	// 	w.Header().Set("Content-Type", "application/json")
+// 	// 	http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
+// 	// 	return
+// 	// }
+// }
+
+// Need to check if the payment is successful or not.
+func (c *Config) CheckPaymentStatus(w http.ResponseWriter, r *http.Request) {
+
+	var requestBody struct {
+		IdempotentKey string `json:"idempotent_key"`
+	}
 
 	bodyBytes, err := io.ReadAll(r.Body)
 
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf(`{"errors": "Error writing JSON response %v"}`, err), http.StatusInternalServerError)
+		fmt.Println("error reading request body")
+		http.Error(w, fmt.Sprintf(`{"error": "error reading request body %s"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
 
 	err = json.Unmarshal(bodyBytes, &requestBody)
 
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf(`{"errors": "Error unmarshaling json %v"}`, err), http.StatusInternalServerError)
+		fmt.Println("error unmarshalling json")
+		http.Error(w, fmt.Sprintf(`{"error": "error unmarshalling reqyest json %s"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println(requestBody)
-
-	// Need to call the create ticket function and book seats function
-	// Need to call the send mail producer to send mail to user
-
-	// switch requestBody.Type {
-	// case "payment.succeeded":
-	// 	// Commit seats and generate ticket for the customer
-	// 	fmt.Println("Payment succeeded")
-	// 	// response, err := c.MovieDB_service.BookSeats(context.Background(), &pb.BookSeatsRequest{})
-	// case "payment.failed":
-	// 	// re
-	// }
-
-	dummyResponse.IsValid = true
-
-	jsonResponse, err := json.Marshal(dummyResponse)
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-	}
-	_, err = w.Write(jsonResponse)
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
+	if requestBody.IdempotentKey == "" {
+		http.Error(w, `{"error": "idempotentKey missing"}`, http.StatusBadRequest)
 		return
 	}
+
+	var redisValue RedisIdempotentValue
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err = c.RedisClient.Get(ctx, requestBody.IdempotentKey).Scan(&redisValue)
+
+	if err != nil {
+		fmt.Println("error gettiung redis value " + err.Error())
+		http.Error(w, `{"paymentSuccess": false}`, http.StatusOK)
+		return
+	}
+
+	response := map[string]any{
+		"paymentSuccess": redisValue.PaymentStatus == "succeeded",
+		"ticketID":       redisValue.TicketID,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func (c *Config) GetIdempotentKey(w http.ResponseWriter, r *http.Request) {
-
-	// Generate a new idempotent key
-
 	idempotentKey := utils.GenerateIdempotentKey()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Store the key in Redis with a 5-minute expiration
+	// Value should an object which should contain all the fields in Idempotent model from payment service
+
+	redisValueObj := RedisIdempotentValue{
+		CustomerID:      "",
+		OrderIDs:        []string{},
+		BookedSeatsIDs:  []int32{},
+		MovieTimeSlotID: 0,
+		IsTicketSent:    false,
+		IsMailSent:      false,
+	}
+
+	// jsonRedisValueObj, err := json.Marshal(redisValueObj)
+
+	// if err != nil {
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	http.Error(w, fmt.Sprintf(`{"error": "Error marshalling JSON response: %v"}`, err), http.StatusInternalServerError)
+	// 	return
+	// }
+
+	err := c.RedisClient.Set(ctx, idempotentKey, redisValueObj, 5*time.Minute).Err()
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error storing idempotent key in Redis: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -1422,7 +2425,6 @@ func (c *Config) GetIdempotentKey(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonResponse, err := json.Marshal(response)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf(`{"error": "Error marshalling JSON response: %v"}`, err), http.StatusInternalServerError)
@@ -1430,7 +2432,6 @@ func (c *Config) GetIdempotentKey(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = w.Write(jsonResponse)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
@@ -1439,89 +2440,115 @@ func (c *Config) GetIdempotentKey(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Config) IsValidIdempotentKey(w http.ResponseWriter, r *http.Request) {
-
 	var requestBody struct {
-		Key string
+		Key string `json:"key"`
 	}
 
 	bodyBytes, err := io.ReadAll(r.Body)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "Error occured while reading request body", http.StatusInternalServerError)
+		http.Error(w, "Error reading request body", http.StatusInternalServerError)
 		return
 	}
 
 	err = json.Unmarshal(bodyBytes, &requestBody)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error unmarshalling json", http.StatusInternalServerError)
+		http.Error(w, "Error unmarshalling JSON", http.StatusInternalServerError)
 		return
 	}
 
-	response, err := c.Payment_service.IsValidIdempotentKey(context.TODO(), &payment_service.IsValidIdempotentKeyRequest{
-		IdempotentKey: requestBody.Key,
-	})
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
+	// Check if the key exists in Redis
+	exists, err := c.RedisClient.Exists(ctx, requestBody.Key).Result()
+	if err != nil || exists == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, `{"error": "Idempotent key is not valid or expired"}`, http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	jsonResponse, err := json.Marshal(map[string]bool{"is_valid": true})
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("Error calling IsValidIdempotentKey rpc function: %v", err.Error()), http.StatusInternalServerError)
-		return
-	}
-
-	if response.Error != "" {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("Error calling IsValidIdempotentKey rpc function: %v", response.Error), http.StatusInternalServerError)
-		return
-	}
-
-	if !response.IsValid {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "idempotent key is not valid", http.StatusBadRequest)
-		return
-	}
-
-	var responseBody struct {
-		IsValidKey bool
-	}
-
-	responseBody.IsValidKey = response.IsValid
-
-	jsonResponse, err := json.Marshal(responseBody)
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error marshaling json response body", http.StatusInternalServerError)
+		http.Error(w, "Error marshalling JSON response", http.StatusInternalServerError)
 		return
 	}
 
 	_, err = w.Write(jsonResponse)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error writing response", http.StatusInternalServerError)
+		http.Error(w, "Error writing response", http.StatusInternalServerError)
 		return
 	}
 }
 
 func (c *Config) CommitIdempotentKey(w http.ResponseWriter, r *http.Request) {
-
-	var requestBody payment_service.CommitIdempotentKeyRequest
+	var requestBody struct {
+		Key string `json:"key"`
+	}
 
 	bodyBytes, err := io.ReadAll(r.Body)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error reading request body", 500)
+		http.Error(w, "Error reading request body", http.StatusInternalServerError)
 		return
 	}
 
 	err = json.Unmarshal(bodyBytes, &requestBody)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "Error unmarshalling JSON", http.StatusInternalServerError)
+		return
+	}
+
+	// Commit the key to the database
+	_, err = c.Payment_service.CommitIdempotentKey(context.TODO(), &payment_service.CommitIdempotentKeyRequest{
+		IdempotentKey: requestBody.Key,
+	})
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error unmarshalling request body : "+err.Error(), 500)
+		http.Error(w, fmt.Sprintf("Error committing idempotent key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	jsonResponse, err := json.Marshal(map[string]string{"message": "Idempotent key committed successfully"})
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "Error marshalling JSON response", http.StatusInternalServerError)
+		return
+	}
+
+	_, err = w.Write(jsonResponse)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, "Error writing response", http.StatusInternalServerError)
+		return
+	}
+}
+
+func (c *Config) Create_Customer(w http.ResponseWriter, r *http.Request) {
+	var requestBody payment_service.CreateCustomerRequest
+
+	bodyBytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, `{"error": "error reading request body"}`, 500)
+		return
+	}
+
+	err = json.Unmarshal(bodyBytes, &requestBody)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "error unmarshalling request body : %s"}`, err.Error()), 500)
 		return
 	}
 
@@ -1531,67 +2558,16 @@ func (c *Config) CommitIdempotentKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := c.Payment_service.CommitIdempotentKey(context.TODO(), &requestBody)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var redisResult RedisIdempotentValue
+
+	err = c.RedisClient.Get(ctx, requestBody.IdempotentKey).Scan(&redisResult)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("Error calling CommitIdempotentKey rpc function: %v", err.Error()), http.StatusInternalServerError)
-		return
-	}
-
-	if response.Error != "" {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("Error calling CommitIdempotentKey rpc function: %v", response.Error), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	responseBody := map[string]string{
-		"message": "Idempotent key committed successfully",
-	}
-
-	jsonResponse, err := json.Marshal(responseBody)
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf(`{"error": "Error marshalling JSON response: %v"}`, err), http.StatusInternalServerError)
-		return
-	}
-
-	_, err = w.Write(jsonResponse)
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
-		return
-	}
-
-}
-
-func (c *Config) Create_Customer(w http.ResponseWriter, r *http.Request) {
-
-	var requestBody payment_service.CreateCustomerRequest
-
-	bodyBytes, err := io.ReadAll(r.Body)
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error reading request body", 500)
-		return
-	}
-
-	err = json.Unmarshal(bodyBytes, &requestBody)
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error unmarshalling request body : "+err.Error(), 500)
-		return
-	}
-
-	if requestBody.Email == "" {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "email cannot be empty", 400)
+		http.Error(w, fmt.Sprintf(`{"error": "Error getting idempotent key from Redis: %v"}`, err), http.StatusInternalServerError)
 		return
 	}
 
@@ -1599,13 +2575,13 @@ func (c *Config) Create_Customer(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("Error calling CreateCustomer rpc function: %v", err.Error()), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error": "Error calling CreateCustomer rpc function: %v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
 
 	if response.Error != "" {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("Error calling CreateCustomer rpc function: %v", response.Error), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error": "Error calling CreateCustomer rpc function: %v"}`, response.Error), http.StatusInternalServerError)
 		return
 	}
 
@@ -1616,6 +2592,36 @@ func (c *Config) Create_Customer(w http.ResponseWriter, r *http.Request) {
 		"customer_id": response.CustomerId,
 	}
 
+	// Commit the idempotent key to the database
+
+	// Retrieve the idempotent key details from Redis
+
+	redisResult.CustomerID = response.CustomerId
+
+	err = c.RedisClient.Set(ctx, requestBody.IdempotentKey, redisResult, 15*time.Minute).Err()
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error storing idempotent key in Redis: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	// Now commit the idempotent key to the database
+
+	_, err = c.Payment_service.CommitIdempotentKey(context.TODO(), &payment_service.CommitIdempotentKeyRequest{
+		IdempotentKey:   requestBody.IdempotentKey,
+		CustomerId:      response.CustomerId,
+		OrderIds:        redisResult.OrderIDs,
+		MovieTimeSlotId: redisResult.MovieTimeSlotID,
+		BookedSeatsIds:  redisResult.BookedSeatsIDs,
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error":"Error committing idempotent key: %v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
 	jsonResponse, err := json.Marshal(responseBody)
 
 	if err != nil {
@@ -1625,7 +2631,6 @@ func (c *Config) Create_Customer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = w.Write(jsonResponse)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
@@ -1634,46 +2639,77 @@ func (c *Config) Create_Customer(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
-
 	var requestBody payment_service.Create_Order_Request
 
 	bodyBytes, err := io.ReadAll(r.Body)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error reading request body", 500)
+		http.Error(w, fmt.Sprintf(`{"error":"error reading request body : %v"}`, err.Error()), 500)
 		return
 	}
 
 	err = json.Unmarshal(bodyBytes, &requestBody)
 
+	fmt.Println("Request body in Create order function: ", requestBody)
+
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error unmarshalling request body : "+err.Error(), 500)
+		http.Error(w, fmt.Sprintf(`{"error":"error unmarshalling request body : %v"}`, err.Error()), 500)
 		return
 	}
 
 	if requestBody.IdempotentKey == "" {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "idempotent key cannot be empty", 400)
+		http.Error(w, `{"error":"idempotent key cannot be empty"}`, 400)
 		return
 	}
 
 	if requestBody.MovieTimeSlotId == 0 {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "movie time slot id cannot be empty", 400)
+		http.Error(w, `{"error":"movie time slot id cannot be empty"}`, 400)
 		return
 	}
 
 	if len(requestBody.SeatMatrixIDs) == 0 {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "seat matrix ids cannot be empty", 400)
+		http.Error(w, `{"error":"seat matrix ids cannot be empty"}`, 400)
 		return
 	}
 
-	// if requestBody.CustomerId == 0 || requestBody.IdempotentKey == "" {
+	// Check if the idempotent key exists in Redis
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	exists, err := c.RedisClient.Exists(ctx, requestBody.IdempotentKey).Result()
+
+	if err != nil || exists == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, `{"error": "Idempotent key is not valid or expired"}`, http.StatusBadRequest)
+		return
+	}
+
+	// Commit order ids to redis
+
+	var redisResult RedisIdempotentValue
+
+	err = c.RedisClient.Get(ctx, requestBody.IdempotentKey).Scan(&redisResult)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error getting idempotent key from Redis: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	redisResult.MovieTimeSlotID = requestBody.MovieTimeSlotId
+	redisResult.BookedSeatsIDs = append(redisResult.BookedSeatsIDs, requestBody.SeatMatrixIDs...)
+
+	// _, err = c.Payment_service.CommitIdempotentKey(context.TODO(), &payment_service.CommitIdempotentKeyRequest{
+	// 	IdempotentKey: requestBody.IdempotentKey,
+	// })
+
+	// if err != nil {
 	// 	w.Header().Set("Content-Type", "application/json")
-	// 	http.Error(w, "customer id and idempotent key cannot be empty", 400)
+	// 	http.Error(w, fmt.Sprintf(`{"error":"Error committing idempotent key: %v"}`, err.Error()), http.StatusInternalServerError)
 	// 	return
 	// }
 
@@ -1681,44 +2717,70 @@ func (c *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("Error calling CreateOrder rpc function: %v", err.Error()), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error":"Error calling CreateOrder rpc function: %v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
 
 	if response.Error != "" {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("Error calling CreateOrder rpc function: %v", response.Error), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error":"Error calling CreateOrder rpc function: %v"}`, response.Error), http.StatusInternalServerError)
 		return
 	}
+
+	redisResult.OrderIDs = append(redisResult.OrderIDs, response.OrderId...)
+
+	// Commit order ids to redis, we will commit idempotent key after creating customer
+
+	err = c.RedisClient.Set(ctx, requestBody.IdempotentKey, redisResult, 15*time.Minute).Err()
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error storing idempotent key in Redis: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	// Commit the idempotent key to the database
+	// _, err = c.Payment_service.CommitIdempotentKey(context.TODO(), &payment_service.CommitIdempotentKeyRequest{
+	// 	IdempotentKey: requestBody.IdempotentKey,
+	// })
+
+	// if err != nil {
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	http.Error(w, fmt.Sprintf(`{"error":"Error committing idempotent key: %v"}`, err.Error()), http.StatusInternalServerError)
+	// 	return
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
+	_, err = w.Write(fmt.Appendf(nil, `{"order_id": "%s"}`, response.OrderId))
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (c *Config) CreatePaymentLink(w http.ResponseWriter, r *http.Request) {
-
 	var requestBody payment_service.CreatePaymentLinkRequest
 
 	bodyBytes, err := io.ReadAll(r.Body)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error reading request body", 500)
+		http.Error(w, fmt.Sprintf(`{"error":"error reading request body : %s"}`, err.Error()), 500)
 		return
 	}
 
 	err = json.Unmarshal(bodyBytes, &requestBody)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "error unmarshalling request body : "+err.Error(), 500)
+		http.Error(w, fmt.Sprintf(`{"error":"error unmarshalling request body : %s"}`, err.Error()), 500)
 		return
 	}
 
 	if requestBody.IdempotentKey == "" {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, "order id cannot be empty", 400)
+		http.Error(w, `{"error":"idempotent key cannot be empty"}`, 400)
 		return
 	}
 
@@ -1726,13 +2788,13 @@ func (c *Config) CreatePaymentLink(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("Error calling CreatePaymentLink rpc function: %v", err.Error()), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error":"Error calling CreatePaymentLink rpc function: %v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
 
 	if response.Error != "" {
 		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("Error calling CreatePaymentLink rpc function: %v", response.Error), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error":"Error calling CreatePaymentLink rpc function: %v"}`, response.Error), http.StatusInternalServerError)
 		return
 	}
 
@@ -1740,7 +2802,6 @@ func (c *Config) CreatePaymentLink(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	jsonResponse, err := json.Marshal(response)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf(`{"error": "Error marshalling JSON response: %v"}`, err), http.StatusInternalServerError)
@@ -1748,7 +2809,6 @@ func (c *Config) CreatePaymentLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = w.Write(jsonResponse)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)

@@ -11,15 +11,17 @@ import (
 	validator "github.com/go-playground/validator/v10"
 	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
 	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
+	rabbitmq_producer "github.com/kartik7120/booking_broker-service/cmd/api/payment_producer_service"
 	ps "github.com/kartik7120/booking_broker-service/cmd/api/payment_service"
 )
 
 type Config struct {
-	MovieDB_service pb.MovieDBServiceClient
-	Payment_service ps.PaymentServiceClient
-	Auth_Service    at.AuthServiceClient
-	Validator       *validator.Validate
-	RedisClient     *redis.Client
+	MovieDB_service          pb.MovieDBServiceClient
+	Payment_service          ps.PaymentServiceClient
+	Auth_Service             at.AuthServiceClient
+	Validator                *validator.Validate
+	RedisClient              *redis.Client
+	Payment_Producer_service rabbitmq_producer.RabbitmqProducerServiceClient
 }
 
 func (c *Config) Routes() http.Handler {
@@ -68,6 +70,8 @@ func (c *Config) Routes() http.Handler {
 	mux.Get("/getVenue/{venueID}", c.GetVenue)
 	mux.Get("/getMovieTimeSlot/{movieTimeSlotID}", c.GetMovieTimeSlot)
 	mux.Post("/lockSeats", c.LockSeats)
+	mux.Post("/payment-status", c.CheckPaymentStatus)
+	mux.Get("/getTicketDetails/{ticketID}", c.GetTicketDetails)
 
 	return mux
 }

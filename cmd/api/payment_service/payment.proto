@@ -119,6 +119,8 @@ message CommitIdempotentKeyRequest {
     string idempotent_key = 1;
     string customer_id = 2;
     repeated string orderIds = 3;
+    int32 movie_time_slot_id = 4;
+    repeated int32 booked_seats_ids = 5;
 }
 
 message Create_Payment_Intent_INR_Response {

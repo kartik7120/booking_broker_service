@@ -7,7 +7,9 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/joho/godotenv"
 	"github.com/kartik7120/booking_broker-service/cmd/api"
+	"github.com/kartik7120/booking_broker-service/cmd/api/utils"
 )
 
 func TestServer(t *testing.T) {
@@ -58,5 +60,20 @@ func TestServer(t *testing.T) {
 
 		// Wait for the server goroutine to finish
 		wg.Wait()
+	})
+
+	t.Run("Test if email is sent", func(t *testing.T) {
+
+		err := godotenv.Load()
+
+		if err != nil {
+			t.Fatalf("Error loading .env file: %v", err)
+		}
+
+		err = utils.SendMailUsingMailtrap("kaartikjobs7120@gmail.com", "Test Subject", "<h1>This is a test email</h1>")
+
+		if err != nil {
+			t.Errorf("Error sending email: %v", err)
+		}
 	})
 }

@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package rabbitmq_producer_service;
+
+option go_package = "github.com/kartik7120/rabbitmq_producer_service/cmd/grpcServer;rabbitmq_producer";
+
+import "google/protobuf/timestamp.proto";
+
+message Payment {
+  message Billing {
+    string city = 1;
+    string country = 2;
+    string state = 3;
+    string street = 4;
+    string zipcode = 5;
+  }
+
+  message Customer {
+    string customer_id = 1;
+    string email = 2;
+    string name = 3;
+  }
+
+  message Dispute {
+    string amount = 1;
+    string business_id = 2;
+    google.protobuf.Timestamp created_at = 3;
+    string currency = 4;
+    string dispute_id = 5;
+    string dispute_stage = 6;
+    string dispute_status = 7;
+    string payment_id = 8;
+    string remarks = 9;
+  }
+
+  message ProductCartItem {
+    string product_id = 1;
+    int32 quantity = 2;
+  }
+
+  message Refund {
+    int32 amount = 1;
+    string business_id = 2;
+    google.protobuf.Timestamp created_at = 3;
+    string currency = 4;
+    bool is_partial = 5;
+    string payment_id = 6;
+    string reason = 7;
+    string refund_id = 8;
+    string status = 9;
+  }
+
+  Billing billing = 1;
+  string brand_id = 2;
+  string business_id = 3;
+  string card_issuing_country = 4;
+  string card_last_four = 5;
+  string card_network = 6;
+  string card_type = 7;
+  google.protobuf.Timestamp created_at = 8;
+  string currency = 9;
+
+  Customer customer = 10;
+  bool digital_products_delivered = 11;
+  string discount_id = 12;
+
+  repeated Dispute disputes = 13;
+
+  string error_code = 14;
+  string error_message = 15;
+
+  map<string, string> metadata = 16; // Assumes flattened key/value strings
+
+  string payment_id = 17;
+  string payment_link = 18;
+  string payment_method = 19;
+  string payment_method_type = 20;
+
+  repeated ProductCartItem product_cart = 21;
+  repeated Refund refunds = 22;
+
+  int32 settlement_amount = 23;
+  string settlement_currency = 24;
+  int32 settlement_tax = 25;
+  string status = 26;
+  string subscription_id = 27;
+  int32 tax = 28;
+  int32 total_amount = 29;
+  google.protobuf.Timestamp updated_at = 30;
+}
+
+message Payment_Service_Producer_Request {
+  Payment payment_payload = 1;
+}
+
+message Payment_Service_Producer_Response {
+  string error = 1;
+}
+
+message Lock_Seats_Request {
+  repeated int32 seatIds = 1;
+}
+
+message Lock_Seats_Response {
+  string error = 1;
+}
+
+message Unlock_Seats_Request {
+  repeated int32 seatIds = 1;
+}
+
+message Unlock_Seats_Response {
+  string error = 1;
+}
+
+message Send_Mail_Producer_Request {
+  // string email = 1;
+  // string phone_number = 2;
+  string to = 3;
+  string name = 4;
+  string text = 5;
+  string html = 6;
+  string category = 7;
+  string subject = 8;
+  reserved 1;
+  reserved 2;
+}
+
+message Send_Mail_Producer_Response {
+  string error = 1;
+}
+
+service rabbitmqProducerService {
+  rpc Payment_Service_Webhook_Producer(Payment_Service_Producer_Request) returns (Payment_Service_Producer_Response);
+  rpc Lock_Seats(Lock_Seats_Request) returns (Lock_Seats_Response);
+  rpc Unlock_Seats(Unlock_Seats_Request) returns (Unlock_Seats_Response);
+  rpc Send_Mail_Producer(Send_Mail_Producer_Request) returns (Send_Mail_Producer_Response);
+  rpc Payment_Service_Failure_Producer(Payment_Service_Producer_Request) returns (Payment_Service_Producer_Response);
+}
