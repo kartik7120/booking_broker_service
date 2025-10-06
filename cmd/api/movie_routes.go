@@ -1428,7 +1428,28 @@ func (c *Config) GetBookedSeats(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	jsonResponse, err := json.Marshal(response)
+	type BookedSeatResponse struct {
+		ID              int32  `json:"id"`
+		SeatNumber      string `json:"seat_number"`
+		MovieTimeSlotID int32  `json:"movieTimeSlotID"`
+		SeatMatrixID    int32  `json:"seatMatrixID"`
+		IsBooked        bool   `json:"is_booked"`
+	}
+
+	var customResponse []BookedSeatResponse
+
+	for _, v := range response.BookedSeats {
+
+		customResponse = append(customResponse, BookedSeatResponse{
+			ID:              v.Id,
+			SeatNumber:      v.SeatNumber,
+			MovieTimeSlotID: v.MovieTimeSlotID,
+			SeatMatrixID:    v.SeatMatrixID,
+			IsBooked:        v.IsBooked,
+		})
+	}
+
+	jsonResponse, err := json.Marshal(customResponse)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
