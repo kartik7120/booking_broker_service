@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -989,93 +990,97 @@ func (c *Config) GetMovieReviews(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Config) AddMovieReview(w http.ResponseWriter, r *http.Request) {
-	// Extract the "id" parameter from the URL
+	w.Header().Set("Content-Type", "application/json")
+
 	var requestBody struct {
-		UserID  int32  `json:"userId"`
-		Title   string `json:"title"`
-		Comment string `json:"comment"`
-		Rating  int32  `json:"rating"`
+		UserID          int32  `json:"userId"`
+		Title           string `json:"title"`
+		Comment         string `json:"comment"`
+		Rating          int32  `json:"rating"`
+		ReviewerName    string `json:"reviewerName"`
+		ContainsSpoiler bool   `json:"containsSpoiler"`
+		Language        string `json:"language"`
+		Format          string `json:"format"`
 	}
 
+	// Read and parse request body
 	bodyBytes, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
-
 	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusBadRequest)
+		http.Error(w, `{"error": "Failed to read request body"}`, http.StatusBadRequest)
 		return
 	}
 
-	err = json.Unmarshal(bodyBytes, &requestBody)
-
-	if err != nil {
-		http.Error(w, "Error unmarshalling JSON from request body", http.StatusBadRequest)
+	if err := json.Unmarshal(bodyBytes, &requestBody); err != nil {
+		http.Error(w, `{"error": "Invalid JSON format"}`, http.StatusBadRequest)
 		return
 	}
 
-	if requestBody.Rating <= 0 || requestBody.Rating > 5 {
-		http.Error(w, `error rating cannot be less than 1 or greater than 5`, http.StatusBadRequest)
+	// Validate inputs
+	if requestBody.Rating < 1 || requestBody.Rating > 5 {
+		http.Error(w, `{"error": "Rating must be between 1 and 5"}`, http.StatusBadRequest)
 		return
 	}
 
-	if requestBody.Comment == "" {
-		http.Error(w, "error comment cannot be empty", http.StatusBadRequest)
+	if strings.TrimSpace(requestBody.Title) == "" {
+		http.Error(w, `{"error": "Title cannot be empty"}`, http.StatusBadRequest)
 		return
 	}
 
-	if requestBody.Title == "" {
-		http.Error(w, "error title cannot be empty", http.StatusBadRequest)
+	if strings.TrimSpace(requestBody.Comment) == "" {
+		http.Error(w, `{"error": "Comment cannot be empty"}`, http.StatusBadRequest)
 		return
 	}
 
 	if requestBody.UserID <= 0 {
-		http.Error(w, "error userId cannot be less than 1", http.StatusBadRequest)
+		http.Error(w, `{"error": "Invalid userId"}`, http.StatusBadRequest)
 		return
 	}
 
+	// Extract movie ID from URL
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, `{"error": "Missing 'id' parameter in URL"}`, http.StatusBadRequest)
 		return
 	}
 
 	idInt, err := strconv.Atoi(id)
-
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, `{"error": "Invalid 'id' parameter in URL"}`, http.StatusBadRequest)
+		http.Error(w, `{"error": "Invalid movie ID in URL"}`, http.StatusBadRequest)
 		return
 	}
 
-	response, err := c.MovieDB_service.AddReview(context.Background(), &pb.Review{
-		MovieID: int32(idInt),
-		UserID:  requestBody.UserID,
-		Rating:  requestBody.Rating,
-		Comment: requestBody.Comment,
-		Title:   requestBody.Title,
-	})
+	// gRPC request
+	review := &pb.Review{
+		MovieID:         int32(idInt),
+		UserID:          requestBody.UserID,
+		Title:           requestBody.Title,
+		Comment:         requestBody.Comment,
+		Rating:          requestBody.Rating,
+		ReviewerName:    requestBody.ReviewerName,
+		CreatedAt:       (time.Now().Unix()),
+		ContainsSpoiler: requestBody.ContainsSpoiler,
+		Language:        requestBody.Language,
+		Format:          requestBody.Format,
+	}
 
+	response, err := c.MovieDB_service.AddReview(context.Background(), review)
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf(`{"error": "Error adding movie review: %v"}`, err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error": "Error adding review: %v"}`, err), http.StatusInternalServerError)
 		return
 	}
 
 	if response == nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, `{"error": "No movie review found"}`, http.StatusNotFound)
+		http.Error(w, `{"error": "No response received from review service"}`, http.StatusInternalServerError)
 		return
 	}
 
-	jsonResponse, err := json.Marshal(response.Message)
-
+	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf(`{"error": "Error marshalling JSON response: %v"}`, err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error": "Error encoding response: %v"}`, err), http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResponse)
 }

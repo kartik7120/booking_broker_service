@@ -174,14 +174,21 @@ message GetNowPlayingMovieRequest {
 }
 
 message Review {
-   int32 movieID = 1;
-   int32 userID = 2;
-   int32 rating = 3;
-   string comment = 4;
-   string title = 5;
-   int32 reviewID = 6;
-   int32 createdAt = 7;
-   string reviewerName = 8;
+  int32 reviewID = 1;          // unique ID for the review
+  int32 movieID = 2;           // movie being reviewed
+  int32 userID = 3;            // user who created the review (-1 if anonymous)
+  int32 rating = 4;            // rating out of 5
+  string title = 5;            // short title for the review
+  string comment = 6;          // full review text
+  string reviewerName = 7;     // optional display name of reviewer
+  int64 createdAt = 8;         // Unix timestamp (use int64 for proper time precision)
+  int64 updatedAt = 9;         // optional: if the review is edited later
+  bool containsSpoiler = 10;   // marks if the review has spoilers
+  string language = 11;        // e.g., "English", "Hindi"
+  string format = 12;          // e.g., "2D", "3D", "IMAX"
+  int32 likes = 13;            // number of likes
+  int32 dislikes = 14;         // number of dislikes
+  bool isEdited = 15;          // true if review was edited
 }
 
 message ReviewUpdateRequest {
@@ -191,6 +198,12 @@ message ReviewUpdateRequest {
    string comment = 4;
    string title = 5;
    int32 rating = 6;
+    bool containsSpoiler = 7;
+    string language = 8;
+    string format = 9;
+    int32 likes = 10;
+    int32 dislikes = 11;
+    bool isEdited = 12;
 }
 
 message ReviewResponse {
