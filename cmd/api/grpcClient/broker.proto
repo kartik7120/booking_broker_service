@@ -100,6 +100,8 @@ message Movie {
     reserved 12;
     string screen_wide_poster_url = 16;
     string logoImageURL = 17;
+    int32 rating = 18;
+    string title_poster_url = 19;
 }
 
 enum VenueType {

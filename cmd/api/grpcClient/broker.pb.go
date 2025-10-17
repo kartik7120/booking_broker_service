@@ -729,6 +729,8 @@ type Movie struct {
 	Id                  int32  `protobuf:"varint,15,opt,name=id,proto3" json:"id,omitempty"`
 	ScreenWidePosterUrl string `protobuf:"bytes,16,opt,name=screen_wide_poster_url,json=screenWidePosterUrl,proto3" json:"screen_wide_poster_url,omitempty"`
 	LogoImageURL        string `protobuf:"bytes,17,opt,name=logoImageURL,proto3" json:"logoImageURL,omitempty"`
+	Rating              int32  `protobuf:"varint,18,opt,name=rating,proto3" json:"rating,omitempty"`
+	TitlePosterUrl      string `protobuf:"bytes,19,opt,name=title_poster_url,json=titlePosterUrl,proto3" json:"title_poster_url,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -871,6 +873,20 @@ func (x *Movie) GetScreenWidePosterUrl() string {
 func (x *Movie) GetLogoImageURL() string {
 	if x != nil {
 		return x.LogoImageURL
+	}
+	return ""
+}
+
+func (x *Movie) GetRating() int32 {
+	if x != nil {
+		return x.Rating
+	}
+	return 0
+}
+
+func (x *Movie) GetTitlePosterUrl() string {
+	if x != nil {
+		return x.TitlePosterUrl
 	}
 	return ""
 }
@@ -4131,7 +4147,7 @@ const file_broker_proto_rawDesc = "" +
 	"\fmovie_format\x18\x05 \x01(\x0e2\x19.moviedb_service.SeatTypeR\vmovieFormat\x12\x18\n" +
 	"\amovieid\x18\x06 \x01(\x05R\amovieid\x12\x18\n" +
 	"\avenueid\x18\a \x01(\x05R\avenueid\x12(\n" +
-	"\x0fMovieTimeSlotID\x18\b \x01(\x05R\x0fMovieTimeSlotID\"\xa3\x04\n" +
+	"\x0fMovieTimeSlotID\x18\b \x01(\x05R\x0fMovieTimeSlotID\"\xe5\x04\n" +
 	"\x05Movie\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1a\n" +
@@ -4151,7 +4167,9 @@ const file_broker_proto_rawDesc = "" +
 	"\aranking\x18\x0e \x01(\x05R\aranking\x12\x0e\n" +
 	"\x02id\x18\x0f \x01(\x05R\x02id\x123\n" +
 	"\x16screen_wide_poster_url\x18\x10 \x01(\tR\x13screenWidePosterUrl\x12\"\n" +
-	"\flogoImageURL\x18\x11 \x01(\tR\flogoImageURLJ\x04\b\f\x10\r\"\x94\x04\n" +
+	"\flogoImageURL\x18\x11 \x01(\tR\flogoImageURL\x12\x16\n" +
+	"\x06rating\x18\x12 \x01(\x05R\x06rating\x12(\n" +
+	"\x10title_poster_url\x18\x13 \x01(\tR\x0etitlePosterUrlJ\x04\b\f\x10\r\"\x94\x04\n" +
 	"\x05Venue\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\aaddress\x18\x02 \x01(\tR\aaddress\x12.\n" +

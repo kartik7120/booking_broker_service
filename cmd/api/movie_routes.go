@@ -993,7 +993,7 @@ func (c *Config) AddMovieReview(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var requestBody struct {
-		UserID          int32  `json:"userId"`
+		UserID          int32  `json:"userID"`
 		Title           string `json:"title"`
 		Comment         string `json:"comment"`
 		Rating          int32  `json:"rating"`
@@ -1032,7 +1032,7 @@ func (c *Config) AddMovieReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if requestBody.UserID <= 0 {
+	if requestBody.UserID != -1 && requestBody.UserID <= 0 {
 		http.Error(w, `{"error": "Invalid userId"}`, http.StatusBadRequest)
 		return
 	}
