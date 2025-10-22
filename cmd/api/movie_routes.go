@@ -772,6 +772,7 @@ func (c *Config) GetUpcomingMovies(w http.ResponseWriter, r *http.Request) {
 	response, err := c.MovieDB_service.GetUpcomingMovies(context.Background(), &pb.GetUpcomingMovieRequest{
 		Date: dateParam,
 	})
+
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf(`{"error": "Error getting upcoming movies: %v"}`, err), http.StatusInternalServerError)
@@ -781,6 +782,7 @@ func (c *Config) GetUpcomingMovies(w http.ResponseWriter, r *http.Request) {
 	// Validate the gRPC response
 	if response == nil || response.MovieList == nil {
 		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
 		http.Error(w, `{"error": "No upcoming movies found"}`, http.StatusNotFound)
 		return
 	}
