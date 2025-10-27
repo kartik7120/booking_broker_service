@@ -23,106 +23,82 @@ import (
 )
 
 func main() {
-
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Fatal("Error loading .env file", err)
-		os.Exit(1)
-		return
+	// Load env
+	if err := godotenv.Load(); err != nil {
+		log.Warn("No .env file found, continuing...")
 	}
 
-	redisClient := redis.NewClient(
-		&redis.Options{
-			Addr:     "127.0.0.1:6379", // Redis server address
-			Password: "",               // No password set
-			DB:       0,                // Use default DB
-			Protocol: 2,                // Connection protocol
-		},
-	)
+	// Redis client
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     "redis_booking_app:6379",
+		Password: "",
+		DB:       0,
+	})
 
 	app := api.Config{
 		Validator:   validator.New(),
 		RedisClient: redisClient,
 	}
 
+	// HTTP server
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: app.Routes(),
 	}
 
-	// srv2 := &http.Server{
-	// 	Addr:    ":8081",
-	// 	Handler: app.Routes(),
-	// }
-
 	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetOutput(os.Stdout)
 	log.SetReportCaller(true)
 
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	// gRPC options
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	var opts []grpc.DialOption
+	// MovieDB service client
+	movieConn, err := grpc.NewClient("booking_moviedb_service:1102", opts...)
+	if err != nil {
+		log.Fatalf("Error connecting to MovieDB service: %v", err)
+	}
+	defer movieConn.Close()
+	app.MovieDB_service = pb.NewMovieDBServiceClient(movieConn)
 
-	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// Payment service client
+	paymentConn, err := grpc.NewClient("booking_payment_service:1104", opts...)
+	if err != nil {
+		log.Fatalf("Error connecting to Payment service: %v", err)
+	}
+	defer paymentConn.Close()
+	app.Payment_service = payment_service.NewPaymentServiceClient(paymentConn)
 
-	conn, err := grpc.NewClient(":1102", opts...)
+	// Auth service client
+	authConn, err := grpc.NewClient("booking_auth_service:1101", opts...)
+	if err != nil {
+		log.Fatalf("Error connecting to Auth service: %v", err)
+	}
+	defer authConn.Close()
+	app.Auth_Service = at.NewAuthServiceClient(authConn)
+
+	// RabbitMQ producer service client
+	rabbitConn, err := grpc.NewClient("rabbitmq_producer_service:1105", opts...)
 
 	if err != nil {
-		log.Error("error connecting to client", err)
-		os.Exit(1)
-		return
+		log.Fatalf("Error connecting to RabbitMQ producer service: %v", err)
 	}
 
-	conn2, err := grpc.NewClient(":1104", opts...)
+	defer rabbitConn.Close()
 
-	if err != nil {
-		log.Error("error connecting to payment service", err)
-		os.Exit(1)
-		return
-	}
+	app.Payment_Producer_service = rabbitmq_producer.NewRabbitmqProducerServiceClient(rabbitConn)
 
-	client := pb.NewMovieDBServiceClient(conn)
-
-	paymentClient := payment_service.NewPaymentServiceClient(conn2)
-
-	conn3, err := grpc.NewClient(":1101", opts...)
-
-	if err != nil {
-		log.Error("error connecting to auth service", err)
-		os.Exit(1)
-		return
-	}
-
-	conn4, err := grpc.NewClient(":1105", opts...)
-
-	if err != nil {
-		log.Error("error connecting to payment service", err)
-		os.Exit(1)
-		return
-	}
-
-	app.MovieDB_service = client
-	app.Payment_service = paymentClient
-	app.Auth_Service = at.NewAuthServiceClient(conn3)
-	app.Payment_Producer_service = rabbitmq_producer.NewRabbitmqProducerServiceClient(conn4)
-
+	// Start HTTP server
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Error starting server: %v", err)
 		}
 	}()
 
-	// go func() {
-	// 	if err := srv2.ListenAndServeTLS("cert.pem", "key.pem"); err != nil && err != http.ErrServerClosed {
-	// 		log.Fatalf("Error starting TLS server %v", err)
-	// 	}
-	// }()
-
 	<-quit
-
 	log.Println("Shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -132,5 +108,5 @@ func main() {
 		log.Fatalf("Error shutting down server: %v", err)
 	}
 
-	log.Println("Server exiting")
+	log.Println("Server exited gracefully")
 }
