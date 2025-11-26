@@ -72,6 +72,7 @@ func (c *Config) Routes() http.Handler {
 	mux.Post("/lockSeats", c.LockSeats)
 	mux.Post("/payment-status", c.CheckPaymentStatus)
 	mux.Get("/getTicketDetails/{ticketID}", c.GetTicketDetails)
+	mux.Post("/webhook/strapihook", c.StapiWebhook)
 
 	return mux
 }

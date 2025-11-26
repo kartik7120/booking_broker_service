@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
+	strapitypes "github.com/kartik7120/booking_broker-service/cmd/api/strapi_types"
 
 	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
 	"github.com/kartik7120/booking_broker-service/cmd/api/payment_service"
@@ -113,6 +114,30 @@ func (r RedisIdempotentValue) MarshalBinary() ([]byte, error) {
 
 func (r *RedisIdempotentValue) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, r)
+}
+
+func (c *Config) StapiWebhook(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("webhook triggered")
+
+	bodyBytes, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error reading request body: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	var webhookEvent strapitypes.StrapiWebHookType
+
+	err = json.Unmarshal(bodyBytes, &webhookEvent)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error unmarshalling request body: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Printf("webhook event: %+v\n", webhookEvent)
 }
 
 func (c *Config) LockSeats(w http.ResponseWriter, r *http.Request) {
