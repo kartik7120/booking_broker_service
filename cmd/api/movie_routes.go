@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	at "github.com/kartik7120/booking_broker-service/cmd/api/authService"
+	rabbitmq_producer "github.com/kartik7120/booking_broker-service/cmd/api/payment_producer_service"
 	strapitypes "github.com/kartik7120/booking_broker-service/cmd/api/strapi_types"
 
 	pb "github.com/kartik7120/booking_broker-service/cmd/api/grpcClient"
@@ -108,6 +109,16 @@ type RedisIdempotentValue struct {
 	ErrorMessage    string   `json:"error_message"`
 }
 
+type StrapiCastDTO struct {
+	Name          string `json:"name"`
+	CharacterName string `json:"character_name"`
+	PhotoUrl      string `json:"photo_url"`
+	MovieId       int32  `json:"movieid"`
+	Type          string `json:"type"`
+	StarpiCastUid string `json:"starpi_cast_uid"`
+	CastId        int32  `json:"cast_id"`
+}
+
 func (r RedisIdempotentValue) MarshalBinary() ([]byte, error) {
 	return json.Marshal(r)
 }
@@ -138,6 +149,61 @@ func (c *Config) StapiWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("webhook event: %+v\n", webhookEvent)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var cast rabbitmq_producer.Cast
+
+	// Convert webhookEvent.Entry to rabbitmq_producer.Cast type
+
+	entryJSON, _ := json.Marshal(webhookEvent.Entry)
+
+	var dto StrapiCastDTO
+
+	err = json.Unmarshal(entryJSON, &dto)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error unmarshalling entry to StrapiCastDTO: %s", err.Error()), http.StatusBadRequest)
+		fmt.Println("error unmarshalling entry to StrapiCastDTO: ", err)
+		// TODO: Use the strapi API to fail the sync of this component
+		return
+	}
+
+	cast.Name = dto.Name
+	cast.CharacterName = dto.CharacterName
+	cast.PhotoUrl = dto.PhotoUrl
+	if strings.ToLower(dto.Type) == "actor" {
+		cast.Type = rabbitmq_producer.CastType_ACTOR
+	} else if strings.ToLower(dto.Type) == "director" {
+		cast.Type = rabbitmq_producer.CastType_DIRECTOR
+	} else if strings.ToLower(dto.Type) == "producer" {
+		cast.Type = rabbitmq_producer.CastType_PRODUCER
+	}
+
+	cast.MovieId = dto.MovieId
+	cast.StarpiCastUidStr = dto.StarpiCastUid
+	fmt.Printf("cast after type casting: %#v", cast)
+
+	resp, err := c.Payment_Producer_service.Cast_Service_Producer(ctx, &cast)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error calling Cast_Service_Producer: %s", err.Error()), http.StatusInternalServerError)
+		// TODO: Use the strapi API to fail the sync of this component
+		fmt.Println("error calling producer service inside strapi function")
+		return
+	}
+
+	if resp.Error != "" {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, fmt.Sprintf("error from Cast_Service_Producer: %s", resp.Error), http.StatusInternalServerError)
+		fmt.Println("error from Cast_Service_Producer: ", strings.TrimSpace(resp.Error))
+		// TODO: Use the strapi API to fail the sync of this component
+		return
+	}
+
 }
 
 func (c *Config) LockSeats(w http.ResponseWriter, r *http.Request) {

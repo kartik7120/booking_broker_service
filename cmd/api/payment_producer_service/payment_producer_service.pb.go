@@ -22,6 +22,67 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type CastType int32
+
+const (
+	CastType_ACTOR           CastType = 0
+	CastType_DIRECTOR        CastType = 1
+	CastType_PRODUCER        CastType = 2
+	CastType_WRITER          CastType = 3
+	CastType_CINEMATOGRAPHER CastType = 4
+	CastType_EDITOR          CastType = 5
+	CastType_COMPOSER        CastType = 6
+)
+
+// Enum value maps for CastType.
+var (
+	CastType_name = map[int32]string{
+		0: "ACTOR",
+		1: "DIRECTOR",
+		2: "PRODUCER",
+		3: "WRITER",
+		4: "CINEMATOGRAPHER",
+		5: "EDITOR",
+		6: "COMPOSER",
+	}
+	CastType_value = map[string]int32{
+		"ACTOR":           0,
+		"DIRECTOR":        1,
+		"PRODUCER":        2,
+		"WRITER":          3,
+		"CINEMATOGRAPHER": 4,
+		"EDITOR":          5,
+		"COMPOSER":        6,
+	}
+)
+
+func (x CastType) Enum() *CastType {
+	p := new(CastType)
+	*p = x
+	return p
+}
+
+func (x CastType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CastType) Descriptor() protoreflect.EnumDescriptor {
+	return file_payment_producer_service_proto_enumTypes[0].Descriptor()
+}
+
+func (CastType) Type() protoreflect.EnumType {
+	return &file_payment_producer_service_proto_enumTypes[0]
+}
+
+func (x CastType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CastType.Descriptor instead.
+func (CastType) EnumDescriptor() ([]byte, []int) {
+	return file_payment_producer_service_proto_rawDescGZIP(), []int{0}
+}
+
 type Payment struct {
 	state                    protoimpl.MessageState     `protogen:"open.v1"`
 	Billing                  *Payment_Billing           `protobuf:"bytes,1,opt,name=billing,proto3" json:"billing,omitempty"`
@@ -692,6 +753,159 @@ func (x *Send_Mail_Producer_Response) GetError() string {
 	return ""
 }
 
+type Cast struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Type          CastType               `protobuf:"varint,5,opt,name=type,proto3,enum=rabbitmq_producer_service.CastType" json:"type,omitempty"`
+	CharacterName string                 `protobuf:"bytes,6,opt,name=character_name,json=characterName,proto3" json:"character_name,omitempty"`
+	PhotoUrl      string                 `protobuf:"bytes,7,opt,name=photo_url,json=photoUrl,proto3" json:"photo_url,omitempty"`
+	MovieId       int32                  `protobuf:"varint,8,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
+	// int32 starpi_cast_uid = 9;
+	CastId           int32  `protobuf:"varint,10,opt,name=cast_id,json=castId,proto3" json:"cast_id,omitempty"`
+	StarpiCastUidStr string `protobuf:"bytes,11,opt,name=starpi_cast_uid_str,json=starpiCastUidStr,proto3" json:"starpi_cast_uid_str,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *Cast) Reset() {
+	*x = Cast{}
+	mi := &file_payment_producer_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Cast) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Cast) ProtoMessage() {}
+
+func (x *Cast) ProtoReflect() protoreflect.Message {
+	mi := &file_payment_producer_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Cast.ProtoReflect.Descriptor instead.
+func (*Cast) Descriptor() ([]byte, []int) {
+	return file_payment_producer_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *Cast) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Cast) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *Cast) GetType() CastType {
+	if x != nil {
+		return x.Type
+	}
+	return CastType_ACTOR
+}
+
+func (x *Cast) GetCharacterName() string {
+	if x != nil {
+		return x.CharacterName
+	}
+	return ""
+}
+
+func (x *Cast) GetPhotoUrl() string {
+	if x != nil {
+		return x.PhotoUrl
+	}
+	return ""
+}
+
+func (x *Cast) GetMovieId() int32 {
+	if x != nil {
+		return x.MovieId
+	}
+	return 0
+}
+
+func (x *Cast) GetCastId() int32 {
+	if x != nil {
+		return x.CastId
+	}
+	return 0
+}
+
+func (x *Cast) GetStarpiCastUidStr() string {
+	if x != nil {
+		return x.StarpiCastUidStr
+	}
+	return ""
+}
+
+type Cast_Service_Producer_Response struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Error         string                 `protobuf:"bytes,1,opt,name=error,proto3" json:"error,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Cast_Service_Producer_Response) Reset() {
+	*x = Cast_Service_Producer_Response{}
+	mi := &file_payment_producer_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Cast_Service_Producer_Response) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Cast_Service_Producer_Response) ProtoMessage() {}
+
+func (x *Cast_Service_Producer_Response) ProtoReflect() protoreflect.Message {
+	mi := &file_payment_producer_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Cast_Service_Producer_Response.ProtoReflect.Descriptor instead.
+func (*Cast_Service_Producer_Response) Descriptor() ([]byte, []int) {
+	return file_payment_producer_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *Cast_Service_Producer_Response) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+func (x *Cast_Service_Producer_Response) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 type Payment_Billing struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	City          string                 `protobuf:"bytes,1,opt,name=city,proto3" json:"city,omitempty"`
@@ -705,7 +919,7 @@ type Payment_Billing struct {
 
 func (x *Payment_Billing) Reset() {
 	*x = Payment_Billing{}
-	mi := &file_payment_producer_service_proto_msgTypes[9]
+	mi := &file_payment_producer_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -717,7 +931,7 @@ func (x *Payment_Billing) String() string {
 func (*Payment_Billing) ProtoMessage() {}
 
 func (x *Payment_Billing) ProtoReflect() protoreflect.Message {
-	mi := &file_payment_producer_service_proto_msgTypes[9]
+	mi := &file_payment_producer_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -779,7 +993,7 @@ type Payment_Customer struct {
 
 func (x *Payment_Customer) Reset() {
 	*x = Payment_Customer{}
-	mi := &file_payment_producer_service_proto_msgTypes[10]
+	mi := &file_payment_producer_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -791,7 +1005,7 @@ func (x *Payment_Customer) String() string {
 func (*Payment_Customer) ProtoMessage() {}
 
 func (x *Payment_Customer) ProtoReflect() protoreflect.Message {
-	mi := &file_payment_producer_service_proto_msgTypes[10]
+	mi := &file_payment_producer_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -845,7 +1059,7 @@ type Payment_Dispute struct {
 
 func (x *Payment_Dispute) Reset() {
 	*x = Payment_Dispute{}
-	mi := &file_payment_producer_service_proto_msgTypes[11]
+	mi := &file_payment_producer_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -857,7 +1071,7 @@ func (x *Payment_Dispute) String() string {
 func (*Payment_Dispute) ProtoMessage() {}
 
 func (x *Payment_Dispute) ProtoReflect() protoreflect.Message {
-	mi := &file_payment_producer_service_proto_msgTypes[11]
+	mi := &file_payment_producer_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -946,7 +1160,7 @@ type Payment_ProductCartItem struct {
 
 func (x *Payment_ProductCartItem) Reset() {
 	*x = Payment_ProductCartItem{}
-	mi := &file_payment_producer_service_proto_msgTypes[12]
+	mi := &file_payment_producer_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -958,7 +1172,7 @@ func (x *Payment_ProductCartItem) String() string {
 func (*Payment_ProductCartItem) ProtoMessage() {}
 
 func (x *Payment_ProductCartItem) ProtoReflect() protoreflect.Message {
-	mi := &file_payment_producer_service_proto_msgTypes[12]
+	mi := &file_payment_producer_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1005,7 +1219,7 @@ type Payment_Refund struct {
 
 func (x *Payment_Refund) Reset() {
 	*x = Payment_Refund{}
-	mi := &file_payment_producer_service_proto_msgTypes[13]
+	mi := &file_payment_producer_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1017,7 +1231,7 @@ func (x *Payment_Refund) String() string {
 func (*Payment_Refund) ProtoMessage() {}
 
 func (x *Payment_Refund) ProtoReflect() protoreflect.Message {
-	mi := &file_payment_producer_service_proto_msgTypes[13]
+	mi := &file_payment_producer_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1205,14 +1419,39 @@ const file_payment_producer_service_proto_rawDesc = "" +
 	"\bcategory\x18\a \x01(\tR\bcategory\x12\x18\n" +
 	"\asubject\x18\b \x01(\tR\asubjectJ\x04\b\x01\x10\x02J\x04\b\x02\x10\x03\"3\n" +
 	"\x1bSend_Mail_Producer_Response\x12\x14\n" +
-	"\x05error\x18\x01 \x01(\tR\x05error2\xbf\x05\n" +
+	"\x05error\x18\x01 \x01(\tR\x05error\"\xae\x02\n" +
+	"\x04Cast\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x127\n" +
+	"\x04type\x18\x05 \x01(\x0e2#.rabbitmq_producer_service.CastTypeR\x04type\x12%\n" +
+	"\x0echaracter_name\x18\x06 \x01(\tR\rcharacterName\x12\x1b\n" +
+	"\tphoto_url\x18\a \x01(\tR\bphotoUrl\x12\x19\n" +
+	"\bmovie_id\x18\b \x01(\x05R\amovieId\x12\x17\n" +
+	"\acast_id\x18\n" +
+	" \x01(\x05R\x06castId\x12-\n" +
+	"\x13starpi_cast_uid_str\x18\v \x01(\tR\x10starpiCastUidStrJ\x04\b\x03\x10\x04J\x04\b\x04\x10\x05J\x04\b\t\x10\n" +
+	"\"P\n" +
+	"\x1eCast_Service_Producer_Response\x12\x14\n" +
+	"\x05error\x18\x01 \x01(\tR\x05error\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage*l\n" +
+	"\bCastType\x12\t\n" +
+	"\x05ACTOR\x10\x00\x12\f\n" +
+	"\bDIRECTOR\x10\x01\x12\f\n" +
+	"\bPRODUCER\x10\x02\x12\n" +
+	"\n" +
+	"\x06WRITER\x10\x03\x12\x13\n" +
+	"\x0fCINEMATOGRAPHER\x10\x04\x12\n" +
+	"\n" +
+	"\x06EDITOR\x10\x05\x12\f\n" +
+	"\bCOMPOSER\x10\x062\xb4\x06\n" +
 	"\x17rabbitmqProducerService\x12\x9d\x01\n" +
 	" Payment_Service_Webhook_Producer\x12;.rabbitmq_producer_service.Payment_Service_Producer_Request\x1a<.rabbitmq_producer_service.Payment_Service_Producer_Response\x12k\n" +
 	"\n" +
 	"Lock_Seats\x12-.rabbitmq_producer_service.Lock_Seats_Request\x1a..rabbitmq_producer_service.Lock_Seats_Response\x12q\n" +
 	"\fUnlock_Seats\x12/.rabbitmq_producer_service.Unlock_Seats_Request\x1a0.rabbitmq_producer_service.Unlock_Seats_Response\x12\x83\x01\n" +
 	"\x12Send_Mail_Producer\x125.rabbitmq_producer_service.Send_Mail_Producer_Request\x1a6.rabbitmq_producer_service.Send_Mail_Producer_Response\x12\x9d\x01\n" +
-	" Payment_Service_Failure_Producer\x12;.rabbitmq_producer_service.Payment_Service_Producer_Request\x1a<.rabbitmq_producer_service.Payment_Service_Producer_ResponseBRZPgithub.com/kartik7120/rabbitmq_producer_service/cmd/grpcServer;rabbitmq_producerb\x06proto3"
+	" Payment_Service_Failure_Producer\x12;.rabbitmq_producer_service.Payment_Service_Producer_Request\x1a<.rabbitmq_producer_service.Payment_Service_Producer_Response\x12s\n" +
+	"\x15Cast_Service_Producer\x12\x1f.rabbitmq_producer_service.Cast\x1a9.rabbitmq_producer_service.Cast_Service_Producer_ResponseBRZPgithub.com/kartik7120/rabbitmq_producer_service/cmd/grpcServer;rabbitmq_producerb\x06proto3"
 
 var (
 	file_payment_producer_service_proto_rawDescOnce sync.Once
@@ -1226,52 +1465,59 @@ func file_payment_producer_service_proto_rawDescGZIP() []byte {
 	return file_payment_producer_service_proto_rawDescData
 }
 
-var file_payment_producer_service_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_payment_producer_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_payment_producer_service_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_payment_producer_service_proto_goTypes = []any{
-	(*Payment)(nil),                           // 0: rabbitmq_producer_service.Payment
-	(*Payment_Service_Producer_Request)(nil),  // 1: rabbitmq_producer_service.Payment_Service_Producer_Request
-	(*Payment_Service_Producer_Response)(nil), // 2: rabbitmq_producer_service.Payment_Service_Producer_Response
-	(*Lock_Seats_Request)(nil),                // 3: rabbitmq_producer_service.Lock_Seats_Request
-	(*Lock_Seats_Response)(nil),               // 4: rabbitmq_producer_service.Lock_Seats_Response
-	(*Unlock_Seats_Request)(nil),              // 5: rabbitmq_producer_service.Unlock_Seats_Request
-	(*Unlock_Seats_Response)(nil),             // 6: rabbitmq_producer_service.Unlock_Seats_Response
-	(*Send_Mail_Producer_Request)(nil),        // 7: rabbitmq_producer_service.Send_Mail_Producer_Request
-	(*Send_Mail_Producer_Response)(nil),       // 8: rabbitmq_producer_service.Send_Mail_Producer_Response
-	(*Payment_Billing)(nil),                   // 9: rabbitmq_producer_service.Payment.Billing
-	(*Payment_Customer)(nil),                  // 10: rabbitmq_producer_service.Payment.Customer
-	(*Payment_Dispute)(nil),                   // 11: rabbitmq_producer_service.Payment.Dispute
-	(*Payment_ProductCartItem)(nil),           // 12: rabbitmq_producer_service.Payment.ProductCartItem
-	(*Payment_Refund)(nil),                    // 13: rabbitmq_producer_service.Payment.Refund
-	nil,                                       // 14: rabbitmq_producer_service.Payment.MetadataEntry
-	(*timestamp.Timestamp)(nil),               // 15: google.protobuf.Timestamp
+	(CastType)(0),                             // 0: rabbitmq_producer_service.CastType
+	(*Payment)(nil),                           // 1: rabbitmq_producer_service.Payment
+	(*Payment_Service_Producer_Request)(nil),  // 2: rabbitmq_producer_service.Payment_Service_Producer_Request
+	(*Payment_Service_Producer_Response)(nil), // 3: rabbitmq_producer_service.Payment_Service_Producer_Response
+	(*Lock_Seats_Request)(nil),                // 4: rabbitmq_producer_service.Lock_Seats_Request
+	(*Lock_Seats_Response)(nil),               // 5: rabbitmq_producer_service.Lock_Seats_Response
+	(*Unlock_Seats_Request)(nil),              // 6: rabbitmq_producer_service.Unlock_Seats_Request
+	(*Unlock_Seats_Response)(nil),             // 7: rabbitmq_producer_service.Unlock_Seats_Response
+	(*Send_Mail_Producer_Request)(nil),        // 8: rabbitmq_producer_service.Send_Mail_Producer_Request
+	(*Send_Mail_Producer_Response)(nil),       // 9: rabbitmq_producer_service.Send_Mail_Producer_Response
+	(*Cast)(nil),                              // 10: rabbitmq_producer_service.Cast
+	(*Cast_Service_Producer_Response)(nil),    // 11: rabbitmq_producer_service.Cast_Service_Producer_Response
+	(*Payment_Billing)(nil),                   // 12: rabbitmq_producer_service.Payment.Billing
+	(*Payment_Customer)(nil),                  // 13: rabbitmq_producer_service.Payment.Customer
+	(*Payment_Dispute)(nil),                   // 14: rabbitmq_producer_service.Payment.Dispute
+	(*Payment_ProductCartItem)(nil),           // 15: rabbitmq_producer_service.Payment.ProductCartItem
+	(*Payment_Refund)(nil),                    // 16: rabbitmq_producer_service.Payment.Refund
+	nil,                                       // 17: rabbitmq_producer_service.Payment.MetadataEntry
+	(*timestamp.Timestamp)(nil),               // 18: google.protobuf.Timestamp
 }
 var file_payment_producer_service_proto_depIdxs = []int32{
-	9,  // 0: rabbitmq_producer_service.Payment.billing:type_name -> rabbitmq_producer_service.Payment.Billing
-	15, // 1: rabbitmq_producer_service.Payment.created_at:type_name -> google.protobuf.Timestamp
-	10, // 2: rabbitmq_producer_service.Payment.customer:type_name -> rabbitmq_producer_service.Payment.Customer
-	11, // 3: rabbitmq_producer_service.Payment.disputes:type_name -> rabbitmq_producer_service.Payment.Dispute
-	14, // 4: rabbitmq_producer_service.Payment.metadata:type_name -> rabbitmq_producer_service.Payment.MetadataEntry
-	12, // 5: rabbitmq_producer_service.Payment.product_cart:type_name -> rabbitmq_producer_service.Payment.ProductCartItem
-	13, // 6: rabbitmq_producer_service.Payment.refunds:type_name -> rabbitmq_producer_service.Payment.Refund
-	15, // 7: rabbitmq_producer_service.Payment.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 8: rabbitmq_producer_service.Payment_Service_Producer_Request.payment_payload:type_name -> rabbitmq_producer_service.Payment
-	15, // 9: rabbitmq_producer_service.Payment.Dispute.created_at:type_name -> google.protobuf.Timestamp
-	15, // 10: rabbitmq_producer_service.Payment.Refund.created_at:type_name -> google.protobuf.Timestamp
-	1,  // 11: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Webhook_Producer:input_type -> rabbitmq_producer_service.Payment_Service_Producer_Request
-	3,  // 12: rabbitmq_producer_service.rabbitmqProducerService.Lock_Seats:input_type -> rabbitmq_producer_service.Lock_Seats_Request
-	5,  // 13: rabbitmq_producer_service.rabbitmqProducerService.Unlock_Seats:input_type -> rabbitmq_producer_service.Unlock_Seats_Request
-	7,  // 14: rabbitmq_producer_service.rabbitmqProducerService.Send_Mail_Producer:input_type -> rabbitmq_producer_service.Send_Mail_Producer_Request
-	1,  // 15: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Failure_Producer:input_type -> rabbitmq_producer_service.Payment_Service_Producer_Request
-	2,  // 16: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Webhook_Producer:output_type -> rabbitmq_producer_service.Payment_Service_Producer_Response
-	4,  // 17: rabbitmq_producer_service.rabbitmqProducerService.Lock_Seats:output_type -> rabbitmq_producer_service.Lock_Seats_Response
-	6,  // 18: rabbitmq_producer_service.rabbitmqProducerService.Unlock_Seats:output_type -> rabbitmq_producer_service.Unlock_Seats_Response
-	8,  // 19: rabbitmq_producer_service.rabbitmqProducerService.Send_Mail_Producer:output_type -> rabbitmq_producer_service.Send_Mail_Producer_Response
-	2,  // 20: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Failure_Producer:output_type -> rabbitmq_producer_service.Payment_Service_Producer_Response
-	16, // [16:21] is the sub-list for method output_type
-	11, // [11:16] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	12, // 0: rabbitmq_producer_service.Payment.billing:type_name -> rabbitmq_producer_service.Payment.Billing
+	18, // 1: rabbitmq_producer_service.Payment.created_at:type_name -> google.protobuf.Timestamp
+	13, // 2: rabbitmq_producer_service.Payment.customer:type_name -> rabbitmq_producer_service.Payment.Customer
+	14, // 3: rabbitmq_producer_service.Payment.disputes:type_name -> rabbitmq_producer_service.Payment.Dispute
+	17, // 4: rabbitmq_producer_service.Payment.metadata:type_name -> rabbitmq_producer_service.Payment.MetadataEntry
+	15, // 5: rabbitmq_producer_service.Payment.product_cart:type_name -> rabbitmq_producer_service.Payment.ProductCartItem
+	16, // 6: rabbitmq_producer_service.Payment.refunds:type_name -> rabbitmq_producer_service.Payment.Refund
+	18, // 7: rabbitmq_producer_service.Payment.updated_at:type_name -> google.protobuf.Timestamp
+	1,  // 8: rabbitmq_producer_service.Payment_Service_Producer_Request.payment_payload:type_name -> rabbitmq_producer_service.Payment
+	0,  // 9: rabbitmq_producer_service.Cast.type:type_name -> rabbitmq_producer_service.CastType
+	18, // 10: rabbitmq_producer_service.Payment.Dispute.created_at:type_name -> google.protobuf.Timestamp
+	18, // 11: rabbitmq_producer_service.Payment.Refund.created_at:type_name -> google.protobuf.Timestamp
+	2,  // 12: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Webhook_Producer:input_type -> rabbitmq_producer_service.Payment_Service_Producer_Request
+	4,  // 13: rabbitmq_producer_service.rabbitmqProducerService.Lock_Seats:input_type -> rabbitmq_producer_service.Lock_Seats_Request
+	6,  // 14: rabbitmq_producer_service.rabbitmqProducerService.Unlock_Seats:input_type -> rabbitmq_producer_service.Unlock_Seats_Request
+	8,  // 15: rabbitmq_producer_service.rabbitmqProducerService.Send_Mail_Producer:input_type -> rabbitmq_producer_service.Send_Mail_Producer_Request
+	2,  // 16: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Failure_Producer:input_type -> rabbitmq_producer_service.Payment_Service_Producer_Request
+	10, // 17: rabbitmq_producer_service.rabbitmqProducerService.Cast_Service_Producer:input_type -> rabbitmq_producer_service.Cast
+	3,  // 18: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Webhook_Producer:output_type -> rabbitmq_producer_service.Payment_Service_Producer_Response
+	5,  // 19: rabbitmq_producer_service.rabbitmqProducerService.Lock_Seats:output_type -> rabbitmq_producer_service.Lock_Seats_Response
+	7,  // 20: rabbitmq_producer_service.rabbitmqProducerService.Unlock_Seats:output_type -> rabbitmq_producer_service.Unlock_Seats_Response
+	9,  // 21: rabbitmq_producer_service.rabbitmqProducerService.Send_Mail_Producer:output_type -> rabbitmq_producer_service.Send_Mail_Producer_Response
+	3,  // 22: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Failure_Producer:output_type -> rabbitmq_producer_service.Payment_Service_Producer_Response
+	11, // 23: rabbitmq_producer_service.rabbitmqProducerService.Cast_Service_Producer:output_type -> rabbitmq_producer_service.Cast_Service_Producer_Response
+	18, // [18:24] is the sub-list for method output_type
+	12, // [12:18] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_payment_producer_service_proto_init() }
@@ -1284,13 +1530,14 @@ func file_payment_producer_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_payment_producer_service_proto_rawDesc), len(file_payment_producer_service_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   15,
+			NumEnums:      1,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_payment_producer_service_proto_goTypes,
 		DependencyIndexes: file_payment_producer_service_proto_depIdxs,
+		EnumInfos:         file_payment_producer_service_proto_enumTypes,
 		MessageInfos:      file_payment_producer_service_proto_msgTypes,
 	}.Build()
 	File_payment_producer_service_proto = out.File
