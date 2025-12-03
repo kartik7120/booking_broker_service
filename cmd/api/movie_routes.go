@@ -113,7 +113,7 @@ type StrapiCastDTO struct {
 	Name          string `json:"name"`
 	CharacterName string `json:"character_name"`
 	PhotoUrl      string `json:"photo_url"`
-	MovieId       int32  `json:"movieid"`
+	MovieId       *int32 `json:"movieid"`
 	Type          string `json:"type"`
 	StarpiCastUid string `json:"starpi_cast_uid"`
 	CastId        int32  `json:"cast_id"`
@@ -163,6 +163,8 @@ func (c *Config) StapiWebhook(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(entryJSON, &dto)
 
+	fmt.Printf("strapi event %#v\n", dto)
+
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf("error unmarshalling entry to StrapiCastDTO: %s", err.Error()), http.StatusBadRequest)
@@ -182,26 +184,37 @@ func (c *Config) StapiWebhook(w http.ResponseWriter, r *http.Request) {
 		cast.Type = rabbitmq_producer.CastType_PRODUCER
 	}
 
-	cast.MovieId = dto.MovieId
-	cast.StarpiCastUidStr = dto.StarpiCastUid
-	fmt.Printf("cast after type casting: %#v", cast)
-
-	resp, err := c.Payment_Producer_service.Cast_Service_Producer(ctx, &cast)
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("error calling Cast_Service_Producer: %s", err.Error()), http.StatusInternalServerError)
-		// TODO: Use the strapi API to fail the sync of this component
-		fmt.Println("error calling producer service inside strapi function")
-		return
+	if dto.MovieId != nil {
+		cast.MovieId = *dto.MovieId
+	} else {
+		cast.MovieId = 0
 	}
 
-	if resp.Error != "" {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("error from Cast_Service_Producer: %s", resp.Error), http.StatusInternalServerError)
-		fmt.Println("error from Cast_Service_Producer: ", strings.TrimSpace(resp.Error))
-		// TODO: Use the strapi API to fail the sync of this component
-		return
+	cast.StarpiCastUidStr = dto.StarpiCastUid
+
+	fmt.Printf("cast after type casting: %#v", cast)
+
+	if webhookEvent.Event == "entry.publish" && webhookEvent.Model == "cast" {
+
+		resp, err := c.Payment_Producer_service.Cast_Service_Producer(ctx, &cast)
+
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			http.Error(w, fmt.Sprintf("error calling Cast_Service_Producer: %s\n", err.Error()), http.StatusInternalServerError)
+			// TODO: Use the strapi API to fail the sync of this component
+			fmt.Println("error calling producer service inside strapi function : ", err.Error())
+			return
+		}
+
+		if resp.Error != "" {
+			w.Header().Set("Content-Type", "application/json")
+			http.Error(w, fmt.Sprintf("error from Cast_Service_Producer: %s", resp.Error), http.StatusInternalServerError)
+			fmt.Println("error from Cast_Service_Producer: ", strings.TrimSpace(resp.Error))
+			// TODO: Use the strapi API to fail the sync of this component
+			return
+		}
+	} else {
+		fmt.Printf("other event encountered , need to implement the rest")
 	}
 
 }
