@@ -116,7 +116,27 @@ type StrapiCastDTO struct {
 	MovieId       *int32 `json:"movieid"`
 	Type          string `json:"type"`
 	StarpiCastUid string `json:"starpi_cast_uid"`
-	CastId        int32  `json:"cast_id"`
+	CastId        int    `json:"cast_id"`
+	IsSynced      bool   `json:"is_synced"`
+}
+
+type StrapiMovietimeslotDTO struct {
+	ID                     int32  `json:"id"`
+	Date                   string `json:"date"`
+	StartTime              string `json:"starttime"`
+	EndTime                string `json:"endtime"`
+	Duration               int32  `json:"duration"`
+	MovieFormat            string `json:"movieformat"`
+	IsSynced               bool   `json:"is_synced"`
+	StrapiMovieTimeSlotUid string `json:"starpi_movie_time_slot_uid"`
+
+	Movie struct {
+		ID int32 `json:"id"`
+	} `json:"movie"`
+
+	Venue struct {
+		VenueID int32 `json:"venueID"`
+	} `json:"venue"`
 }
 
 func (r RedisIdempotentValue) MarshalBinary() ([]byte, error) {
@@ -153,68 +173,163 @@ func (c *Config) StapiWebhook(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var cast rabbitmq_producer.Cast
+	switch webhookEvent.Model {
+	case "cast":
+		var cast rabbitmq_producer.Cast
 
-	// Convert webhookEvent.Entry to rabbitmq_producer.Cast type
+		// Convert webhookEvent.Entry to rabbitmq_producer.Cast type
 
-	entryJSON, _ := json.Marshal(webhookEvent.Entry)
+		entryJSON, _ := json.Marshal(webhookEvent.Entry)
 
-	var dto StrapiCastDTO
+		var dto StrapiCastDTO
 
-	err = json.Unmarshal(entryJSON, &dto)
+		err = json.Unmarshal(entryJSON, &dto)
 
-	fmt.Printf("strapi event %#v\n", dto)
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, fmt.Sprintf("error unmarshalling entry to StrapiCastDTO: %s", err.Error()), http.StatusBadRequest)
-		fmt.Println("error unmarshalling entry to StrapiCastDTO: ", err)
-		// TODO: Use the strapi API to fail the sync of this component
-		return
-	}
-
-	cast.Name = dto.Name
-	cast.CharacterName = dto.CharacterName
-	cast.PhotoUrl = dto.PhotoUrl
-	if strings.ToLower(dto.Type) == "actor" {
-		cast.Type = rabbitmq_producer.CastType_ACTOR
-	} else if strings.ToLower(dto.Type) == "director" {
-		cast.Type = rabbitmq_producer.CastType_DIRECTOR
-	} else if strings.ToLower(dto.Type) == "producer" {
-		cast.Type = rabbitmq_producer.CastType_PRODUCER
-	}
-
-	if dto.MovieId != nil {
-		cast.MovieId = *dto.MovieId
-	} else {
-		cast.MovieId = 0
-	}
-
-	cast.StarpiCastUidStr = dto.StarpiCastUid
-
-	fmt.Printf("cast after type casting: %#v", cast)
-
-	if webhookEvent.Event == "entry.publish" && webhookEvent.Model == "cast" {
-
-		resp, err := c.Payment_Producer_service.Cast_Service_Producer(ctx, &cast)
+		fmt.Printf("strapi event %#v\n", dto)
 
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
-			http.Error(w, fmt.Sprintf("error calling Cast_Service_Producer: %s\n", err.Error()), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("error unmarshalling entry to StrapiCastDTO: %s", err.Error()), http.StatusBadRequest)
+			fmt.Println("error unmarshalling entry to StrapiCastDTO: ", err)
 			// TODO: Use the strapi API to fail the sync of this component
+			return
+		}
+
+		cast.Name = dto.Name
+		cast.CharacterName = dto.CharacterName
+		cast.PhotoUrl = dto.PhotoUrl
+		if strings.ToLower(dto.Type) == "actor" {
+			cast.Type = rabbitmq_producer.CastType_ACTOR
+		} else if strings.ToLower(dto.Type) == "director" {
+			cast.Type = rabbitmq_producer.CastType_DIRECTOR
+		} else if strings.ToLower(dto.Type) == "producer" {
+			cast.Type = rabbitmq_producer.CastType_PRODUCER
+		}
+
+		if dto.MovieId != nil {
+			cast.MovieId = *dto.MovieId
+		} else {
+			cast.MovieId = 0
+		}
+
+		cast.CastId = int32(dto.CastId)
+
+		cast.StarpiCastUidStr = dto.StarpiCastUid
+
+		fmt.Printf("cast after type casting: %#v", cast)
+
+		if webhookEvent.Event == "entry.publish" && webhookEvent.Model == "cast" {
+
+			if dto.IsSynced {
+				w.Header().Set("Content-Type", "application/json")
+				fmt.Println("cast is already synced, no action needed")
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
+			resp, err := c.Payment_Producer_service.Cast_Service_Producer(ctx, &cast)
+
+			if err != nil {
+				w.Header().Set("Content-Type", "application/json")
+				http.Error(w, fmt.Sprintf("error calling Cast_Service_Producer: %s\n", err.Error()), http.StatusInternalServerError)
+				// TODO: Use the strapi API to fail the sync of this component
+				fmt.Println("error calling producer service inside strapi function : ", err.Error())
+				return
+			}
+
+			if resp.Error != "" {
+				w.Header().Set("Content-Type", "application/json")
+				http.Error(w, fmt.Sprintf("error from Cast_Service_Producer: %s", resp.Error), http.StatusInternalServerError)
+				fmt.Println("error from Cast_Service_Producer: ", strings.TrimSpace(resp.Error))
+				// TODO: Use the strapi API to fail the sync of this component
+				return
+			}
+
+		} else if webhookEvent.Event == "entry.delete" && webhookEvent.Model == "cast" {
+
+			resp, err := c.Payment_Producer_service.Delete_Cast_Producer(ctx, &cast)
+
+			if !dto.IsSynced {
+				w.Header().Set("Content-Type", "application/json")
+				fmt.Println("cast is not synced, no action needed")
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
+			if err != nil {
+				w.Header().Set("Content-Type", "application/json")
+				http.Error(w, fmt.Sprintf("error calling Delete_Cast_Producer: %s\n", err.Error()), http.StatusInternalServerError)
+				fmt.Println("error calling delete cast producer : ", err.Error())
+				return
+			}
+
+			if resp.Error != "" {
+				w.Header().Set("Content-Type", "application/json")
+				http.Error(w, fmt.Sprintf("error from Delete_Cast_Producer: %s", resp.Error), http.StatusInternalServerError)
+				fmt.Println("error from Delete_Cast_Producer: ", strings.TrimSpace(resp.Error))
+				return
+			}
+
+		} else {
+			fmt.Printf("other event encountered , need to implement the rest")
+		}
+	case "movietimeslot":
+
+		fmt.Println("inside the movie time slot block")
+
+		var movieTimeSlot rabbitmq_producer.Movie_Time_Slot_Strapi
+
+		entryJSON, err := json.Marshal(webhookEvent.Entry)
+
+		var dto StrapiMovietimeslotDTO
+
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Println("error marshalling entry to json for movie time slot model : ", err)
+			return
+		}
+
+		err = json.Unmarshal(entryJSON, &dto)
+
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Println("error unmarshalling entry to StrapiMovietimeslotDTO: ", err)
+			return
+		}
+
+		movieTimeSlot.MovieId = dto.Movie.ID
+		movieTimeSlot.VenueId = dto.Venue.VenueID
+		movieTimeSlot.Date = dto.Date
+		movieTimeSlot.Starttime = dto.StartTime
+		movieTimeSlot.Endtime = dto.EndTime
+		movieTimeSlot.Duration = dto.Duration
+
+		if strings.ToLower(dto.MovieFormat) == "TWO_D" {
+			movieTimeSlot.Format = rabbitmq_producer.MovieFormat_TWO_D
+		} else if strings.ToLower(dto.MovieFormat) == "THREE_D" {
+			movieTimeSlot.Format = rabbitmq_producer.MovieFormat_THREE_D
+		} else if strings.ToLower(dto.MovieFormat) == "IMAX" {
+			movieTimeSlot.Format = rabbitmq_producer.MovieFormat_IMAX
+		}
+
+		movieTimeSlot.StarpiMovieTimeslotUid = dto.StrapiMovieTimeSlotUid
+
+		fmt.Printf("RAW movietimeslot entry: %s\n", string(entryJSON))
+		fmt.Printf("DTO parsed: %+v\n", dto)
+
+		resp, err := c.Payment_Producer_service.Movie_Time_Slot_Producer(ctx, &movieTimeSlot)
+
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
 			fmt.Println("error calling producer service inside strapi function : ", err.Error())
 			return
 		}
 
 		if resp.Error != "" {
 			w.Header().Set("Content-Type", "application/json")
-			http.Error(w, fmt.Sprintf("error from Cast_Service_Producer: %s", resp.Error), http.StatusInternalServerError)
-			fmt.Println("error from Cast_Service_Producer: ", strings.TrimSpace(resp.Error))
-			// TODO: Use the strapi API to fail the sync of this component
+			fmt.Println("error from Movie_Time_Slot_Producer: ", strings.TrimSpace(resp.Error))
 			return
 		}
-	} else {
-		fmt.Printf("other event encountered , need to implement the rest")
 	}
 
 }

@@ -25,6 +25,9 @@ const (
 	RabbitmqProducerService_Send_Mail_Producer_FullMethodName               = "/rabbitmq_producer_service.rabbitmqProducerService/Send_Mail_Producer"
 	RabbitmqProducerService_Payment_Service_Failure_Producer_FullMethodName = "/rabbitmq_producer_service.rabbitmqProducerService/Payment_Service_Failure_Producer"
 	RabbitmqProducerService_Cast_Service_Producer_FullMethodName            = "/rabbitmq_producer_service.rabbitmqProducerService/Cast_Service_Producer"
+	RabbitmqProducerService_Movie_Time_Slot_Producer_FullMethodName         = "/rabbitmq_producer_service.rabbitmqProducerService/Movie_Time_Slot_Producer"
+	RabbitmqProducerService_Delete_Cast_Producer_FullMethodName             = "/rabbitmq_producer_service.rabbitmqProducerService/Delete_Cast_Producer"
+	RabbitmqProducerService_Movie__Producer_FullMethodName                  = "/rabbitmq_producer_service.rabbitmqProducerService/Movie__Producer"
 )
 
 // RabbitmqProducerServiceClient is the client API for RabbitmqProducerService service.
@@ -37,6 +40,9 @@ type RabbitmqProducerServiceClient interface {
 	Send_Mail_Producer(ctx context.Context, in *Send_Mail_Producer_Request, opts ...grpc.CallOption) (*Send_Mail_Producer_Response, error)
 	Payment_Service_Failure_Producer(ctx context.Context, in *Payment_Service_Producer_Request, opts ...grpc.CallOption) (*Payment_Service_Producer_Response, error)
 	Cast_Service_Producer(ctx context.Context, in *Cast, opts ...grpc.CallOption) (*Cast_Service_Producer_Response, error)
+	Movie_Time_Slot_Producer(ctx context.Context, in *Movie_Time_Slot_Strapi, opts ...grpc.CallOption) (*Movie_Time_Slot_Producer_Response, error)
+	Delete_Cast_Producer(ctx context.Context, in *Cast, opts ...grpc.CallOption) (*Cast_Service_Producer_Response, error)
+	Movie__Producer(ctx context.Context, in *Movie_Strapi, opts ...grpc.CallOption) (*Movie_Time_Slot_Producer_Response, error)
 }
 
 type rabbitmqProducerServiceClient struct {
@@ -107,6 +113,36 @@ func (c *rabbitmqProducerServiceClient) Cast_Service_Producer(ctx context.Contex
 	return out, nil
 }
 
+func (c *rabbitmqProducerServiceClient) Movie_Time_Slot_Producer(ctx context.Context, in *Movie_Time_Slot_Strapi, opts ...grpc.CallOption) (*Movie_Time_Slot_Producer_Response, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Movie_Time_Slot_Producer_Response)
+	err := c.cc.Invoke(ctx, RabbitmqProducerService_Movie_Time_Slot_Producer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rabbitmqProducerServiceClient) Delete_Cast_Producer(ctx context.Context, in *Cast, opts ...grpc.CallOption) (*Cast_Service_Producer_Response, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Cast_Service_Producer_Response)
+	err := c.cc.Invoke(ctx, RabbitmqProducerService_Delete_Cast_Producer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rabbitmqProducerServiceClient) Movie__Producer(ctx context.Context, in *Movie_Strapi, opts ...grpc.CallOption) (*Movie_Time_Slot_Producer_Response, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Movie_Time_Slot_Producer_Response)
+	err := c.cc.Invoke(ctx, RabbitmqProducerService_Movie__Producer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RabbitmqProducerServiceServer is the server API for RabbitmqProducerService service.
 // All implementations must embed UnimplementedRabbitmqProducerServiceServer
 // for forward compatibility.
@@ -117,6 +153,9 @@ type RabbitmqProducerServiceServer interface {
 	Send_Mail_Producer(context.Context, *Send_Mail_Producer_Request) (*Send_Mail_Producer_Response, error)
 	Payment_Service_Failure_Producer(context.Context, *Payment_Service_Producer_Request) (*Payment_Service_Producer_Response, error)
 	Cast_Service_Producer(context.Context, *Cast) (*Cast_Service_Producer_Response, error)
+	Movie_Time_Slot_Producer(context.Context, *Movie_Time_Slot_Strapi) (*Movie_Time_Slot_Producer_Response, error)
+	Delete_Cast_Producer(context.Context, *Cast) (*Cast_Service_Producer_Response, error)
+	Movie__Producer(context.Context, *Movie_Strapi) (*Movie_Time_Slot_Producer_Response, error)
 	mustEmbedUnimplementedRabbitmqProducerServiceServer()
 }
 
@@ -144,6 +183,15 @@ func (UnimplementedRabbitmqProducerServiceServer) Payment_Service_Failure_Produc
 }
 func (UnimplementedRabbitmqProducerServiceServer) Cast_Service_Producer(context.Context, *Cast) (*Cast_Service_Producer_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Cast_Service_Producer not implemented")
+}
+func (UnimplementedRabbitmqProducerServiceServer) Movie_Time_Slot_Producer(context.Context, *Movie_Time_Slot_Strapi) (*Movie_Time_Slot_Producer_Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Movie_Time_Slot_Producer not implemented")
+}
+func (UnimplementedRabbitmqProducerServiceServer) Delete_Cast_Producer(context.Context, *Cast) (*Cast_Service_Producer_Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete_Cast_Producer not implemented")
+}
+func (UnimplementedRabbitmqProducerServiceServer) Movie__Producer(context.Context, *Movie_Strapi) (*Movie_Time_Slot_Producer_Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Movie__Producer not implemented")
 }
 func (UnimplementedRabbitmqProducerServiceServer) mustEmbedUnimplementedRabbitmqProducerServiceServer() {
 }
@@ -275,6 +323,60 @@ func _RabbitmqProducerService_Cast_Service_Producer_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RabbitmqProducerService_Movie_Time_Slot_Producer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Movie_Time_Slot_Strapi)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RabbitmqProducerServiceServer).Movie_Time_Slot_Producer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RabbitmqProducerService_Movie_Time_Slot_Producer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RabbitmqProducerServiceServer).Movie_Time_Slot_Producer(ctx, req.(*Movie_Time_Slot_Strapi))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RabbitmqProducerService_Delete_Cast_Producer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Cast)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RabbitmqProducerServiceServer).Delete_Cast_Producer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RabbitmqProducerService_Delete_Cast_Producer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RabbitmqProducerServiceServer).Delete_Cast_Producer(ctx, req.(*Cast))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RabbitmqProducerService_Movie__Producer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Movie_Strapi)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RabbitmqProducerServiceServer).Movie__Producer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RabbitmqProducerService_Movie__Producer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RabbitmqProducerServiceServer).Movie__Producer(ctx, req.(*Movie_Strapi))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RabbitmqProducerService_ServiceDesc is the grpc.ServiceDesc for RabbitmqProducerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -305,6 +407,18 @@ var RabbitmqProducerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Cast_Service_Producer",
 			Handler:    _RabbitmqProducerService_Cast_Service_Producer_Handler,
+		},
+		{
+			MethodName: "Movie_Time_Slot_Producer",
+			Handler:    _RabbitmqProducerService_Movie_Time_Slot_Producer_Handler,
+		},
+		{
+			MethodName: "Delete_Cast_Producer",
+			Handler:    _RabbitmqProducerService_Delete_Cast_Producer_Handler,
+		},
+		{
+			MethodName: "Movie__Producer",
+			Handler:    _RabbitmqProducerService_Movie__Producer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
