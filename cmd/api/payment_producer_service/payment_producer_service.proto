@@ -190,8 +190,9 @@ message Movie_Strapi {
   string description = 2;
   string release_date = 3;
   int32 duration = 4;
-  string language = 5;
-  string type = 6;
+  // repeated string languages = 5;
+  reserved 5;
+  repeated string type = 6;
   string poster_url = 7;
   string trailer_url = 8;
   string movie_resolution = 9;
@@ -201,6 +202,8 @@ message Movie_Strapi {
   string logoPosterURL = 13;
   bool is_synced = 14;
   int32 movie_id = 15;
+  string starpi_movie_uid = 16;
+  string languages = 17;
 }
 
 service rabbitmqProducerService {
@@ -212,5 +215,6 @@ service rabbitmqProducerService {
   rpc Cast_Service_Producer(Cast) returns (Cast_Service_Producer_Response);
   rpc Movie_Time_Slot_Producer(Movie_Time_Slot_Strapi) returns (Movie_Time_Slot_Producer_Response);
   rpc Delete_Cast_Producer(Cast) returns (Cast_Service_Producer_Response);
-  rpc Movie__Producer(Movie_Strapi) returns (Movie_Time_Slot_Producer_Response);
+  rpc Movie_Producer(Movie_Strapi) returns (Movie_Time_Slot_Producer_Response);
+  rpc Delete_Movie_Producer(Movie_Strapi) returns (Movie_Time_Slot_Producer_Response);
 }

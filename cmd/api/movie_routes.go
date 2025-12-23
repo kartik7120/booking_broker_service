@@ -139,6 +139,32 @@ type StrapiMovietimeslotDTO struct {
 	} `json:"venue"`
 }
 
+type StrapiMovieDTO struct {
+	Title            string   `json:"title"`
+	Desciption       string   `json:"description"`
+	ReleaseDate      string   `json:"releaseDate"`
+	Duration         int32    `json:"duration"`
+	Languages        string   `json:"languages"`
+	Type             []string `json:"type"`
+	PosterUrl        string   `json:"posterURL"`
+	TrailerURL       string   `json:"trailerURL"`
+	MovieResolution  string   `json:"movieResolution"`
+	Ranking          int      `json:"ranking"`
+	Votes            int      `json:"votes"`
+	ScreenWidePoster string   `json:"screenWidePoster"`
+	LogoImageURL     string   `json:"logoImageURL"`
+	IsSynced         bool     `json:"is_synced"`
+	MovieID          int32    `json:"movieid"`
+	StrapiMovieUid   string   `json:"starpi_movie_uid"`
+}
+
+type StrapiVenueDTO struct {
+}
+
+type MovieDto struct {
+	Title string `json:"title"`
+}
+
 func (r RedisIdempotentValue) MarshalBinary() ([]byte, error) {
 	return json.Marshal(r)
 }
@@ -329,6 +355,94 @@ func (c *Config) StapiWebhook(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Println("error from Movie_Time_Slot_Producer: ", strings.TrimSpace(resp.Error))
 			return
+		}
+	case "movie":
+		fmt.Println("inside the movie block of the broker service")
+
+		var movie rabbitmq_producer.Movie_Strapi
+
+		entryJSON, err := json.Marshal(webhookEvent.Entry)
+
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Println("error marshalling entry to json for movie model : ", err)
+			return
+		}
+
+		fmt.Printf("entry json struct : %+v\n", entryJSON)
+
+		if webhookEvent.Event == "entry.publish" || webhookEvent.Event == "entry.delete" {
+
+			var dto StrapiMovieDTO
+
+			err = json.Unmarshal(entryJSON, &dto)
+
+			fmt.Printf("strapi movie dto : %+v\n", dto)
+
+			if err != nil {
+				w.Header().Set("Content-Type", "application/json")
+				fmt.Println("error unmarshalling entry to StrapiMovieDTO: ", err)
+				return
+			}
+
+			if dto.IsSynced && webhookEvent.Event == "entry.publish" {
+				w.Header().Set("Content-Type", "application/json")
+				fmt.Println("movie is already synced, no action needed")
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
+			movie.Title = dto.Title
+			movie.Description = dto.Desciption
+			movie.ReleaseDate = dto.ReleaseDate
+			movie.Duration = dto.Duration
+			movie.Languages = dto.Languages
+			movie.Type = dto.Type
+			movie.PosterUrl = dto.PosterUrl
+			movie.TrailerUrl = dto.TrailerURL
+			movie.MovieResolution = dto.MovieResolution
+			movie.Ranking = int32(dto.Ranking)
+			movie.Votes = int32(dto.Votes)
+			movie.ScreenWidePoster = dto.ScreenWidePoster
+			movie.LogoPosterURL = dto.LogoImageURL
+			movie.StarpiMovieUid = dto.StrapiMovieUid
+			movie.MovieId = dto.MovieID
+
+			if webhookEvent.Event == "entry.delete" {
+				resp, err := c.Payment_Producer_service.Delete_Movie_Producer(ctx, &movie)
+
+				if err != nil {
+					w.Header().Set("Content-Type", "application/json")
+					fmt.Println("error calling Delete_Movie_Producer: ", err.Error())
+					return
+				}
+
+				if resp.Error != "" {
+					w.Header().Set("Content-Type", "application/json")
+					fmt.Println("error from Delete_Movie_Producer: ", strings.TrimSpace(resp.Error))
+					return
+				}
+			} else {
+
+				resp, err := c.Payment_Producer_service.Movie_Producer(ctx, &movie)
+
+				if err != nil {
+					w.Header().Set("Content-Type", "application/json")
+					fmt.Println("error calling producer service inside strapi function : ", err.Error())
+					return
+				}
+
+				if resp.Error != "" {
+					w.Header().Set("Content-Type", "application/json")
+					fmt.Println("error from Movie_Producer: ", strings.TrimSpace(resp.Error))
+					return
+				}
+			}
+
+		}
+	case "venue":
+		if webhookEvent.Event == "entry.publish" {
+
 		}
 	}
 
@@ -2950,16 +3064,6 @@ func (c *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	redisResult.MovieTimeSlotID = requestBody.MovieTimeSlotId
 	redisResult.BookedSeatsIDs = append(redisResult.BookedSeatsIDs, requestBody.SeatMatrixIDs...)
 
-	// _, err = c.Payment_service.CommitIdempotentKey(context.TODO(), &payment_service.CommitIdempotentKeyRequest{
-	// 	IdempotentKey: requestBody.IdempotentKey,
-	// })
-
-	// if err != nil {
-	// 	w.Header().Set("Content-Type", "application/json")
-	// 	http.Error(w, fmt.Sprintf(`{"error":"Error committing idempotent key: %v"}`, err.Error()), http.StatusInternalServerError)
-	// 	return
-	// }
-
 	response, err := c.Payment_service.CreateOrder(context.TODO(), &requestBody)
 
 	if err != nil {
@@ -2985,17 +3089,6 @@ func (c *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf(`{"error": "Error storing idempotent key in Redis: %v"}`, err), http.StatusInternalServerError)
 		return
 	}
-
-	// Commit the idempotent key to the database
-	// _, err = c.Payment_service.CommitIdempotentKey(context.TODO(), &payment_service.CommitIdempotentKeyRequest{
-	// 	IdempotentKey: requestBody.IdempotentKey,
-	// })
-
-	// if err != nil {
-	// 	w.Header().Set("Content-Type", "application/json")
-	// 	http.Error(w, fmt.Sprintf(`{"error":"Error committing idempotent key: %v"}`, err.Error()), http.StatusInternalServerError)
-	// 	return
-	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

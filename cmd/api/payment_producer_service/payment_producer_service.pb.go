@@ -1116,8 +1116,7 @@ type Movie_Strapi struct {
 	Description      string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	ReleaseDate      string                 `protobuf:"bytes,3,opt,name=release_date,json=releaseDate,proto3" json:"release_date,omitempty"`
 	Duration         int32                  `protobuf:"varint,4,opt,name=duration,proto3" json:"duration,omitempty"`
-	Language         string                 `protobuf:"bytes,5,opt,name=language,proto3" json:"language,omitempty"`
-	Type             string                 `protobuf:"bytes,6,opt,name=type,proto3" json:"type,omitempty"`
+	Type             []string               `protobuf:"bytes,6,rep,name=type,proto3" json:"type,omitempty"`
 	PosterUrl        string                 `protobuf:"bytes,7,opt,name=poster_url,json=posterUrl,proto3" json:"poster_url,omitempty"`
 	TrailerUrl       string                 `protobuf:"bytes,8,opt,name=trailer_url,json=trailerUrl,proto3" json:"trailer_url,omitempty"`
 	MovieResolution  string                 `protobuf:"bytes,9,opt,name=movie_resolution,json=movieResolution,proto3" json:"movie_resolution,omitempty"`
@@ -1127,6 +1126,8 @@ type Movie_Strapi struct {
 	LogoPosterURL    string                 `protobuf:"bytes,13,opt,name=logoPosterURL,proto3" json:"logoPosterURL,omitempty"`
 	IsSynced         bool                   `protobuf:"varint,14,opt,name=is_synced,json=isSynced,proto3" json:"is_synced,omitempty"`
 	MovieId          int32                  `protobuf:"varint,15,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
+	StarpiMovieUid   string                 `protobuf:"bytes,16,opt,name=starpi_movie_uid,json=starpiMovieUid,proto3" json:"starpi_movie_uid,omitempty"`
+	Languages        string                 `protobuf:"bytes,17,opt,name=languages,proto3" json:"languages,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -1189,18 +1190,11 @@ func (x *Movie_Strapi) GetDuration() int32 {
 	return 0
 }
 
-func (x *Movie_Strapi) GetLanguage() string {
-	if x != nil {
-		return x.Language
-	}
-	return ""
-}
-
-func (x *Movie_Strapi) GetType() string {
+func (x *Movie_Strapi) GetType() []string {
 	if x != nil {
 		return x.Type
 	}
-	return ""
+	return nil
 }
 
 func (x *Movie_Strapi) GetPosterUrl() string {
@@ -1264,6 +1258,20 @@ func (x *Movie_Strapi) GetMovieId() int32 {
 		return x.MovieId
 	}
 	return 0
+}
+
+func (x *Movie_Strapi) GetStarpiMovieUid() string {
+	if x != nil {
+		return x.StarpiMovieUid
+	}
+	return ""
+}
+
+func (x *Movie_Strapi) GetLanguages() string {
+	if x != nil {
+		return x.Languages
+	}
+	return ""
 }
 
 type Payment_Billing struct {
@@ -1805,14 +1813,13 @@ const file_payment_producer_service_proto_rawDesc = "" +
 	"\x19starpi_movie_timeslot_uid\x18\b \x01(\tR\x16starpiMovieTimeslotUid\"S\n" +
 	"!Movie_Time_Slot_Producer_Response\x12\x14\n" +
 	"\x05error\x18\x01 \x01(\tR\x05error\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\xda\x03\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\x8c\x04\n" +
 	"\fMovie_Strapi\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12!\n" +
 	"\frelease_date\x18\x03 \x01(\tR\vreleaseDate\x12\x1a\n" +
-	"\bduration\x18\x04 \x01(\x05R\bduration\x12\x1a\n" +
-	"\blanguage\x18\x05 \x01(\tR\blanguage\x12\x12\n" +
-	"\x04type\x18\x06 \x01(\tR\x04type\x12\x1d\n" +
+	"\bduration\x18\x04 \x01(\x05R\bduration\x12\x12\n" +
+	"\x04type\x18\x06 \x03(\tR\x04type\x12\x1d\n" +
 	"\n" +
 	"poster_url\x18\a \x01(\tR\tposterUrl\x12\x1f\n" +
 	"\vtrailer_url\x18\b \x01(\tR\n" +
@@ -1824,7 +1831,9 @@ const file_payment_producer_service_proto_rawDesc = "" +
 	"\x10screenWidePoster\x18\f \x01(\tR\x10screenWidePoster\x12$\n" +
 	"\rlogoPosterURL\x18\r \x01(\tR\rlogoPosterURL\x12\x1b\n" +
 	"\tis_synced\x18\x0e \x01(\bR\bisSynced\x12\x19\n" +
-	"\bmovie_id\x18\x0f \x01(\x05R\amovieId*l\n" +
+	"\bmovie_id\x18\x0f \x01(\x05R\amovieId\x12(\n" +
+	"\x10starpi_movie_uid\x18\x10 \x01(\tR\x0estarpiMovieUid\x12\x1c\n" +
+	"\tlanguages\x18\x11 \x01(\tR\tlanguagesJ\x04\b\x05\x10\x06*l\n" +
 	"\bCastType\x12\t\n" +
 	"\x05ACTOR\x10\x00\x12\f\n" +
 	"\bDIRECTOR\x10\x01\x12\f\n" +
@@ -1840,7 +1849,8 @@ const file_payment_producer_service_proto_rawDesc = "" +
 	"\aTHREE_D\x10\x01\x12\b\n" +
 	"\x04IMAX\x10\x02\x12\n" +
 	"\n" +
-	"\x06FOUR_D\x10\x032\xb0\t\n" +
+	"\x06FOUR_D\x10\x032\xaf\n" +
+	"\n" +
 	"\x17rabbitmqProducerService\x12\x9d\x01\n" +
 	" Payment_Service_Webhook_Producer\x12;.rabbitmq_producer_service.Payment_Service_Producer_Request\x1a<.rabbitmq_producer_service.Payment_Service_Producer_Response\x12k\n" +
 	"\n" +
@@ -1850,8 +1860,9 @@ const file_payment_producer_service_proto_rawDesc = "" +
 	" Payment_Service_Failure_Producer\x12;.rabbitmq_producer_service.Payment_Service_Producer_Request\x1a<.rabbitmq_producer_service.Payment_Service_Producer_Response\x12s\n" +
 	"\x15Cast_Service_Producer\x12\x1f.rabbitmq_producer_service.Cast\x1a9.rabbitmq_producer_service.Cast_Service_Producer_Response\x12\x8b\x01\n" +
 	"\x18Movie_Time_Slot_Producer\x121.rabbitmq_producer_service.Movie_Time_Slot_Strapi\x1a<.rabbitmq_producer_service.Movie_Time_Slot_Producer_Response\x12r\n" +
-	"\x14Delete_Cast_Producer\x12\x1f.rabbitmq_producer_service.Cast\x1a9.rabbitmq_producer_service.Cast_Service_Producer_Response\x12x\n" +
-	"\x0fMovie__Producer\x12'.rabbitmq_producer_service.Movie_Strapi\x1a<.rabbitmq_producer_service.Movie_Time_Slot_Producer_ResponseBRZPgithub.com/kartik7120/rabbitmq_producer_service/cmd/grpcServer;rabbitmq_producerb\x06proto3"
+	"\x14Delete_Cast_Producer\x12\x1f.rabbitmq_producer_service.Cast\x1a9.rabbitmq_producer_service.Cast_Service_Producer_Response\x12w\n" +
+	"\x0eMovie_Producer\x12'.rabbitmq_producer_service.Movie_Strapi\x1a<.rabbitmq_producer_service.Movie_Time_Slot_Producer_Response\x12~\n" +
+	"\x15Delete_Movie_Producer\x12'.rabbitmq_producer_service.Movie_Strapi\x1a<.rabbitmq_producer_service.Movie_Time_Slot_Producer_ResponseBRZPgithub.com/kartik7120/rabbitmq_producer_service/cmd/grpcServer;rabbitmq_producerb\x06proto3"
 
 var (
 	file_payment_producer_service_proto_rawDescOnce sync.Once
@@ -1914,18 +1925,20 @@ var file_payment_producer_service_proto_depIdxs = []int32{
 	11, // 18: rabbitmq_producer_service.rabbitmqProducerService.Cast_Service_Producer:input_type -> rabbitmq_producer_service.Cast
 	13, // 19: rabbitmq_producer_service.rabbitmqProducerService.Movie_Time_Slot_Producer:input_type -> rabbitmq_producer_service.Movie_Time_Slot_Strapi
 	11, // 20: rabbitmq_producer_service.rabbitmqProducerService.Delete_Cast_Producer:input_type -> rabbitmq_producer_service.Cast
-	15, // 21: rabbitmq_producer_service.rabbitmqProducerService.Movie__Producer:input_type -> rabbitmq_producer_service.Movie_Strapi
-	4,  // 22: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Webhook_Producer:output_type -> rabbitmq_producer_service.Payment_Service_Producer_Response
-	6,  // 23: rabbitmq_producer_service.rabbitmqProducerService.Lock_Seats:output_type -> rabbitmq_producer_service.Lock_Seats_Response
-	8,  // 24: rabbitmq_producer_service.rabbitmqProducerService.Unlock_Seats:output_type -> rabbitmq_producer_service.Unlock_Seats_Response
-	10, // 25: rabbitmq_producer_service.rabbitmqProducerService.Send_Mail_Producer:output_type -> rabbitmq_producer_service.Send_Mail_Producer_Response
-	4,  // 26: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Failure_Producer:output_type -> rabbitmq_producer_service.Payment_Service_Producer_Response
-	12, // 27: rabbitmq_producer_service.rabbitmqProducerService.Cast_Service_Producer:output_type -> rabbitmq_producer_service.Cast_Service_Producer_Response
-	14, // 28: rabbitmq_producer_service.rabbitmqProducerService.Movie_Time_Slot_Producer:output_type -> rabbitmq_producer_service.Movie_Time_Slot_Producer_Response
-	12, // 29: rabbitmq_producer_service.rabbitmqProducerService.Delete_Cast_Producer:output_type -> rabbitmq_producer_service.Cast_Service_Producer_Response
-	14, // 30: rabbitmq_producer_service.rabbitmqProducerService.Movie__Producer:output_type -> rabbitmq_producer_service.Movie_Time_Slot_Producer_Response
-	22, // [22:31] is the sub-list for method output_type
-	13, // [13:22] is the sub-list for method input_type
+	15, // 21: rabbitmq_producer_service.rabbitmqProducerService.Movie_Producer:input_type -> rabbitmq_producer_service.Movie_Strapi
+	15, // 22: rabbitmq_producer_service.rabbitmqProducerService.Delete_Movie_Producer:input_type -> rabbitmq_producer_service.Movie_Strapi
+	4,  // 23: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Webhook_Producer:output_type -> rabbitmq_producer_service.Payment_Service_Producer_Response
+	6,  // 24: rabbitmq_producer_service.rabbitmqProducerService.Lock_Seats:output_type -> rabbitmq_producer_service.Lock_Seats_Response
+	8,  // 25: rabbitmq_producer_service.rabbitmqProducerService.Unlock_Seats:output_type -> rabbitmq_producer_service.Unlock_Seats_Response
+	10, // 26: rabbitmq_producer_service.rabbitmqProducerService.Send_Mail_Producer:output_type -> rabbitmq_producer_service.Send_Mail_Producer_Response
+	4,  // 27: rabbitmq_producer_service.rabbitmqProducerService.Payment_Service_Failure_Producer:output_type -> rabbitmq_producer_service.Payment_Service_Producer_Response
+	12, // 28: rabbitmq_producer_service.rabbitmqProducerService.Cast_Service_Producer:output_type -> rabbitmq_producer_service.Cast_Service_Producer_Response
+	14, // 29: rabbitmq_producer_service.rabbitmqProducerService.Movie_Time_Slot_Producer:output_type -> rabbitmq_producer_service.Movie_Time_Slot_Producer_Response
+	12, // 30: rabbitmq_producer_service.rabbitmqProducerService.Delete_Cast_Producer:output_type -> rabbitmq_producer_service.Cast_Service_Producer_Response
+	14, // 31: rabbitmq_producer_service.rabbitmqProducerService.Movie_Producer:output_type -> rabbitmq_producer_service.Movie_Time_Slot_Producer_Response
+	14, // 32: rabbitmq_producer_service.rabbitmqProducerService.Delete_Movie_Producer:output_type -> rabbitmq_producer_service.Movie_Time_Slot_Producer_Response
+	23, // [23:33] is the sub-list for method output_type
+	13, // [13:23] is the sub-list for method input_type
 	13, // [13:13] is the sub-list for extension type_name
 	13, // [13:13] is the sub-list for extension extendee
 	0,  // [0:13] is the sub-list for field type_name
