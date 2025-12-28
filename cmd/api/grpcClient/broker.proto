@@ -421,6 +421,7 @@ message IsValidToCommitSeatsForBooking_Response {
 message CreateTicketRequest {
     string idempotent_key = 1;
     string trasaction_id = 2;
+    repeated int32 bookedSeatsIds = 3;
 }
 
 message CreateTicketResponse {

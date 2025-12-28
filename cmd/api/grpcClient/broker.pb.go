@@ -3720,11 +3720,12 @@ func (x *IsValidToCommitSeatsForBooking_Response) GetToBeBookedSeats() []*Booked
 }
 
 type CreateTicketRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	IdempotentKey string                 `protobuf:"bytes,1,opt,name=idempotent_key,json=idempotentKey,proto3" json:"idempotent_key,omitempty"`
-	TrasactionId  string                 `protobuf:"bytes,2,opt,name=trasaction_id,json=trasactionId,proto3" json:"trasaction_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	IdempotentKey  string                 `protobuf:"bytes,1,opt,name=idempotent_key,json=idempotentKey,proto3" json:"idempotent_key,omitempty"`
+	TrasactionId   string                 `protobuf:"bytes,2,opt,name=trasaction_id,json=trasactionId,proto3" json:"trasaction_id,omitempty"`
+	BookedSeatsIds []int32                `protobuf:"varint,3,rep,packed,name=bookedSeatsIds,proto3" json:"bookedSeatsIds,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CreateTicketRequest) Reset() {
@@ -3769,6 +3770,13 @@ func (x *CreateTicketRequest) GetTrasactionId() string {
 		return x.TrasactionId
 	}
 	return ""
+}
+
+func (x *CreateTicketRequest) GetBookedSeatsIds() []int32 {
+	if x != nil {
+		return x.BookedSeatsIds
+	}
+	return nil
 }
 
 type CreateTicketResponse struct {
@@ -4389,10 +4397,11 @@ const file_broker_proto_rawDesc = "" +
 	"\aisvalid\x18\x01 \x01(\bR\aisvalid\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\x12\x16\n" +
 	"\x06status\x18\x03 \x01(\x05R\x06status\x12F\n" +
-	"\x0ftoBeBookedSeats\x18\x04 \x03(\v2\x1c.moviedb_service.BookedSeatsR\x0ftoBeBookedSeats\"a\n" +
+	"\x0ftoBeBookedSeats\x18\x04 \x03(\v2\x1c.moviedb_service.BookedSeatsR\x0ftoBeBookedSeats\"\x89\x01\n" +
 	"\x13CreateTicketRequest\x12%\n" +
 	"\x0eidempotent_key\x18\x01 \x01(\tR\ridempotentKey\x12#\n" +
-	"\rtrasaction_id\x18\x02 \x01(\tR\ftrasactionId\"z\n" +
+	"\rtrasaction_id\x18\x02 \x01(\tR\ftrasactionId\x12&\n" +
+	"\x0ebookedSeatsIds\x18\x03 \x03(\x05R\x0ebookedSeatsIds\"z\n" +
 	"\x14CreateTicketResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\x12\x18\n" +
