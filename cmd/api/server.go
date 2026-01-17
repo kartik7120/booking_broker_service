@@ -24,14 +24,33 @@ type Config struct {
 	Payment_Producer_service rabbitmq_producer.RabbitmqProducerServiceClient
 }
 
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Access-Control-Allow-Origin", "https://booking-front-end-198155959998.europe-west1.run.app")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (c *Config) Routes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*", "http://*", "http://127.0.0.1:5173"},
+		AllowedOrigins: []string{
+			"https://booking-front-end-198155959998.europe-west1.run.app",
+			"http://127.0.0.1:5173",
+		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
@@ -39,6 +58,9 @@ func (c *Config) Routes() http.Handler {
 	mux.Use(middleware.Heartbeat("/ping"))
 	mux.Use(middleware.Logger)
 	mux.Use(middleware.Recoverer)
+	mux.Options("/*", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 	// mux.Use(utils.RedirectToHttpMiddleware)
 
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {

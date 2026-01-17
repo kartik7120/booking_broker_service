@@ -1108,6 +1108,7 @@ func (c *Config) GetUpcomingMovies(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
+		fmt.Printf("error from GetUpcomingMovies: %v\n", err)
 		http.Error(w, fmt.Sprintf(`{"error": "Error getting upcoming movies: %v"}`, err), http.StatusInternalServerError)
 		return
 	}
@@ -1115,6 +1116,7 @@ func (c *Config) GetUpcomingMovies(w http.ResponseWriter, r *http.Request) {
 	// Validate the gRPC response
 	if response == nil || response.MovieList == nil {
 		w.Header().Set("Content-Type", "application/json")
+		fmt.Println("No upcoming movies found")
 		w.WriteHeader(http.StatusNoContent)
 		http.Error(w, `{"error": "No upcoming movies found"}`, http.StatusNotFound)
 		return
@@ -1133,6 +1135,7 @@ func (c *Config) GetUpcomingMovies(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(jsonResponse)
 	if err != nil {
+		fmt.Println("error writing json response: ", err)
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf(`{"error": "Error writing JSON response: %v"}`, err), http.StatusInternalServerError)
 	}
@@ -1148,14 +1151,14 @@ func (c *Config) GetNowPlayingMovies(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusBadRequest)
+		http.Error(w, `{"error":"Error reading request body"}`, http.StatusBadRequest)
 		return
 	}
 
 	err = json.Unmarshal(bodyBytes, &requestBody)
 
 	if err != nil {
-		http.Error(w, "error unmarshalling JSON from request body", http.StatusBadRequest)
+		http.Error(w, `{"error":"error unmarshalling JSON from request body"}`, http.StatusBadRequest)
 		return
 	}
 
@@ -1166,20 +1169,23 @@ func (c *Config) GetNowPlayingMovies(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		http.Error(w, "Error getting now playing movies from service", http.StatusInternalServerError)
+		fmt.Println("error getting from now playing movie grpc function : ", err.Error())
+		http.Error(w, `{"error":"Error getting now playing movies from service"}`, http.StatusInternalServerError)
 		return
 	}
 
 	// Check if the response or MovieList is nil
 	if response == nil || response.MovieList == nil {
-		http.Error(w, "No movies found", http.StatusNotFound)
+		fmt.Println("No movies found")
+		http.Error(w, `{"error": "No movies found"}`, http.StatusNotFound)
 		return
 	}
 
 	// Marshal the response to JSON
 	jsonResponse, err := json.Marshal(&response.MovieList)
 	if err != nil {
-		http.Error(w, "Error marshalling JSON response", http.StatusInternalServerError)
+		fmt.Printf("error marshalling json in get now playing movies function : %s", err.Error())
+		http.Error(w, `{"error":"Error marshalling JSON response"}`, http.StatusInternalServerError)
 		return
 	}
 
@@ -1190,7 +1196,7 @@ func (c *Config) GetNowPlayingMovies(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(jsonResponse)
 	if err != nil {
-		http.Error(w, "Error writing JSON response", http.StatusInternalServerError)
+		http.Error(w, `{"error":"Error writing JSON response"}`, http.StatusInternalServerError)
 	}
 }
 
@@ -2341,7 +2347,7 @@ func (c *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(bodyBytes, &requestBody)
 
-	fmt.Println("Request body in Create order function: ", requestBody)
+	fmt.Printf("Request body in Create order function: %+v\n", requestBody)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -2394,15 +2400,19 @@ func (c *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	redisResult.MovieTimeSlotID = requestBody.MovieTimeSlotId
 	redisResult.BookedSeatsIDs = append(redisResult.BookedSeatsIDs, requestBody.SeatMatrixIDs...)
 
+	fmt.Println("Calling the create order grpc function")
+
 	response, err := c.Payment_service.CreateOrder(context.TODO(), &requestBody)
 
 	if err != nil {
+		fmt.Printf("error calling create order grpc function : %s", err.Error())
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf(`{"error":"Error calling CreateOrder rpc function: %v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
 
 	if response.Error != "" {
+		fmt.Printf("error calling create order grpc function : %s", response.Error)
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, fmt.Sprintf(`{"error":"Error calling CreateOrder rpc function: %v"}`, response.Error), http.StatusInternalServerError)
 		return
