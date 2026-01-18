@@ -1938,6 +1938,10 @@ func (c *Config) HandleWebhookEvents(w http.ResponseWriter, r *http.Request) {
 			PhoneNumber:     event.Data.Metadata.CustomerPhone,
 		})
 
+		if err != nil {
+			fmt.Println("error calling book seats function " + (err.Error()))
+		}
+
 		fmt.Println("Finished calling booked seats function")
 
 		fmt.Printf("booked seats that are booked : %v", bookResp.BookSeatsId)
